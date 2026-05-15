@@ -83,12 +83,13 @@ const SupplierProfile = () => {
             localStorage.setItem('cart', JSON.stringify(existingCart));
             window.dispatchEvent(new Event('cartUpdated'));
 
-            setShowCartPopup(true);
-
             setAddedItems(prev => ({ ...prev, [product._id]: true }));
+            setSuccessMessage(t('product_added_to_cart') || 'Product added to cart successfully');
+            setShowSuccess(true);
             setTimeout(() => {
                 setAddedItems(prev => ({ ...prev, [product._id]: false }));
-            }, 2000);
+                setShowSuccess(false);
+            }, 3000);
         } catch (err) {
             console.error("Cart error in SupplierProfile:", err);
         }
@@ -255,8 +256,17 @@ const SupplierProfile = () => {
                         </div>
 
                         <div className={styles['sp-header-actions']}>
-                            <button onClick={(e) => handleChatNow(e, null)} className={`${styles['sp-btn']} ${styles['sp-btn-primary']}`} style={{ minWidth: '160px', border: 'none', cursor: 'pointer' }}>{t('chat_now') || 'Chat Now'}</button>
-                            <Link href="/rfq/post" className={`${styles['sp-btn']} ${styles['sp-btn-outline']}`} style={{ minWidth: '160px' }}>{t('send_enquiry') || 'Send Inquiry'}</Link>
+                            <div className={styles['sp-main-actions']}>
+                                <button onClick={(e) => handleChatNow(e, null)} className={`${styles['sp-btn']} ${styles['sp-btn-primary']}`}>{t('chat_now') || 'Chat Now'}</button>
+                                <Link href="/rfq/post" className={`${styles['sp-btn']} ${styles['sp-btn-outline']}`}>{t('send_enquiry') || 'Send Inquiry'}</Link>
+                            </div>
+                            <button className={styles['sp-report-btn']} title="Report this supplier">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                    <line x1="4" y1="22" x2="4" y2="15"></line>
+                                </svg>
+                                <span>Report</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -646,57 +656,6 @@ const SupplierProfile = () => {
                                 onClick={() => setContactDetailPopup({ open: false, field: '', value: '' })}
                                 style={{ padding: '8px 20px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '5px', fontWeight: 500, cursor: 'pointer', fontSize: '14px' }}
                             >Close</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* CART SUCCESS POPUP (Bootstrap) */}
-            {showCartPopup && (
-                <div
-                    className="modal show d-block"
-                    tabIndex={-1}
-                    style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999 }}
-                    onClick={() => setShowCartPopup(false)}
-                >
-                    <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '16px', overflow: 'hidden' }}>
-                            <div className="modal-header bg-success text-white border-0 py-3 position-relative d-flex justify-content-center">
-                                <h5 className="modal-title font-weight-bold d-flex align-items-center gap-2 m-0 fs-5 justify-content-center w-100">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                    </svg>
-                                    Success
-                                </h5>
-                                <button
-                                    type="button"
-                                    className="btn-close btn-close-white position-absolute end-0 me-3"
-                                    onClick={() => setShowCartPopup(false)}
-                                    aria-label="Close"
-                                    style={{ filter: 'invert(1) grayscale(100%) brightness(200%)' }}
-                                ></button>
-                            </div>
-                            <div className="modal-body text-center py-5">
-                                <h4 className="fw-bold text-dark mb-2">Product added cart successfully</h4>
-                                <p className="text-muted mb-0">You can continue shopping or proceed to checkout.</p>
-                            </div>
-                            <div className="modal-footer bg-light border-0 justify-content-center py-3">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-secondary px-4 fw-bold rounded-pill"
-                                    onClick={() => setShowCartPopup(false)}
-                                >
-                                    Continue Shopping
-                                </button>
-                                <Link
-                                    href="/cart"
-                                    className="btn px-4 fw-bold rounded-pill text-white shadow-sm"
-                                    style={{ backgroundColor: 'var(--primary-color, #ff6a00)', borderColor: 'var(--primary-color, #ff6a00)' }}
-                                >
-                                    View Shopping Cart
-                                </Link>
-                            </div>
                         </div>
                     </div>
                 </div>
