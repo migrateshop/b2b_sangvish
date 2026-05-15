@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Documentation - Official Merchant Guide</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d2e67;
+            --primary-hover: #1a4a9e;
+            --sidebar-bg: #f8fafc;
+            --header-bg: #ffffff;
+            --bg: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border: #e2e8f0;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            height: 70px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-area h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .btn-header {
+            background: var(--primary);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-header:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            left: 0;
+            padding: 30px 20px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .section-group {
+            margin-bottom: 30px;
+        }
+
+        .group-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            padding-left: 15px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 15px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(13, 46, 103, 0.2);
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: var(--sidebar-width);
+            margin-top: 70px;
+            padding: 40px 80px;
+            max-width: 1200px;
+        }
+
+        .doc-section {
+            margin-bottom: 80px;
+            scroll-margin-top: 100px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            padding-left: 20px;
+            border-left: 6px solid #10b981;
+            margin-bottom: 25px;
+            line-height: 1.2;
+        }
+
+        h1.chapter-title {
+            color: #0f172a;
+            font-size: 38px;
+            margin: 60px 0 30px;
+            font-family: 'Playfair Display', serif;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1.chapter-title:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 35px 0 15px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: var(--text-dim);
+            font-size: 15px;
+        }
+
+        /* Elements */
+        ul {
+            list-style: none;
+            margin-bottom: 25px;
+            padding-left: 10px;
+        }
+
+        li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            font-size: 14.5px;
+            color: var(--text-dim);
+        }
+
+        li::before {
+            content: "\f058";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .screenshot-box {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            margin: 25px 0;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .screenshot-box i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .feature-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card strong {
+            color: #166534;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            color: var(--primary);
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-nav a:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 40px 20px;
+            }
+
+            .header-nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-area">
+            <div
+                style="background: var(--primary); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                <i class="fa-solid fa-layer-group" style="color: white; font-size: 18px;"></i>
+            </div>
+            <h2>B2B Documentation</h2>
+        </div>
+        <div class="header-nav">
+            <a href="#admin-menus">Admin Area</a>
+            <a href="#supplier-dashboard">Supplier Hub</a>
+            <a href="#buyer-nav">Buyer Portal</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <div class="section-group">
+            <div class="group-title">0. GETTING STARTED</div>
+            <a href="#doc-overview" class="nav-link active">Project Overview</a>
+        </div>
+
+        <div class="section-group">
+            <div class="group-title">1. SETUP & INSTALLATION</div>
+            <a href="#setup-prereq" class="nav-link">Prerequisites & Stack</a>
+            <a href="#setup-env" class="nav-link">Environment Configuration</a>
+            <a href="#setup-backend" class="nav-link">Backend Setup</a>
+            <a href="#setup-frontend" class="nav-link">Frontend Setup</a>
+            <a href="#setup-migration" class="nav-link">Database Migration</a>
+            <a href="#setup-queue" class="nav-link">Queue & Cron Setup</a>
+            <a href="#setup-deploy" class="nav-link">Build & Deployment</a>
+            <a href="#setup-troubleshoot" class="nav-link">Troubleshooting</a>
+        </div>
+
+        <div class="section-group">
+            <div class="group-title">2. SYSTEM WORKFLOWS</div>
+            <a href="#flow-lifecycle" class="nav-link">Transaction Lifecycle</a>
+            <a href="#flow-admin" class="nav-link">Admin Workflow</a>
+            <a href="#flow-buyer" class="nav-link">Buyer Workflow</a>
+            <a href="#flow-supplier" class="nav-link">Supplier Workflow</a>
+        </div>
+
+        <div class="section-group">
+            <div class="group-title">3. ADMIN PANEL</div>
+            <a href="#admin-menus-summary" class="nav-link">Menu Summary</a>
+            <a href="#admin-menus" class="nav-link">Feature Deep-Dive</a>
+            <a href="#admin-users" class="nav-link">Roles & Permissions</a>
+            <a href="#admin-products" class="nav-link">Product Moderation</a>
+            <a href="#admin-orders" class="nav-link">Order Management</a>
+            <a href="#admin-settings" class="nav-link">System Settings</a>
+        </div>
+
+        <div class="section-group">
+            <div class="group-title">4. BUYER PANEL</div>
+            <a href="#buyer-nav" class="nav-link">Menus & Navigation</a>
+            <a href="#buyer-search" class="nav-link">Product Browsing</a>
+            <a href="#buyer-rfq" class="nav-link">Quotations (RFQ)</a>
+            <a href="#buyer-cart" class="nav-link">Cart & Checkout Flow</a>
+            <a href="#buyer-wallet" class="nav-link">Wallet & Payments</a>
+            <a href="#buyer-profile" class="nav-link">Profile & Notifications</a>
+        </div>
+
+        <div class="section-group">
+            <div class="group-title">5. SUPPLIER PANEL</div>
+            <a href="#supplier-dashboard" class="nav-link">Store Dashboard</a>
+            <a href="#supplier-products" class="nav-link">Product & Inventory</a>
+            <a href="#supplier-rfq" class="nav-link">Quotation Responses</a>
+            <a href="#supplier-orders" class="nav-link">Order & Shipping Flow</a>
+            <a href="#supplier-wallet" class="nav-link">Earnings & Withdrawals</a>
+            <a href="#supplier-settings" class="nav-link">Business Profile</a>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <!-- ==============================================
+             CHAPTER 0: OVERVIEW
+        =============================================== -->
+        <section id="doc-overview" class="doc-section">
+            <h1 class="chapter-title" style="margin-top:0;">Global B2B Marketplace Documentation</h1>
+            <p>Welcome to the official documentation for the **Global B2B Marketplace**. This platform is a full-stack,
+                enterprise-grade solution designed to bridge the gap between global manufacturers (Suppliers) and bulk
+                procurement professionals (Buyers).</p>
+
+            <div class="feature-card" style="margin-top:20px;">
+                <strong><i class="fa-solid fa-rocket"></i> Key Value Props:</strong>
+                <ul style="margin: 10px 0 0;">
+                    <li>Escrow-protected multi-currency transactions.</li>
+                    <li>Built-in Messaging & Quotation engine for bulk negotiation.</li>
+                    <li>AI-driven Product Discovery layer.</li>
+                    <li>Multi-tenant Supplier Dashboards + Global Admin moderation.</li>
+                </ul>
+            </div>
+            <p style="margin-top:20px;">Whether you are a developer tasked with scaling the infrastructure, or a client
+                administrator managing day-to-day trades, this guide serves as your single source of truth.</p>
+        </section>
+
+        <!-- ==============================================
+             CHAPTER 1: SETUP & INSTALLATION
+        =============================================== -->
+        <h1 class="chapter-title">1. Full Project Setup & Installation Guide</h1>
+
+        <section id="setup-prereq" class="doc-section">
+            <h2 class="section-title">Prerequisites & Technology Stack</h2>
+            <p>Before installing the platform on your local development machine or production server, ensure your
+                environment meets the minimum architecture requirements.</p>
+            <ul>
+                <li><b>Node.js:</b> v18.x or v20.x LTS (Required for Frontend React app & Backend Express server).</li>
+                <li><b>Database:</b> MongoDB v6.0 or higher.</li>
+                <li><b>Package Manager:</b> NPM (comes with Node.js) or Yarn.</li>
+                <li><b>Web Server (Production):</b> Nginx or Apache (for reverse proxy).</li>
+                <li><b>Process Manager:</b> PM2 (for keeping the backend server alive in production).</li>
+            </ul>
+        </section>
+
+        <section id="setup-env" class="doc-section">
+            <h2 class="section-title">Environment Variables (.env Configuration)</h2>
+            <p>Both the frontend and backend require properly configured environments. Example environment variables:
+            </p>
+            <div class="code-block">
+                # Backend (.env)
+                PORT=5000
+                MONGODB_URI=mongodb://localhost:27017/alibaba_demo
+                JWT_SECRET=your_super_secret_jwt_key
+                STRIPE_SECRET_KEY=sk_test_...
+                PAYPAL_CLIENT_ID=AcM...
+                PAYPAL_APP_SECRET=EOf...
+                FRONTEND_URL=http://localhost:3000
+
+                # Frontend (.env)
+                REACT_APP_API_URL=http://localhost:5000/api
+                REACT_APP_RECAPTCHA_SITE_KEY=your_recaptcha_v3_site_key
+            </div>
+            <p><b>Important:</b> Never commit your actual live `.env` files to Git version control. Always use
+                `.env.example` as a template.</p>
+        </section>
+
+        <section id="setup-backend" class="doc-section">
+            <h2 class="section-title">Backend Installation (Node.js/Express)</h2>
+            <p>Follow these steps to initialize the core REST API backend.</p>
+            <div class="code-block">
+                cd backend/
+                npm install
+                # To run local development server with hot-reload (Nodemon)
+                npm run dev
+                # To start production server
+                npm start
+            </div>
+        </section>
+
+        <section id="setup-frontend" class="doc-section">
+            <h2 class="section-title">Frontend Installation (React.js)</h2>
+            <p>Start the user interface application which powers the Buyer, Supplier, and Admin portals.</p>
+            <div class="code-block">
+                cd frontend/
+                npm install
+                npm start
+            </div>
+            <p>The marketplace will automatically open at <code>http://localhost:3000</code>.</p>
+        </section>
+
+        <section id="setup-migration" class="doc-section">
+            <h2 class="section-title">Database Seeding & Storage Setup</h2>
+            <p>To populate your fresh MongoDB instance with default Admin users, predefined categories, and system
+                settings, run the seeder script:</p>
+            <div class="code-block">
+                cd backend/
+                npm run seed
+            </div>
+            <p><b>Storage Setup:</b> Product images, invoices, and supplier documents are stored locally in the
+                <code>backend/uploads</code> directory (or AWS S3/Cloudinary depending on your implemented driver in the
+                `.env`). Make sure the <code>uploads/</code> folder has public read permissions.</p>
+        </section>
+
+        <section id="setup-queue" class="doc-section">
+            <h2 class="section-title">Queue & Cron Job Setup</h2>
+            <p>Cron jobs are initialized within the Node runtime automatically upon starting the server. They handle
+                background tasks such as:</p>
+            <ul>
+                <li>Auto-canceling unpaid pending orders after 24 hours.</li>
+                <li>Compiling weekly analytics & sending summary emails.</li>
+                <li>Re-syncing subscription status for expired supplier plans.</li>
+            </ul>
+        </section>
+
+        <section id="setup-deploy" class="doc-section">
+            <h2 class="section-title">Build & Deployment Steps (Production/Staging)</h2>
+            <p>Deploying to a live Ubuntu/Linux server requires creating a React production build and using PM2 for the
+                backend.</p>
+            <div class="code-block">
+                # 1. Build the Frontend
+                cd frontend/
+                npm run build
+                # (This outputs optimized static files to /build directory)
+
+                # 2. Start Backend with PM2
+                cd backend/
+                npm install -g pm2
+                pm2 start server.js --name "alibaba-backend"
+                pm2 save
+                pm2 startup
+            </div>
+            <p>You must then configure Nginx to serve the <code>frontend/build</code> folder on port 80/443, and proxy
+                <code>/api</code> requests to localhost:5000.</p>
+        </section>
+
+        <section id="setup-troubleshoot" class="doc-section">
+            <h2 class="section-title">Common Troubleshooting Steps</h2>
+            <div class="feature-card">
+                <strong>CORS Errors?</strong>
+                Ensure your <code>FRONTEND_URL</code> in the backend `.env` precisely matches the domain the React app
+                is served from (including http vs https).
+            </div>
+            <div class="feature-card">
+                <strong>Images not loading?</strong>
+                Verify that your backend URL resolving static assets matches the explicit server IP/domain.
+            </div>
+        </section>
+
+        <section id="setup-structure" class="doc-section">
+            <h2 class="section-title">Project Codebase Structure</h2>
+            <p>Navigating the repository is straightforward. The application is logically split into high-level
+                directory modules:</p>
+
+            <h3 style="color:#0f172a; margin-top:20px;">1. Backend (Express Node.js)</h3>
+            <div class="code-block">
+                backend/
+                ├── controllers/ # Route request/response logic.
+                ├── models/ # Mongoose Schemas (User, Product, Order, etc.)
+                ├── routes/ # HTTP Endpoint definitions.
+                ├── middlewares/ # Auth, Validation, & Upload handlers.
+                ├── services/ # Specialized business logic (Stripe, Socket).
+                └── uploads/ # Local storage for documents and images.
+            </div>
+
+            <h3 style="color:#0f172a; margin-top:20px;">2. Frontend (React.js)</h3>
+            <div class="code-block">
+                frontend/
+                ├── src/
+                │ ├── components/ # Reusable UI components (Shared).
+                │ ├── pages/ # Top-level route pages (Home, Cart, Dashboards).
+                │ ├── context/ # Global state management.
+                │ ├── assets/ # Images, Global Icons, and Fonts.
+                │ └── utils/ # Client-side helper functions.
+                └── public/ # Static assets and index.html.
+            </div>
+        </section>
+
+
+
+        <!-- ==============================================
+             CHAPTER 2: SYSTEM WORKFLOWS
+        =============================================== -->
+        <h1 class="chapter-title">2. User Flows & System Architecture</h1>
+
+        <section id="flow-lifecycle" class="doc-section">
+            <h2 class="section-title">End-to-End Transaction Lifecycle</h2>
+            <div class="feature-card" style="background:#fff7ed; border-color:#fed7aa">
+                <strong style="color:#c2410c"><i class="fa-solid fa-briefcase"></i> For Clients (Business
+                    Logic)</strong>
+                <p style="margin: 5px 0 0; color:#431407">The platform operates as an Escrow-driven marketplace. Buyers
+                    find products, place an order, and their payment is held securely. The Supplier is notified to ship
+                    the item. Only once the Buyer confirms they received the packages does the platform release the
+                    funds to the Supplier's virtual wallet, subtracting a marketplace commission.</p>
+            </div>
+            <div class="feature-card" style="background:#f0f9ff; border-color:#bae6fd">
+                <strong style="color:#0369a1"><i class="fa-solid fa-code"></i> For Developers (Technical
+                    Architecture)</strong>
+                <ul style="margin-top: 10px;">
+                    <li><b>Cart Splitting:</b> The MongoDB <code>Cart</code> model splits items by
+                        <code>supplier_id</code>. Checkout generates one parent <code>Transaction</code> and multiple
+                        child <code>Order</code> documents.</li>
+                    <li><b>Payment Escrow:</b> Payments processed via Stripe/CCAvenue trigger a webhook that marks the
+                        <code>Order</code> as <code>paid</code> while holding financial distribution in a pending
+                        ledger.</li>
+                    <li><b>Wallet DB Ledger:</b> Upon the Buyer hitting "Confirm Receipt" (triggering
+                        <code>/api/orders/:id/deliver</code> route), the backend calculates the admin commission from
+                        Settings, and increments the Supplier's <code>User.walletBalance</code>.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="flow-admin" class="doc-section">
+            <h2 class="section-title">Admin Workflow</h2>
+            <div class="feature-card" style="background:#fff7ed; border-color:#fed7aa">
+                <strong style="color:#c2410c"><i class="fa-solid fa-briefcase"></i> For Clients (Business
+                    Logic)</strong>
+                <p style="margin: 5px 0 0; color:#431407">Administrators are the overseers. Admins verify new suppliers
+                    to prevent fraud, moderate product listings, resolve buyer-supplier disputes, and manage website
+                    content (banners, global taxes, categories).</p>
+            </div>
+            <div class="feature-card" style="background:#f0f9ff; border-color:#bae6fd">
+                <strong style="color:#0369a1"><i class="fa-solid fa-code"></i> For Developers (Technical
+                    Architecture)</strong>
+                <ul style="margin-top: 10px;">
+                    <li><b>Role-Based Access Control (RBAC):</b> Admins possess a JWT payload containing
+                        <code>role: 'admin'</code>. The backend Express <code>isAdmin</code> middleware protects all
+                        <code>/api/admin/*</code> HTTP routes.</li>
+                    <li><b>Dynamic Configuration:</b> Settings like global tax, categories, and hero sliders are not
+                        hardcoded. They are fetched dynamically from MongoDB collections (e.g., <code>Settings</code>)
+                        and mutated via the React dashboard.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="flow-buyer" class="doc-section">
+            <h2 class="section-title">Buyer Workflow</h2>
+            <div class="feature-card" style="background:#fff7ed; border-color:#fed7aa">
+                <strong style="color:#c2410c"><i class="fa-solid fa-briefcase"></i> For Clients (Business
+                    Logic)</strong>
+                <p style="margin: 5px 0 0; color:#431407">Buyers log in to source products across global verified
+                    suppliers. They can add ready-to-ship products to their cart, or for custom bulk orders, submit a
+                    Request for Quotation (RFQ) directly to a supplier to negotiate pricing.</p>
+            </div>
+            <div class="feature-card" style="background:#f0f9ff; border-color:#bae6fd">
+                <strong style="color:#0369a1"><i class="fa-solid fa-code"></i> For Developers (Technical
+                    Architecture)</strong>
+                <ul style="margin-top: 10px;">
+                    <li><b>RFQ Tracking System:</b> Bypasses standard cart logic. Mongoose generates a
+                        <code>Quotation</code> document. Communication runs through a Socket.io channel until an agreed
+                        custom invoice is generated.</li>
+                    <li><b>AI Search Layer:</b> Leverages a background keyword heuristic route to map conversational
+                        Buyer queries (e.g., "cheap blue shoes") into exact <code>Product</code> schema $regex matches.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="flow-supplier" class="doc-section">
+            <h2 class="section-title">Supplier Workflow</h2>
+            <div class="feature-card" style="background:#fff7ed; border-color:#fed7aa">
+                <strong style="color:#c2410c"><i class="fa-solid fa-briefcase"></i> For Clients (Business
+                    Logic)</strong>
+                <p style="margin: 5px 0 0; color:#431407">Suppliers operate an independent storefront within the
+                    marketplace. They undergo KYC verification, upload catalogs with bulk-pricing tiers, fulfill orders
+                    with tracking numbers, and withdraw earnings natively via the dashboard.</p>
+            </div>
+            <div class="feature-card" style="background:#f0f9ff; border-color:#bae6fd">
+                <strong style="color:#0369a1"><i class="fa-solid fa-code"></i> For Developers (Technical
+                    Architecture)</strong>
+                <ul style="margin-top: 10px;">
+                    <li><b>Schema Ownership:</b> <code>Product</code> models require an <code>owner: ObjectId</code>
+                        referencing the Supplier. A Supplier can only mutate products mapping strictly to their JWT ID.
+                    </li>
+                    <li><b>Withdrawal System:</b> Funds exist only as virtual integers in the DB until a Supplier
+                        submits a <code>WithdrawalRequest</code>. Financial APIs or manual Admin wires complete the
+                        transaction off-platform.</li>
+                </ul>
+            </div>
+        </section>
+
+
+        <!-- ==============================================
+             CHAPTER 3: ADMIN PANEL
+        =============================================== -->
+        <h1 class="chapter-title">3. Admin Panel Documentation</h1>
+
+        <section id="admin-menus-summary" class="doc-section">
+            <h2 class="section-title">Explain All Admin Menus</h2>
+            <table>
+                <tr>
+                    <th>Menu Component</th>
+                    <th>Purpose & Actionable Data</th>
+                </tr>
+                <tr>
+                    <td><b>Dashboard</b></td>
+                    <td>High-level macro statistics, recent orders, signups, and KPI charts.</td>
+                </tr>
+                <tr>
+                    <td><b>Products > All Products</b></td>
+                    <td>Force edit, delete, or feature products pushed by suppliers.</td>
+                </tr>
+                <tr>
+                    <td><b>Products > Categories</b></td>
+                    <td>Manage multi-level category taxonomy. (e.g. Electronics > Audio > Headphones).</td>
+                </tr>
+                <tr>
+                    <td><b>Orders Management</b></td>
+                    <td>God-eye view of all transactional states. Admins can refund or cancel orders from here.</td>
+                </tr>
+                <tr>
+                    <td><b>Users > Buyers/Suppliers</b></td>
+                    <td>User ban/suspend control, password resets, and manual email verifications.</td>
+                </tr>
+                <tr>
+                    <td><b>Company Verification</b></td>
+                    <td>KYC oversight and business authentication center. Review and approve supplier business documents.</td>
+                </tr>
+                <tr>
+                    <td><b>Finances > Withdrawals</b></td>
+                    <td>Process layout requests submitted by Suppliers to transfer wallet balances to their external bank accounts.</td>
+                </tr>
+                <tr>
+                    <td><b>Finances > Revenue</b></td>
+                    <td>Reports of the commissions earned by the platform per transaction.</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="admin-menus" class="doc-section">
+            <h2 class="section-title">Admin Menu Deep-Dive</h2>
+
+            <h3 style="color:#0f172a; margin-top:20px;">1. System Dashboard</h3>
+            <p>Access high-level analytics tracking GMV, new entity registration, and active order queues via the
+                Mongoose-driven reporting engine.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/admin_dashboard.png"
+                    style="width:100%; height:auto; display:block;" alt="Dashboard"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">2. User Moderation</h3>
+            <p>Full control over Buyer and Supplier life-cycles, including direct manual KYC approval and RBAC
+                permission assignment.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/all_user.png"
+                    style="width:100%; height:auto; display:block;" alt="User Management"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">2.1 Company Verification (KYC)</h3>
+            <p>Dedicated interface for auditing supplier legitimacy. Admins can review uploaded business licenses,
+                tax IDs, and corporate profiles to grant or revoke "Verified" status badges.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/company_Verification.png"
+                    style="width:100%; height:auto; display:block;" alt="Company Verification"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">3. Product Moderation & Catalogs</h3>
+            <p><strong>Products > All Products:</strong> Force edit, delete, or feature products pushed by suppliers.
+                Ensure strict catalog quality control.<br>
+                <strong>Products > Categories:</strong> Manage dynamic multi-level category taxonomy trees (e.g.,
+                Electronics > Audio > Headphones).
+            </p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Products-04-07-2026_03_55_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Product Moderation"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">4. Orders Management</h3>
+            <p>A god-eye administrative view of all marketplace transactional states. Admins can track tracking IDs,
+                intercept, refund, or forcibly cancel active orders across all suppliers.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Orders-04-07-2026_03_55_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Order Hub"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">4.1 Product Approvals Queue</h3>
+            <p>A specialized workflow for auditing new product listings submitted by Suppliers. Admins must review
+                specifications, pricing, and images before the product becomes live on the global marketplace.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Approvals-04-07-2026_03_56_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Product Approvals"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">5. Finances, Earnings, & Withdrawals</h3>
+            <p><strong>Finances > Withdrawals:</strong> Manually process and finalize layout requests submitted by
+                Suppliers transferring their wallet balances into external bank accounts.<br>
+                <strong>Finances > Revenue:</strong> Monitor real-time platform commission earnings generated from each
+                supplier transaction.
+            </p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Revenue-04-07-2026_03_59_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Finances"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">6. CMS & Homepage Optimization</h3>
+            <p>Dynamically alter the frontend UI without touching the codebase. Manage hero banners, promotional
+                sliders, footer links, and SEO metadata natively via the dashboard.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Cms-04-07-2026_04_02_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="CMS Hub"></div>
+
+        </section>
+
+        <section id="admin-settings" class="doc-section">
+            <h2 class="section-title">System Settings & Configuration</h2>
+            <p>Deep foundational configs defining the core logic across the entire marketplace integration:</p>
+            <ul>
+                <li><b>Payment Gateways:</b> Switch seamlessly between Stripe, PayPal, CCAvenue Live/Sandbox keys via
+                    GUI forms.</li>
+                <li><b>Email Integrations:</b> Configure native SMTP hosts for automated transactional receipt delivery
+                    and notifications.</li>
+                <li><b>Tax & Duties:</b> Define robust state/country level digital tax and GST compliance percentages
+                    globally.</li>
+            </ul>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Payment-Methods-04-07-2026_04_01_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Settings"></div>
+        </section>
+
+
+            <h3 style="color:#0f172a; margin-top:40px;">7. Global Settings & Compliance</h3>
+            <p><strong>Worldwide Reach:</strong> Manage country-level availability and currency mappings.<br>
+                <strong>Tax & Compliance:</strong> Define state/country level digital tax and GST compliance percentages globally.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Worldwide-04-07-2026_03_57_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Worldwide Settings"></div>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Tax-04-07-2026_04_02_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Tax Compliance"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">8. Revenue & Subscriptions</h3>
+            <p><strong>Commissions:</strong> Fine-tune platform percentage cuts per category or per transaction.<br>
+                <strong>Subscription Plans:</strong> Manage recurring membership tiers for Suppliers and Premium Buyers.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Commissions-04-07-2026_04_01_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Commissions"></div>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Subscriptions-04-07-2026_04_03_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Subscriptions"></div>
+
+            <h3 style="color:#0f172a; margin-top:40px;">9. Security & Disputes</h3>
+            <p><strong>Dispute Resolution:</strong> Centralized hub for mediating conflicts between buyers and suppliers.<br>
+                <strong>Social Auth:</strong> Configure OAuth providers (Google, Facebook) for seamless entity onboarding.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Disputes-04-07-2026_03_57_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Disputes"></div>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/Admin-Panel-Social-Login-04-07-2026_04_03_PM.png"
+                    style="width:100%; height:auto; display:block;" alt="Social Login"></div>
+        </section>
+
+
+        <section id="admin-users" class="doc-section">
+            <h2 class="section-title">Roles & Permissions</h2>
+            <p>The platform implements a highly granular Role-Based Access Control (RBAC) system. Admins can create
+                custom sub-roles for internal staff moderators.</p>
+            <ul>
+                <li><b>Permission Groups:</b> Toggle capabilities like <code>Order View Only</code> vs
+                    <code>Order Mutation/Refund</code>.</li>
+                <li><b>Supplier Verification:</b> Dedicated roles can be assigned to strictly audit and approve KYC
+                    documents.</li>
+                <li><b>Security:</b> All session logs are tracked per admin user ID for accountability.</li>
+            </ul>
+        </section>
+
+        <!-- ==============================================
+             CHAPTER 4: BUYER PANEL
+        =============================================== -->
+        <h1 class="chapter-title">4. Buyer Panel Documentation</h1>
+
+        <section id="buyer-nav" class="doc-section">
+            <h2 class="section-title">Buyer Menus & Navigation</h2>
+            <p>The Buyer portal is optimized for procurement, removing seller-specific clutter.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;">
+                <img src="images/screenshot-2.png" style="width:100%; height:auto; display:block;"
+                    alt="Buyer Portal Layout">
+            </div>
+        </section>
+
+        <section id="buyer-search" class="doc-section">
+            <h2 class="section-title">Product Discovery & AI Search</h2>
+            <p>Buyers can find products via standard category trees or the advanced AI-driven search bar which supports
+                conversational queries.</p>
+            <ul>
+                <li><b>Filters:</b> Sort by MOQ, Price Tiers, Supplier Country, and Verification Status.</li>
+                <li><b>Ready-to-Ship:</b> Filter specifically for products that don't require RFQ negotiation.</li>
+            </ul>
+        </section>
+
+        <section id="buyer-rfq" class="doc-section">
+            <h2 class="section-title">Quotations (RFQ) Workflow</h2>
+            <p>Custom bulk negotiation logic powered by real-time Socket.io channels.</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/screenshot-2.png"
+                    style="width:100%; height:auto; display:block;" alt="RFQ Flow"></div>
+        </section>
+
+        <section id="buyer-cart" class="doc-section">
+            <h2 class="section-title">Cart & Checkout Flow</h2>
+            <p>Supports multi-supplier carts. The checkout logic automatically splits the payment and order tracking
+                into independent supplier shipments.</p>
+        </section>
+
+        <section id="buyer-wallet" class="doc-section">
+            <h2 class="section-title">Wallet & Payments</h2>
+            <p>Buyers maintain a virtual wallet for quick refunds and streamlined checkouts across the marketplace.</p>
+        </section>
+
+        <section id="buyer-profile" class="doc-section">
+            <h2 class="section-title">Profile & Notifications</h2>
+            <p>Manage shipping addresses, business license details for tax exemption, and real-time email/push
+                notification settings.</p>
+        </section>
+
+
+        <!-- ==============================================
+             CHAPTER 5: SUPPLIER PANEL
+        =============================================== -->
+        <h1 class="chapter-title">5. Supplier Panel Documentation</h1>
+
+        <section id="supplier-dashboard" class="doc-section">
+            <h2 class="section-title">Store Dashboard Overview</h2>
+            <p>Real-time shop performance analytics and pending action queues (Orders/RFQs).</p>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/screenshot-2.png"
+                    style="width:100%; height:auto; display:block;" alt="Supplier Dashboard"></div>
+        </section>
+
+        <section id="supplier-products" class="doc-section">
+            <h2 class="section-title">Product & Inventory Management</h2>
+            <p>Creating highly compliant listings ensures better ranking across the marketplace.</p>
+            <ul>
+                <li><b>Basic Info:</b> Title, precise categorization, brand, model.</li>
+                <li><b>Trade Details:</b> Setting realistic Min. Order Quantities (MOQ), tiered pricing arrays (e.g.
+                    1-100 units: $5, 100-500 units: $4).</li>
+                <li><b>Media:</b> Main thumbnail and gallery additions.</li>
+                <li><b>Inventory tracking:</b> SKU management and exact stock counts to prevent overselling.</li>
+            </ul>
+        </section>
+
+        <section id="supplier-orders" class="doc-section">
+            <h2 class="section-title">Order Fulfillment & Shipping</h2>
+            <p>The fulfillment pipeline mandates strict state updates:</p>
+            <ol>
+                <li><b>Pending:</b> Waiting for buyer payment.</li>
+                <li><b>Processing:</b> Supplier is picking/packing.</li>
+                <li><b>Shipped:</b> Supplier attaches tracking ID and selects Shipping Carrier. Buyer notified.</li>
+                <li><b>Delivered:</b> Handover completed. Wallet funds released.</li>
+            </ol>
+            <div class="screenshot-box" style="padding:0; overflow:hidden;"><img src="images/screenshot-2.png"
+                    style="width:100%; height:auto; display:block;" alt="Supplier Dashboard"></div>
+        </section>
+
+        <section id="supplier-wallet" class="doc-section">
+            <h2 class="section-title">Earnings, Wallet & Payouts</h2>
+            <p>For every successful order, minus platform commission, funds are assigned to the Supplier's Virtual
+                Wallet.</p>
+            <p>The <b>Withdrawals</b> section allows Suppliers to submit a bank transfer request for a chosen amount.
+                The Admin approves this manually off-platform and flags it as 'Processed'.</p>
+        </section>
+
+        <section id="supplier-rfq" class="doc-section">
+            <h2 class="section-title">Quotation Responses</h2>
+            <p>When Buyers submit tailored Requests for Quotation (RFQs) on custom setups or bulk inquiries, Suppliers
+                receive them instantly.</p>
+            <ul>
+                <li>Chat directly via the active real-time WebSockets tracking window.</li>
+                <li>Propose adjusted Minimum Order Quantities (MOQs) or revised tiered pricing structures.</li>
+                <li>Finalize quotes to immediately spawn a custom sub-order cart logic for the Buyer.</li>
+            </ul>
+        </section>
+
+        <section id="supplier-settings" class="doc-section">
+            <h2 class="section-title">Business Profile Settings</h2>
+            <p>A high-quality verified public profile directly correlates to B2B conversions. Settings encompass:</p>
+            <ul>
+                <li><b>Company KYC:</b> Upload Registration Certificates, ISO badges, and localized Tax ID info.</li>
+                <li><b>Capabilities Map:</b> Define precise factory locations, main operational sectors, and global
+                    export nodes.</li>
+                <li><b>Media Richness:</b> Embedded promotional Youtube links, banner galleries, and branded SEO
+                    tagging.</li>
+            </ul>
+        </section>
+
+        <section id="doc-faq" class="doc-section">
+            <h1 class="chapter-title">6. Frequently Asked Questions (FAQ)</h1>
+            <div class="feature-card">
+                <strong>Q: How do I change the marketplace commission?</strong><br>
+                A: Navigate to Admin > Settings > General Config. Update the "Commission Percentage" field. This affects
+                all subsequent <code>Order</code> deliveries.
+            </div>
+            <div class="feature-card" style="margin-top:15px;">
+                <strong>Q: Can I add new payment gateways?</strong><br>
+                A: Yes. Developers should create a new driver in <code>backend/services/paymentDrivers/</code> and
+                register it in the configuration seeder.
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Smooth scrolling active state engine
+        const links = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.doc-section');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 120) { current = section.getAttribute('id'); }
+            });
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) { link.classList.add('active'); }
+            });
+        });
+    </script>
+</body>
+
+</html>

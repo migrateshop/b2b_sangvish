@@ -1,0 +1,365 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import api from '@/services/axiosConfig';
+import { translations } from '@/utils/translations';
+
+export interface SiteSettings {
+    site_name?: string;
+    favicon?: string;
+    keywords?: string;
+    logo_light?: string;
+    logo_dark?: string;
+    seo_title?: string;
+    meta_description?: string;
+    default_currency?: string;
+    default_language?: string;
+    price_format?: 'prefix' | 'suffix';
+    contact_email?: string;
+    contact_phone?: string;
+    address?: string;
+    google_maps_api_key?: string;
+    enable_recaptcha?: boolean;
+    recaptcha_site_key?: string;
+    pagination_limit?: number;
+}
+
+export interface AuthContextType {
+    authModal: {
+        isOpen: boolean;
+        mode: string;
+        role: string;
+    };
+    setAuthModal: React.Dispatch<React.SetStateAction<any>>;
+    openLogin: (options?: any) => void;
+    openRegister: (options?: any) => void;
+    closeAuthModal: () => void;
+    user: any;
+    currentRole: string;
+    setCurrentRole: (role: string) => void;
+    switchRole: (newRole: string) => void;
+    login: (userData: any) => void;
+    logout: () => void;
+    language: string;
+    currency: string;
+    availableLanguages: any[];
+    availableCurrencies: any[];
+    availableCountries: any[];
+    selectedCountry: string;
+    setSelectedCountry: (code: string) => void;
+    updateUserSettings: (newLang: string, newCurr: string) => Promise<void>;
+    convertPrice: (priceInUSD: number) => { amount: string; symbol: string; formatted: string };
+    siteSettings: SiteSettings | null;
+    refreshSiteSettings: () => void;
+    t: (key: string) => string;
+    isInitialized: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const [authModal, setAuthModal] = useState<{
+        isOpen: boolean;
+        mode: string;
+        role: string;
+    }>({
+        isOpen: false,
+        mode: 'login', // 'login', 'email', 'role', 'otp', 'setup'
+        role: 'buyer'
+    });
+
+    const openLogin = useCallback((options: any = {}) => {
+        setAuthModal({ isOpen: true, mode: options.mode || 'login', role: options.role || 'buyer' });
+    }, []);
+
+    const openRegister = useCallback((options: any = {}) => {
+        setAuthModal({ isOpen: true, mode: options.mode || 'auth_start', role: options.role || 'supplier' });
+    }, []);
+
+    const closeAuthModal = useCallback(() => {
+        setAuthModal(prev => ({ ...prev, isOpen: false }));
+    }, []);
+
+    const [user, setUser] = useState<any>(null);
+    const [currentRole, setCurrentRole] = useState('buyer');
+    const [currency, setCurrency] = useState('USD');
+    const [language, setLanguage] = useState('English');
+    const [availableCurrencies, setAvailableCurrencies] = useState<any[]>([]);
+    const [availableLanguages, setAvailableLanguages] = useState<any[]>([]);
+    const [availableCountries, setAvailableCountries] = useState<any[]>([]);
+    const [selectedCountry, setSelectedCountry] = useState('IN');
+    const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    // Initialize from localStorage ONLY on client
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const storedUser = (typeof window !== 'undefined' ? localStorage.getItem('user') : null);
+            const storedToken = (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+            const storedRole = (typeof window !== 'undefined' ? localStorage.getItem('currentRole') : null);
+            const storedLang = (typeof window !== 'undefined' ? localStorage.getItem('guest_language') : null);
+            const storedCurr = (typeof window !== 'undefined' ? localStorage.getItem('guest_currency') : null);
+            const storedCountry = (typeof window !== 'undefined' ? localStorage.getItem('selectedCountry') : null);
+
+            let parsedUser = null;
+            if (storedUser && storedToken) {
+                try {
+                    parsedUser = JSON.parse(storedUser);
+                    setUser(parsedUser);
+                } catch (e) {}
+            }
+
+            if (storedRole) setCurrentRole(storedRole);
+            else if (parsedUser) {
+                const availableRoles = parsedUser.roles || (parsedUser.role ? [parsedUser.role] : []);
+                if (availableRoles.length > 0) setCurrentRole(availableRoles[0]);
+            }
+
+            if (parsedUser?.language) setLanguage(parsedUser.language);
+            else if (storedLang) setLanguage(storedLang);
+
+            if (parsedUser?.currency) setCurrency(parsedUser.currency);
+            else if (storedCurr) setCurrency(storedCurr);
+
+            if (storedCountry) setSelectedCountry(storedCountry);
+            
+            setIsInitialized(true);
+        }
+    }, []);
+
+    // Update current role when user changes
+    useEffect(() => {
+        if (user && isInitialized) {
+            const availableRoles = user.roles || (user.role ? [user.role] : []);
+            if (!availableRoles.includes(currentRole)) {
+                const nextRole = availableRoles[0] || 'buyer';
+                setCurrentRole(nextRole);
+                localStorage.setItem('currentRole', nextRole);
+            }
+        }
+    }, [user, isInitialized]);
+
+    const switchRole = (newRole: string) => {
+        setCurrentRole(newRole);
+        localStorage.setItem('currentRole', newRole);
+        
+        // Redirect based on role
+        if (newRole === 'supplier') {
+            window.location.href = '/supplier/dashboard';
+        } else if (newRole === 'buyer') {
+            window.location.href = '/buyer/dashboard';
+        } else if (newRole === 'admin') {
+            window.location.href = '/admin/dashboard';
+        } else {
+            window.location.href = '/';
+        }
+    };
+
+    const t = (key: string) => {
+        const currentLangObj = availableLanguages.find((l: any) => l.name === language);
+        if (currentLangObj && currentLangObj.translations && currentLangObj.translations[key]) {
+            return currentLangObj.translations[key];
+        }
+        const trans = translations as any;
+        if (trans[language]?.[key]) return trans[language][key];
+        if (trans['English']?.[key]) return trans['English'][key];
+        return key;
+    };
+
+    useEffect(() => {
+        const langObj = availableLanguages.find(l => l.name === language);
+        if (langObj && langObj.direction) {
+            document.documentElement.dir = langObj.direction;
+        } else {
+            document.documentElement.dir = 'ltr';
+        }
+    }, [language, availableLanguages]);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const [langRes, currRes, countriesRes, siteRes] = await Promise.all([
+                    api.get('/common/languages'),
+                    api.get('/common/currencies'),
+                    api.get('/auth/countries'),
+                    api.get('/site-settings/public')
+                ]);
+                setAvailableLanguages(langRes.data);
+                setAvailableCurrencies(currRes.data);
+                setAvailableCountries(countriesRes.data);
+                setSiteSettings(siteRes.data);
+
+                if (siteRes.data?.primary_color) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('primary_color', siteRes.data.primary_color);
+                        document.documentElement.style.setProperty('--primary-color', siteRes.data.primary_color);
+                        document.documentElement.style.setProperty('--primary', siteRes.data.primary_color);
+                        document.documentElement.style.setProperty('--sp-primary', siteRes.data.primary_color);
+                        document.documentElement.style.setProperty('--clr-primary', siteRes.data.primary_color);
+                    }
+                }
+
+                if (!user && siteRes.data) {
+                    if (!(typeof window !== 'undefined' ? localStorage.getItem('guest_currency') : null)) {
+                        setCurrency(siteRes.data.default_currency || 'USD');
+                    }
+                    if (!(typeof window !== 'undefined' ? localStorage.getItem('guest_language') : null)) {
+                        setLanguage(siteRes.data.default_language || 'English');
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching settings:', err);
+            }
+        };
+        const refreshUser = async () => {
+            if (user?._id) {
+                try {
+                    const res = await api.get('/auth/profile');
+                    if (res.data) {
+                        localStorage.setItem('user', JSON.stringify(res.data));
+                        setUser(res.data);
+                    }
+                } catch (err) {
+                    console.error('Error fetching updated user:', err);
+                }
+            }
+        };
+
+        if (isInitialized) {
+            fetchSettings();
+            refreshUser();
+        }
+
+        const refreshSettingsHandler = () => fetchSettings();
+        if (typeof window !== 'undefined') {
+            window.addEventListener('refreshSiteSettings', refreshSettingsHandler);
+            window.addEventListener('wishlistUpdated', refreshUser);
+        }
+
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('refreshSiteSettings', refreshSettingsHandler);
+                window.removeEventListener('wishlistUpdated', refreshUser);
+            }
+        };
+    }, [user?._id, isInitialized]);
+
+    const updateUserSettings = async (newLang: string, newCurr: string) => {
+        try {
+            if (user) {
+                await api.put('/auth/update-profile', { language: newLang, currency: newCurr });
+                const updatedUser = { ...user, language: newLang, currency: newCurr };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setUser(updatedUser);
+            } else {
+                localStorage.setItem('guest_language', newLang);
+                localStorage.setItem('guest_currency', newCurr);
+            }
+            setLanguage(newLang);
+            setCurrency(newCurr);
+        } catch (err) {
+            console.error('Error updating settings:', err);
+        }
+    };
+
+    const convertPrice = (priceInUSD: number) => {
+        const curr = availableCurrencies.find(c => c.code === currency);
+        const rate = curr ? curr.exchange_rate : 1;
+        const symbol = curr ? curr.symbol : '$';
+        const amount = (priceInUSD * rate).toLocaleString(undefined, { minimumFractionDigits: 2 });
+        const isSuffix = siteSettings?.price_format === 'suffix';
+        const formatted = isSuffix ? `${amount}${symbol}` : `${symbol}${amount}`;
+
+        return {
+            amount: (priceInUSD * rate).toFixed(2),
+            symbol,
+            formatted
+        };
+    };
+
+    const login = (userData: any) => {
+        const userToStore = userData.user || userData;
+        localStorage.setItem('user', JSON.stringify(userToStore));
+        if (userData.token) {
+            localStorage.setItem('token', userData.token);
+        }
+        setUser(userToStore);
+        
+        const availableRoles = userToStore.roles || (userToStore.role ? [userToStore.role] : []);
+        // Preserve current role if it's still available, otherwise default to the first one
+        if (!currentRole || !availableRoles.includes(currentRole)) {
+            const defaultRole = availableRoles[0] || 'buyer';
+            setCurrentRole(defaultRole);
+            localStorage.setItem('currentRole', defaultRole);
+        }
+
+        const newCurr = userToStore.currency || (typeof window !== 'undefined' ? localStorage.getItem('guest_currency') : null) || 'USD';
+        const newLang = userToStore.language || (typeof window !== 'undefined' ? localStorage.getItem('guest_language') : null) || 'English';
+        
+        setCurrency(newCurr);
+        setLanguage(newLang);
+        if (userToStore.country_code) {
+            setSelectedCountry(userToStore.country_code);
+            localStorage.setItem('selectedCountry', userToStore.country_code);
+        }
+    };
+
+    const logout = () => {
+        const availableRoles = user?.roles || (user?.role ? [user.role] : []);
+        const isAdmin = availableRoles.includes('admin');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('currentRole');
+        setAuthModal({ isOpen: false, mode: 'login', role: 'buyer' });
+        setUser(null);
+        setCurrentRole('buyer');
+        if (isAdmin) {
+            window.location.href = '/admin/login';
+        } else {
+            window.location.href = '/';
+        }
+    };
+
+    return (
+        <AuthContext.Provider value={{
+            authModal,
+            setAuthModal,
+            openLogin,
+            openRegister,
+            closeAuthModal,
+            user,
+            currentRole,
+            setCurrentRole,
+            switchRole,
+            login,
+            logout,
+            language,
+            currency,
+            availableLanguages,
+            availableCurrencies,
+            availableCountries,
+            selectedCountry,
+            setSelectedCountry: (code: string) => {
+                setSelectedCountry(code);
+                localStorage.setItem('selectedCountry', code);
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('countryChanged', { detail: code }));
+                }
+            },
+            updateUserSettings,
+            convertPrice,
+            siteSettings,
+            refreshSiteSettings: () => window.dispatchEvent(new CustomEvent('refreshSiteSettings')),
+            t,
+            isInitialized
+        }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};

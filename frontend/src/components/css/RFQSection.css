@@ -1,0 +1,360 @@
+.rfq-section {
+    padding: 60px 0;
+    background: #f8fafc;
+    position: relative;
+    overflow: hidden;
+}
+
+.rfq-inner {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 60px;
+    align-items: center;
+    background: linear-gradient(135deg, #0d2e67 0%, #1e40af 100%);
+    border-radius: 24px;
+    padding: 50px 60px;
+    box-shadow: 0 20px 40px rgba(13, 46, 103, 0.15);
+    position: relative;
+}
+
+.rfq-inner::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+/* Remove old pseudo-element decorations */
+.rfq-section::before,
+.rfq-section::after {
+    display: none;
+}
+
+/* ── Left side ── */
+.rfq-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.rfq-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.rfq-main-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 16px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+.rfq-desc {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0 0 32px;
+    max-width: 500px;
+}
+
+/* Benefits 2×2 grid */
+.rfq-benefits {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 24px;
+    margin-bottom: 0;
+}
+
+.rfq-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.rfq-benefit-icon {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rfq-benefit-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 4px;
+}
+
+.rfq-benefit-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+/* ── Right stats card ── */
+/* ── RFQ V2 Card Design ── */
+.rfq-v2-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.rfq-v2-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+.rfq-v2-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.rfq-v2-stat {
+    flex: 1;
+}
+
+.rfq-v2-stat strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.rfq-v2-stat span {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+}
+
+.rfq-v2-stat-divider {
+    width: 1px;
+    height: 30px;
+    background: #eee;
+}
+
+.rfq-v2-btn {
+    width: 100%;
+    background: var(--clr-accent, #ff6a00);
+    color: #fff;
+    padding: 16px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    transition: all 0.3s;
+    box-shadow: 0 8px 20px rgba(255, 106, 0, 0.25);
+}
+
+.rfq-v2-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(255, 106, 0, 0.35);
+    background: var(--accent-hover, #e65c00);
+}
+
+.rfq-v2-note {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+/* Form Card */
+.rfq-form-card {
+    background: #fff;
+    border: 1px solid #ebebeb;
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+}
+
+.rfq-form-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.rfq-form-close:hover {
+    color: #333;
+}
+
+.rfq-form-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 18px;
+}
+
+.rfq-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rfq-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rfq-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+}
+
+.rfq-field input,
+.rfq-field textarea {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: #111;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.rfq-field input:focus,
+.rfq-field textarea:focus {
+    border-color: var(--primary-color);
+}
+
+.rfq-error {
+    font-size: 12px;
+    color: #ef4444;
+    margin: 0;
+}
+
+.rfq-submit-btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rfq-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.rfq-submit-btn:not(:disabled):hover {
+    background: var(--primary-dark, #081d44);
+    transform: translateY(-1px);
+}
+
+.rfq-disclaimer {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin: 10px 0 0;
+}
+
+.rfq-disclaimer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Success */
+.rfq-success {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.rfq-success-icon {
+    font-size: 48px;
+    color: #10b981;
+    margin-bottom: 12px;
+}
+
+.rfq-success h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 8px;
+}
+
+.rfq-success p {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 20px;
+}
+
+.rfq-view-btn {
+    display: inline-block;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.rfq-view-btn:hover {
+    background: var(--primary-dark, #081d44);
+    transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .rfq-inner {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 24px 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .rfq-section {
+        padding: 32px 0;
+    }
+
+    .rfq-main-title {
+        font-size: 18px;
+    }
+
+    .rfq-benefits {
+        grid-template-columns: 1fr;
+    }
+}
