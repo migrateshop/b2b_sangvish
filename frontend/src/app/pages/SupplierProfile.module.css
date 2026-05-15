@@ -1011,19 +1011,6 @@
         padding: 20px 0;
     }
 
-    .sp-header-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .sp-logo {
-        width: 90px;
-        height: 90px;
-        margin: 0 auto;
-    }
 
     .sp-company-name {
         font-size: 1.8rem !important;
@@ -1056,24 +1043,27 @@
     }
 
     .sp-header-content {
-        padding: 50px 12px 24px !important;
+        padding: 55px 12px 24px !important;
         flex-direction: column !important;
         text-align: center !important;
         gap: 1.2rem !important;
+        position: relative !important;
+        overflow: visible !important;
     }
 
     .sp-logo {
         width: 90px !important;
         height: 90px !important;
         position: absolute !important;
-        top: -45px !important;
+        top: -40px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        z-index: 10 !important;
+        z-index: 100 !important;
         border-width: 3px !important;
         background: #fff !important;
         margin: 0 !important;
         border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
     }
 
     .sp-header-actions {
