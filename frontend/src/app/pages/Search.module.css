@@ -3285,31 +3285,86 @@
     font-size: 18px;
   }
 
-  /* List view: stack vertically */
-  .sr-list-item {
-    flex-direction: column;
-  }
+    /* List view: modern horizontal layout on mobile */
+    .sr-list-item {
+        flex-direction: row !important;
+        height: auto !important;
+        align-items: stretch !important;
+    }
 
-  .sr-list-img {
-    width: 100%;
-    min-height: auto;
-    aspect-ratio: 4/3;
-  }
+    .sr-list-img {
+        width: 120px !important;
+        min-width: 120px !important;
+        height: 100% !important;
+        min-height: 140px !important;
+        aspect-ratio: auto !important;
+        padding: 8px !important;
+    }
 
-  .sr-list-content {
-    flex-direction: column;
-    padding: 14px;
-    gap: 12px;
-  }
+    .sr-list-content {
+        flex-direction: column !important;
+        padding: 12px !important;
+        gap: 6px !important;
+        flex: 1 !important;
+    }
 
-  .sr-list-actions {
-    width: 100%;
-    border-left: none;
-    padding-left: 0;
-    padding-top: 12px;
-    border-top: 1px solid var(--sr-gray-100);
-    flex-direction: row;
-  }
+    .sr-list-title {
+        font-size: 14px !important;
+        -webkit-line-clamp: 2 !important;
+        line-clamp: 2 !important;
+        margin-bottom: 4px !important;
+    }
+
+    .sr-list-attributes {
+        gap: 4px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .sr-list-attr-pill {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+
+    .sr-list-right {
+        width: 100% !important;
+        border-left: none !important;
+        padding-left: 0 !important;
+        padding-top: 10px !important;
+        border-top: 1px dashed #eee !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+
+    .sr-list-actions-group {
+        flex-direction: row !important;
+        width: auto !important;
+        gap: 8px !important;
+    }
+
+    .sr-list-btn {
+        width: auto !important;
+        padding: 0 12px !important;
+        height: 32px !important;
+        font-size: 11px !important;
+    }
+
+    .sr-list-price-block {
+        margin-bottom: 0 !important;
+    }
+
+    .sr-list-price-block .sr-card-price {
+        font-size: 16px !important;
+    }
+
+    .sr-list-actions {
+        width: 100% !important;
+        border-left: none !important;
+        padding-left: 0 !important;
+        padding-top: 8px !important;
+        border-top: 1px solid var(--sr-gray-100) !important;
+        flex-direction: row !important;
+    }
 
   .sr-card-skeleton.sr-list-skeleton {
     flex-direction: column;
