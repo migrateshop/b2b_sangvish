@@ -17,8 +17,11 @@ interface WithdrawalRequest {
         last_name: string;
         email: string;
         company_name?: string;
+        payout_methods?: any[];
     };
     bank_details?: BankDetails;
+    payout_method_type?: string;
+    payout_details?: any;
     amount: number;
     status: string;
     createdAt: string;
@@ -174,28 +177,60 @@ const AdminWithdrawals = () => {
                                         <div style={{ fontSize: '13px', color: 'var(--admin-text-muted)' }}>Try adjusting your filters or search query</div>
                                     </td>
                                 </tr>
-                            ) : currentRequests.map(req => (
-                                <tr key={req._id}>
-                                    <td>
-                                        <div style={{ fontWeight: 800, color: 'var(--admin-text-main)', fontSize: '13px' }}>
-                                            {req.user_id?.first_name} {req.user_id?.last_name}
-                                        </div>
-                                        <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>{req.user_id?.email}</div>
-                                        {req.user_id?.company_name && (
-                                            <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)', fontWeight: 700 }}>{req.user_id?.company_name}</div>
-                                        )}
-                                    </td>
-                                    <td>
-                                        {req.bank_details ? (
-                                            <>
-                                                <div style={{ fontWeight: 700, fontSize: '13px' }}>{req.bank_details.bank_name}</div>
-                                                <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>Acc: {req.bank_details.account_number}</div>
-                                                <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>SWIFT: {req.bank_details.swift_code}</div>
-                                            </>
-                                        ) : (
-                                            <span style={{ fontSize: '11px', color: '#dc2626', fontWeight: 700 }}>No bank details</span>
-                                        )}
-                                    </td>
+                            ) : currentRequests.map(req => {
+                                const userPayoutMethod = req.user_id?.payout_methods?.find((pm: any) => pm.is_default) || req.user_id?.payout_methods?.[0];
+                                const payoutType = req.payout_method_type || userPayoutMethod?.type;
+                                const details = req.payout_details || userPayoutMethod?.details;
+
+                                return (
+                                    <tr key={req._id}>
+                                        <td>
+                                            <div style={{ fontWeight: 800, color: 'var(--admin-text-main)', fontSize: '13px' }}>
+                                                {req.user_id?.first_name} {req.user_id?.last_name}
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>{req.user_id?.email}</div>
+                                            {req.user_id?.company_name && (
+                                                <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)', fontWeight: 700 }}>{req.user_id?.company_name}</div>
+                                            )}
+                                        </td>
+                                        <td>
+                                            {payoutType === 'paypal' ? (
+                                                <>
+                                                    <div style={{ fontWeight: 700, fontSize: '13px', color: '#00457C', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#00457C"><path d="M20.067 8.478c-.492-3.269-3.212-4.144-6.495-4.144H7.135a1.29 1.29 0 0 0-1.28 1.12L3.102 21.05a.43.43 0 0 0 .425.498h4.295c.27 0 .5-.2.536-.467l.805-5.074c.036-.226.228-.396.457-.396h2.247c3.957 0 6.666-1.583 7.33-6.196.115-.81.085-1.554-.13-2.227L20.067 8.478z" /></svg>
+                                                        PayPal
+                                                    </div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--admin-text-muted)', fontWeight: 600 }}>
+                                                        Email: {details?.email || userPayoutMethod?.account_name || userPayoutMethod?.details?.email || 'N/A'}
+                                                    </div>
+                                                </>
+                                            ) : payoutType && payoutType !== 'bank' && payoutType !== 'bank_transfer' ? (
+                                                <>
+                                                    <div style={{ fontWeight: 700, fontSize: '13px', textTransform: 'capitalize' }}>
+                                                        {payoutType.replace('_', ' ')}
+                                                    </div>
+                                                    {details && Object.entries(details).map(([key, val]) => (
+                                                        <div key={key} style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>
+                                                            <strong style={{ textTransform: 'capitalize' }}>{key.replace('_', ' ')}:</strong> {String(val)}
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            ) : (req.bank_details?.bank_name || details?.bank_name || userPayoutMethod?.bank_name) ? (
+                                                <>
+                                                    <div style={{ fontWeight: 700, fontSize: '13px' }}>
+                                                        {req.bank_details?.bank_name || details?.bank_name || userPayoutMethod?.bank_name || 'Bank Transfer'}
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>
+                                                        Acc: {req.bank_details?.account_number || details?.account_number || userPayoutMethod?.account_number || 'N/A'}
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)' }}>
+                                                        SWIFT: {req.bank_details?.swift_code || details?.swift_code || userPayoutMethod?.swift_code || 'N/A'}
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <span style={{ fontSize: '11px', color: '#dc2626', fontWeight: 700 }}>No bank details</span>
+                                            )}
+                                        </td>
                                     <td style={{ fontSize: '12px' }}>{new Date(req.createdAt).toLocaleDateString()}</td>
                                     <td style={{ fontWeight: 800, fontSize: '15px', color: 'var(--admin-text-main)' }}>${req.amount.toLocaleString()}</td>
                                     <td>
@@ -224,19 +259,24 @@ const AdminWithdrawals = () => {
                                         )}
                                     </td>
                                 </tr>
-                            ))}
+                            );
+                            })}
                         </tbody>
                     </table>
                 </div>
                 {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--admin-border)' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
+                    <div className={styles['admin-pagination-footer']}>
+                        <span className={styles['admin-pagination-info']}>
                             Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredRequests.length)} of {filteredRequests.length} payouts
                         </span>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className={"admin-btn" + " " + "admin-btn-secondary"} style={{ padding: '6px 12px' }}>Prev</button>
+                        <div className={styles['admin-pagination-controls']}>
+                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className={styles['admin-pagination-btn-arrow']} title="Prev">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
                             <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--admin-text-main)' }}>Page {currentPage} of {totalPages}</span>
-                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className={"admin-btn" + " " + "admin-btn-secondary"} style={{ padding: '6px 12px' }}>Next</button>
+                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className={styles['admin-pagination-btn-arrow']} title="Next">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
                         </div>
                     </div>
                 )}

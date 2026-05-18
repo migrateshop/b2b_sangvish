@@ -319,12 +319,14 @@ router.post('/supplier/withdraw', protect, async (req, res) => {
             status: 'pending',
             description: 'Withdrawal request',
             bank_details: payoutMethod ? {
-                bank_name: payoutMethod.bank_name,
-                account_name: payoutMethod.account_name,
-                account_number: payoutMethod.account_number,
-                swift_code: payoutMethod.swift_code,
-                routing_number: payoutMethod.routing_number
-            } : null
+                bank_name: payoutMethod.bank_name || payoutMethod.details?.bank_name,
+                account_name: payoutMethod.account_name || payoutMethod.details?.account_name,
+                account_number: payoutMethod.account_number || payoutMethod.details?.account_number,
+                swift_code: payoutMethod.swift_code || payoutMethod.details?.swift_code,
+                routing_number: payoutMethod.routing_number || payoutMethod.details?.routing_number
+            } : null,
+            payout_method_type: payoutMethod ? (payoutMethod.type || 'bank') : 'bank',
+            payout_details: payoutMethod ? payoutMethod.details : null
         });
 
         res.json({ success: true, message: 'Withdrawal request submitted', request });

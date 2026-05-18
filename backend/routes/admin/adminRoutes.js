@@ -219,7 +219,7 @@ router.get('/notifications', async (req, res) => {
 router.get('/withdraw-requests', async (req, res) => {
     try {
         const Transaction = require('../../models/Transaction');
-        const requests = await Transaction.find({ type: 'withdraw' }).populate('user_id', 'email first_name last_name company_name').sort({ createdAt: -1 });
+        const requests = await Transaction.find({ type: 'withdraw' }).populate('user_id', 'email first_name last_name company_name payout_methods').sort({ createdAt: -1 });
         res.json(requests);
     } catch (err) { res.status(500).json({ message: err.message }); }
 });

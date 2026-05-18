@@ -57,10 +57,12 @@ interface Company {
         email: string;
         status: string;
         payout_methods?: Array<{
-            bank_name: string;
-            account_name: string;
-            account_number: string;
-            ifsc_code: string;
+            type?: string;
+            bank_name?: string;
+            account_name?: string;
+            account_number?: string;
+            ifsc_code?: string;
+            details?: any;
         }>;
     };
 }
@@ -182,17 +184,56 @@ const AdminCompanies = () => {
                                 {t('bank_information') || 'BANK INFORMATION'}
                             </h4>
                             {company.user_id?.payout_methods?.[0] ? (
-                                <div style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', padding: '20px', borderRadius: '16px', border: '1px solid #bae6fd', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                                    <div style={{ fontSize: '14px', fontWeight: '900', color: '#0369a1', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 21h18"></path><path d="M3 10h18"></path><path d="M5 6l7-3 7 3"></path><path d="M4 10v11"></path><path d="M20 10v11"></path><path d="M8 14v3"></path><path d="M12 14v3"></path><path d="M16 14v3"></path></svg>
-                                        {company.user_id.payout_methods[0].bank_name}
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>{t('holder') || 'HOLDER'}:</b> {company.user_id.payout_methods[0].account_name}</div>
-                                        <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>{t('account') || 'ACCOUNT'}:</b> {company.user_id.payout_methods[0].account_number}</div>
-                                        <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>{t('ifsc') || 'IFSC'}:</b> {company.user_id.payout_methods[0].ifsc_code}</div>
-                                    </div>
-                                </div>
+                                (() => {
+                                    const pm = company.user_id.payout_methods[0];
+                                    const isPaypal = pm.type === 'paypal';
+                                    const isBank = !pm.type || pm.type === 'bank' || pm.type === 'bank_transfer';
+                                    
+                                    if (isPaypal) {
+                                        return (
+                                            <div style={{ background: 'linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%)', padding: '20px', borderRadius: '16px', border: '1px solid #bae6fd', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                                                <div style={{ fontSize: '14px', fontWeight: '900', color: '#00457C', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#00457C"><path d="M20.067 8.478c-.492-3.269-3.212-4.144-6.495-4.144H7.135a1.29 1.29 0 0 0-1.28 1.12L3.102 21.05a.43.43 0 0 0 .425.498h4.295c.27 0 .5-.2.536-.467l.805-5.074c.036-.226.228-.396.457-.396h2.247c3.957 0 6.666-1.583 7.33-6.196.115-.81.085-1.554-.13-2.227L20.067 8.478z" /></svg>
+                                                    PayPal
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>PAYPAL EMAIL:</b> {pm.details?.email || pm.account_name || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+                                    
+                                    if (isBank) {
+                                        return (
+                                            <div style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', padding: '20px', borderRadius: '16px', border: '1px solid #bae6fd', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                                                <div style={{ fontSize: '14px', fontWeight: '900', color: '#0369a1', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 21h18"></path><path d="M3 10h18"></path><path d="M5 6l7-3 7 3"></path><path d="M4 10v11"></path><path d="M20 10v11"></path><path d="M8 14v3"></path><path d="M12 14v3"></path><path d="M16 14v3"></path></svg>
+                                                    {pm.bank_name || pm.details?.bank_name || 'Bank Transfer'}
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>{t('holder') || 'HOLDER'}:</b> {pm.account_name || pm.details?.account_name || 'N/A'}</div>
+                                                    <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>{t('account') || 'ACCOUNT'}:</b> {pm.account_number || pm.details?.account_number || 'N/A'}</div>
+                                                    <div style={{ fontSize: '12px', color: '#334155' }}><b style={{ color: '#0c4a6e' }}>{t('ifsc') || 'IFSC'}:</b> {pm.ifsc_code || pm.details?.ifsc_code || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    return (
+                                        <div style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', padding: '20px', borderRadius: '16px', border: '1px solid #cbd5e1', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontSize: '14px', fontWeight: '900', color: '#475569', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'capitalize' }}>
+                                                {pm.type?.replace('_', ' ') || 'N/A'}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                {pm.details && Object.entries(pm.details).map(([key, val]) => (
+                                                    <div key={key} style={{ fontSize: '12px', color: '#334155' }}>
+                                                        <b style={{ color: '#475569', textTransform: 'uppercase' }}>{key.replace('_', ' ')}:</b> {String(val)}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })()
                             ) : (
                                 <div style={{ background: '#f8fafc', padding: '30px 20px', borderRadius: '16px', border: '1.5px dashed #e2e8f0', textAlign: 'center' }}>
                                     <p style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>{t('no_bank_details') || 'No bank details linked'}</p>
@@ -321,8 +362,8 @@ const AdminCompanies = () => {
                 ))}
             </div>
 
-            <div className={"admin-card"} style={{ marginBottom: '24px' }}>
-                <div style={{ padding: '16px 20px', display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div className={styles['admin-card']} style={{ marginBottom: '24px' }}>
+                <div style={{ padding: '16px 20px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div className={styles['admin-search-wrap']} style={{ flex: 1 }}>
                         <svg className={styles['admin-search-icon']} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
@@ -349,15 +390,15 @@ const AdminCompanies = () => {
                     </select>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                    <table className={"admin-table"}>
+                <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                    <table className={"admin-table"} style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
                                 <th>{t('company_identity') || 'Company Identity'}</th>
                                 <th>{t('applicant_details') || 'Applicant Details'}</th>
                                 <th>{t('assets_review') || 'Assets / Review'}</th>
-                                <th>{t('current_status') || 'Current Status'}</th>
-                                <th style={{ textAlign: 'right' }}>{t('management') || 'Management'}</th>
+                                <th>{t('status') || 'Status'}</th>
+                                <th style={{ textAlign: 'right' }}>{t('actions') || 'Actions'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -395,7 +436,8 @@ const AdminCompanies = () => {
                                                 className={"admin-badge" + " " + "admin-badge-neutral"}
                                                 style={{ display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #e2e8f0', cursor: 'pointer', padding: '6px 14px' }}
                                             >
-                                                <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}>{t('review_information') || 'Review Information'}</span>
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}>{t('review_information') || 'Review Details'}</span>
                                             </button>
                                             {company.id_proof && (
                                                 <button
@@ -416,8 +458,8 @@ const AdminCompanies = () => {
                                     <td>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                             <span className={`${"admin-badge"} ${company.verification_status === 'verified' ? "admin-badge-success" :
-                                                    company.verification_status === 'rejected' ? "admin-badge-danger" :
-                                                        "admin-badge-warning"
+                                                company.verification_status === 'rejected' ? "admin-badge-danger" :
+                                                    "admin-badge-warning"
                                                 }`}>
                                                 {company.verification_status === 'pending' && company.user_id?.status === 'profile_submitted'
                                                     ? (t('profile_submitted') || 'Profile Submitted')

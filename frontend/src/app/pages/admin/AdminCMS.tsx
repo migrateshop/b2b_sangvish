@@ -162,7 +162,7 @@ const AdminCMS = () => {
                         <p className={"admin-page-subtitle"}>Design your marketplace content with high precision</p>
                     </div>
                     <button onClick={() => setView('list')} className={"admin-btn" + " " + "admin-btn-secondary"} style={{ borderRadius: '12px' }}>
-                        Cancel & Return
+                        Back
                     </button>
                 </div>
 

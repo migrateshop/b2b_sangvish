@@ -35,6 +35,13 @@ const transactionSchema = new mongoose.Schema({
         account_number: String,
         swift_code: String,
         routing_number: String
+    },
+    payout_method_type: {
+        type: String,
+        default: 'bank'
+    },
+    payout_details: {
+        type: mongoose.Schema.Types.Mixed
     }
 }, { timestamps: true });
 
