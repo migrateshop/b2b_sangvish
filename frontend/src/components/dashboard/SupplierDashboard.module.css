@@ -303,6 +303,7 @@
   flex: 1;
   overflow: hidden;
   min-height: 0;
+  align-items: flex-start;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -315,10 +316,12 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - var(--sp-header-h));
+  max-height: calc(100vh - var(--sp-header-h));
   overflow: hidden;
   transition: width .3s cubic-bezier(.4, 0, .2, 1);
   border-right: 1px solid rgba(255, 255, 255, .05);
-  position: relative;
+  position: sticky;
+  top: 0;
 }
 
 /* Subtle gradient overlay on sidebar */
@@ -392,6 +395,11 @@
 
 .supplier-sidebar-content::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Ensure main content also fills the sticky-sibling height */
+.supplier-main-content {
+  min-height: calc(100vh - var(--sp-header-h));
 }
 
 /* Sidebar items */
@@ -760,6 +768,17 @@
 @media (max-width: 1024px) {
   .supplier-sidebar {
     width: 240px;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - var(--sp-header-h));
+    max-height: calc(100vh - var(--sp-header-h));
+    overflow: hidden;
+  }
+
+  .supplier-sidebar-content {
+    overflow-y: auto !important;
+    flex: 1;
+    min-height: 0;
   }
 
   .supplier-header {
