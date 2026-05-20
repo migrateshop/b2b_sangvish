@@ -35,6 +35,7 @@ const updateSiteSettings = async (req, res) => {
         if (pagination_limit !== undefined) settings.pagination_limit = Number(pagination_limit);
         
         if (maintenance_mode !== undefined) settings.maintenance_mode = !!maintenance_mode;
+        if (req.body.enable_cron_reset !== undefined) settings.enable_cron_reset = !!req.body.enable_cron_reset;
         if (default_currency !== undefined) settings.default_currency = default_currency;
         if (default_language !== undefined) settings.default_language = default_language;
         if (date_format !== undefined) settings.date_format = date_format;

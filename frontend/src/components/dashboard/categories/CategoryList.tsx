@@ -144,14 +144,19 @@ const CategoryList = ({ onAdd, onEdit }: { onAdd: (parentId?: string | null) => 
             {/* Filter Bar */}
             <div className={styles['admin-card']} style={{ marginBottom: '20px' }}>
                 <div className={styles['admin-filter-bar']} style={{ padding: '14px 18px', gap: '12px' }}>
-                    <input
-                        type="text"
-                        className={styles['admin-search-input']}
-                        style={{ flex: 2, minWidth: '180px' }}
-                        placeholder="Search categories by name..."
-                        value={searchTerm}
-                        onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                    />
+                    <div className={styles['admin-search-wrap']} style={{ flex: 2, minWidth: '180px' }}>
+                        <svg className={styles['admin-search-icon']} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input
+                            type="text"
+                            className={styles['admin-search-input-premium']}
+                            placeholder="Search categories by name..."
+                            value={searchTerm}
+                            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                        />
+                    </div>
                     {searchTerm && (
                         <button onClick={() => setSearchTerm('')} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ whiteSpace: 'nowrap', padding: '9px 16px' }}>
                             Clear
@@ -247,14 +252,28 @@ const CategoryList = ({ onAdd, onEdit }: { onAdd: (parentId?: string | null) => 
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--admin-border)' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
+                    <div className={styles['admin-pagination-footer']}>
+                        <span className={styles['admin-pagination-info']}>
                             Showing {indexOfFirstItem + 1}–{Math.min(indexOfLastItem, visibleCategories.length)} of {visibleCategories.length}
                         </span>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className={styles['admin-btn'] + ' ' + styles['admin-btn-secondary']} style={{ padding: '6px 14px' }}>Prev</button>
+                        <div className={styles['admin-pagination-controls']}>
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(p => p - 1)}
+                                className={styles['admin-pagination-btn-arrow']}
+                                style={{ width: 'auto', padding: '0 16px', borderRadius: '20px' }}
+                            >
+                                Prev
+                            </button>
                             <span style={{ fontSize: '12px', fontWeight: 800 }}>Page {currentPage} of {totalPages}</span>
-                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className={styles['admin-btn'] + ' ' + styles['admin-btn-secondary']} style={{ padding: '6px 14px' }}>Next</button>
+                            <button
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(p => p + 1)}
+                                className={styles['admin-pagination-btn-arrow']}
+                                style={{ width: 'auto', padding: '0 16px', borderRadius: '20px' }}
+                            >
+                                Next
+                            </button>
                         </div>
                     </div>
                 )}

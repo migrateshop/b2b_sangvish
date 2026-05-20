@@ -137,7 +137,7 @@ const Header = () => {
     const isHome = pathname === '/';
     const isCompactHeader = (!isHome || (isHome && isScrolled)) && pathname && !pathname.startsWith('/admin') && !pathname.startsWith('/dashboard') && !pathname.startsWith('/buyer/dashboard');
 
-    const isMobile = useIsMobile();
+    const isMobile = useIsMobile(991);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -212,8 +212,58 @@ const Header = () => {
         return () => { document.body.classList.remove('mega-menu-open'); };
     }, [isMenuOpen, isFeaturedMenuOpen, isCategoriesPortalOpen]);
 
-    if ((pathname && pathname.startsWith('/admin')) || isMobile) {
+    if (pathname && pathname.startsWith('/admin')) {
         return null;
+    }
+
+    if (isMobile) {
+        return (
+            <header className="mobile-header-fixed">
+                <div className="mph-search-bar-wrap" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: '#fff', borderBottom: '1px solid #eee' }}>
+                    <div className="mph-mobile-header-top">
+                        <div className="mph-mobile-logo-container">
+                            {siteSettings?.logo_light ? (
+                                <img
+                                    src={getImgUrl(siteSettings.logo_light)}
+                                    alt={siteSettings?.siteName || 'Logo'}
+                                    className="mph-mobile-logo"
+                                    onClick={() => navigate.push('/')}
+                                    style={{ height: '30px', cursor: 'pointer' }}
+                                />
+                            ) : (
+                                <span className="mph-mobile-logo-text" onClick={() => navigate.push('/')}>
+                                    {siteSettings?.siteName || 'Alibaba Demo'}
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="mph-mobile-header-actions">
+                            <button className="mph-hdr-btn" onClick={() => setIsDeliverToOpen?.(true)} title="Location">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </button>
+                            <button className="mph-hdr-btn" onClick={() => setIsSettingsOpen?.(true)} title="Language & Currency">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                            </button>
+                            <Link href={user ? "/dashboard/messages" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn mph-hdr-badge-wrap" title="Messages">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                {unreadTotal > 0 && <span className="mph-hdr-badge">{unreadTotal}</span>}
+                            </Link>
+                            <Link href="/cart" className="mph-hdr-btn mph-hdr-badge-wrap" title="Cart">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                {cartCount > 0 && <span className="mph-hdr-badge">{cartCount}</span>}
+                            </Link>
+                            <Link href={user ? "/dashboard/notifications" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn mph-hdr-badge-wrap" title="Notifications">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                {unreadCount > 0 && <span className="mph-hdr-badge">{unreadCount}</span>}
+                            </Link>
+                            <Link href={user ? "/buyer/dashboard/saved" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn" title="Favorites">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        );
     }
 
     // If it's a checkout page, we might still want to hide it or show a simplified one, 
@@ -480,7 +530,15 @@ const Header = () => {
 
                             {isDeliverToOpen && (
                                 <div className="location-dropdown-menu">
-                                    <div className="location-dropdown-content">
+                                    <div className="location-dropdown-content" style={{ position: 'relative' }}>
+                                        <button 
+                                            className="btn-reset location-close-btn"
+                                            onClick={(e) => { e.stopPropagation(); setIsDeliverToOpen(false); }}
+                                            style={{ position: 'absolute', top: '20px', right: '20px', padding: '5px', cursor: 'pointer', color: '#64748b', display: 'flex' }}
+                                            title="Close"
+                                        >
+                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
                                         <h4 className="location-title">Specify your location</h4>
                                         <p className="location-subtitle">Shipping options and fees vary based on your location</p>
 
@@ -581,15 +639,15 @@ const Header = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="action-item language" style={{ cursor: 'pointer' }} onClick={() => setIsSettingsOpen(true)}>
+                        <div className="action-item language d-flex align-center gap-1" style={{ cursor: 'pointer' }} onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
                             <span className="icon">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                                 </svg>
-
                             </span>
                             <span>{language} - {currency}</span>
+                            <svg className={`chevron-icon ${isSettingsOpen ? 'rotate' : ''}`} width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </div>
                         <div className="user-utility-actions d-flex align-center gap-4">
                             <div className="action-item notifications-dropdown-wrapper" style={{ position: 'relative' }}>
@@ -741,29 +799,33 @@ const Header = () => {
                                     <div className="role-switcher-section">
                                         <p className="section-title">Manage Your Dashboards</p>
                                         <div className="role-grid">
-                                            <button
-                                                className={`role-choice-card ${currentRole === 'buyer' ? 'active' : ''}`}
-                                                onClick={() => { switchRole('buyer'); setIsProfileMenuOpen(false); }}
-                                            >
-                                                <div className="check-mark"><svg width="12" height="12" fill="none" stroke="white" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
-                                                <span className="role-name">Buyer</span>
-                                                <span className="role-desc">Purchase products</span>
-                                            </button>
+                                            {!(user.roles?.includes('admin') || user.role === 'admin') && (
+                                                <>
+                                                    <button
+                                                        className={`role-choice-card ${currentRole === 'buyer' ? 'active' : ''}`}
+                                                        onClick={() => { switchRole('buyer'); setIsProfileMenuOpen(false); }}
+                                                    >
+                                                        <div className="check-mark"><svg width="12" height="12" fill="none" stroke="white" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+                                                        <span className="role-name">Buyer</span>
+                                                        <span className="role-desc">Purchase products</span>
+                                                    </button>
 
-                                            {(user.roles?.includes('supplier') || user.role === 'supplier') ? (
-                                                <button
-                                                    className={`role-choice-card ${currentRole === 'supplier' ? 'active' : ''}`}
-                                                    onClick={() => { switchRole('supplier'); setIsProfileMenuOpen(false); }}
-                                                >
-                                                    <div className="check-mark"><svg width="12" height="12" fill="none" stroke="white" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
-                                                    <span className="role-name">Supplier</span>
-                                                    <span className="role-desc">Sell on marketplace</span>
-                                                </button>
-                                            ) : (
-                                                <Link href="/become-supplier" className="role-choice-card start-selling-card">
-                                                    <span className="role-name" style={{ color: '#ff6600' }}>Start Selling</span>
-                                                    <span className="role-desc">Become a supplier</span>
-                                                </Link>
+                                                    {(user.roles?.includes('supplier') || user.role === 'supplier') ? (
+                                                        <button
+                                                            className={`role-choice-card ${currentRole === 'supplier' ? 'active' : ''}`}
+                                                            onClick={() => { switchRole('supplier'); setIsProfileMenuOpen(false); }}
+                                                        >
+                                                            <div className="check-mark"><svg width="12" height="12" fill="none" stroke="white" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+                                                            <span className="role-name">Supplier</span>
+                                                            <span className="role-desc">Sell on marketplace</span>
+                                                        </button>
+                                                    ) : (
+                                                        <Link href="/become-supplier" className="role-choice-card start-selling-card">
+                                                            <span className="role-name" style={{ color: '#ff6600' }}>Start Selling</span>
+                                                            <span className="role-desc">Become a supplier</span>
+                                                        </Link>
+                                                    )}
+                                                </>
                                             )}
 
                                             {(user.roles?.includes('admin') || user.role === 'admin') && (

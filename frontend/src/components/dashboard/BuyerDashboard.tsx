@@ -218,7 +218,7 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
                         navigate.push(`${baseRoute}/orders`);
                     }}>
-                        <div className="buyer-stat-icon" style={{ background: '#eef2ff', color: '#4f46e5' }}>
+                        <div className="buyer-stat-icon" style={{ background: '#f1f5f9', color: '#64748b' }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" /></svg>
                         </div>
                         <div className="buyer-stat-number">{loadingStats ? '...' : stats.totalOrders}</div>
@@ -228,7 +228,7 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
                         navigate.push(`${baseRoute}/orders`);
                     }}>
-                        <div className="buyer-stat-icon" style={{ background: '#fef3c7', color: '#d97706' }}>
+                        <div className="buyer-stat-icon" style={{ background: '#f1f5f9', color: '#64748b' }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                         </div>
                         <div className="buyer-stat-number">{loadingStats ? '...' : stats.pendingOrders}</div>
@@ -238,7 +238,7 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
                         navigate.push(`${baseRoute}/my_rfqs`);
                     }}>
-                        <div className="buyer-stat-icon" style={{ background: '#fce7f3', color: '#db2777' }}>
+                        <div className="buyer-stat-icon" style={{ background: '#f1f5f9', color: '#64748b' }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
                         </div>
                         <div className="buyer-stat-number">{loadingStats ? '...' : stats.rfqs}</div>
@@ -248,7 +248,7 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
                         navigate.push(`${baseRoute}/messages`);
                     }}>
-                        <div className="buyer-stat-icon" style={{ background: '#dbeafe', color: '#2563eb' }}>
+                        <div className="buyer-stat-icon" style={{ background: '#f1f5f9', color: '#64748b' }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
                         </div>
                         <div className="buyer-stat-number">{loadingStats ? '...' : (unreadTotal || 0)}</div>
@@ -258,7 +258,7 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
                         navigate.push(`${baseRoute}/saved`);
                     }}>
-                        <div className="buyer-stat-icon" style={{ background: '#fef2f2', color: '#ef4444' }}>
+                        <div className="buyer-stat-icon" style={{ background: '#f1f5f9', color: '#64748b' }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
                         </div>
                         <div className="buyer-stat-number">{loadingStats ? '...' : stats.favorites}</div>
@@ -268,7 +268,7 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
                         navigate.push(`${baseRoute}/orders`);
                     }}>
-                        <div className="buyer-stat-icon" style={{ background: '#d1fae5', color: '#059669' }}>
+                        <div className="buyer-stat-icon" style={{ background: '#f1f5f9', color: '#64748b' }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                         </div>
                         <div className="buyer-stat-number">{loadingStats ? '...' : stats.completedOrders}</div>
@@ -469,8 +469,8 @@ const BuyerDashboard = ({ tab, subtab }: { tab?: string; subtab?: string }) => {
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                             {user.first_name?.[0].toUpperCase()}
                         </div>
-                        <div className="d-none d-lg-block">
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e' }}>{user.first_name}</div>
+                        <div className="d-none d-lg-block" style={{ textAlign: 'left' }}>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e' }}>{user.first_name} {user.last_name}</div>
                             <div style={{ fontSize: '11px', color: '#94a3b8' }}>{t('buyer_account') || 'Buyer Account'}</div>
                         </div>
                     </div>

@@ -104,8 +104,17 @@ const SupplierRegister = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setError('');
+        
+        // Robust Validation
+        if (!formData.company_name.trim()) return setError('Company name is required');
+        if (!formData.business_type) return setError('Please select a business type');
+        if (!formData.phone.trim()) return setError('Phone number is required');
+        if (!/^\d{7,15}$/.test(formData.phone)) return setError('Invalid phone number format (7-15 digits)');
+        if (!formData.state) return setError('State/Province is required');
+        if (!idProof) return setError('Please upload an ID proof document');
+
+        setLoading(true);
         try {
             const dataToSubmit = new FormData();
             Object.keys(formData).forEach(key => {

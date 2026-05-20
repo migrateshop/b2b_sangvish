@@ -152,12 +152,14 @@ const Checkout = () => {
     }, [user]);
 
     const fetchStates = async (countryId: string) => {
-        if (!countryId) { setStates([]); return; }
+        if (!countryId) { setStates([]); return []; }
         try {
             const { data } = await api.get(`/common/states/${countryId}`);
             setStates(data);
+            return data;
         } catch (err) {
             console.error('Failed to fetch states:', err);
+            return [];
         }
     };
 
@@ -197,8 +199,13 @@ const Checkout = () => {
                     const matchedC = countries.find(c => c.name.toLowerCase() === countryName?.toLowerCase());
                     if (matchedC) {
                         setCountry(matchedC.countryCode || matchedC.name);
-                        fetchStates(matchedC._id);
-                        if (addr.state) setStateVal(addr.state);
+                        const fetchedStates = await fetchStates(matchedC._id);
+                        if (addr.state) {
+                            const matchedS = fetchedStates.find((s: any) => s.name.toLowerCase() === addr.state.toLowerCase());
+                            setStateVal(matchedS ? matchedS.name : addr.state);
+                        } else {
+                            setStateVal('');
+                        }
                     } else {
                         setStateVal(addr.state || addr.region || '');
                     }
@@ -389,10 +396,53 @@ const Checkout = () => {
     };
 
     const handleSaveAddress = async () => {
-        if (!fullName || !street || !city || !stateVal || !postalCode || !phone) {
-            showToast('Please fill all required fields', 'warning');
+        // Full Name Validation
+        if (!fullName || !fullName.trim() || fullName.trim().length < 2) {
+            showToast('Please enter a valid Full Name (at least 2 characters).', 'error');
             return;
         }
+
+        // Phone Validation
+        const cleanPhone = (phone || '').replace(/\D/g, '');
+        if (!cleanPhone) {
+            showToast('Phone Number is required.', 'error');
+            return;
+        }
+        if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+            showToast('Phone Number must be a valid number between 7 and 15 digits.', 'error');
+            return;
+        }
+
+        // Street Address Validation
+        if (!street || !street.trim()) {
+            showToast('Street Address is required. Please search and select a valid address.', 'error');
+            return;
+        }
+
+        // Country Validation
+        if (!country || !country.trim()) {
+            showToast('Country is required.', 'error');
+            return;
+        }
+
+        // State Validation
+        if (!stateVal || !stateVal.trim()) {
+            showToast('State / Province is required.', 'error');
+            return;
+        }
+
+        // City Validation
+        if (!city || !city.trim()) {
+            showToast('City is required.', 'error');
+            return;
+        }
+
+        // Postal Code Validation
+        if (!postalCode || !postalCode.trim() || postalCode.trim().length < 3) {
+            showToast('Please enter a valid Postal Code (at least 3 characters).', 'error');
+            return;
+        }
+
         setAddressSaving(true);
         try {
             const payload = {

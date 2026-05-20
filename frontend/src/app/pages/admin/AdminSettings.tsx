@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import api from '@/services/axiosConfig';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -25,6 +26,7 @@ const DATE_FORMATS = [
 ];
 
 const AdminSettings = () => {
+    const router = useRouter();
     const { refreshSiteSettings, t } = useAuth();
     const { showToast } = useToast();
 
@@ -36,6 +38,7 @@ const AdminSettings = () => {
         primary_color: '#2563eb',
         pagination_limit: 10,
         maintenance_mode: false,
+        enable_cron_reset: true,
         default_currency: '',
         default_language: '',
         date_format: 'DD/MM/YYYY',
@@ -63,6 +66,7 @@ const AdminSettings = () => {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [downloadingBackup, setDownloadingBackup] = useState(false);
+    const [importing, setImporting] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -141,6 +145,27 @@ const AdminSettings = () => {
             setError(t('failed_backup_download') || 'Failed to download database backup.');
         } finally {
             setDownloadingBackup(false);
+        }
+    };
+
+    const handleDirectImport = async () => {
+        if (!window.confirm("Are you absolutely sure you want to trigger a full dummy data restoration?\n\nThis action will delete all current custom products, orders, chat history, reviews, and user accounts, and replace them with standard verified B2B buyer and supplier mock portfolios.")) {
+            return;
+        }
+
+        setImporting(true);
+        try {
+            const { data } = await api.post('/admin/dummy-data/import');
+            if (data.success) {
+                showToast(data.message || 'Demo B2B datasets successfully populated and synchronized.', 'success');
+            } else {
+                showToast(data.message || 'Failed to import dummy B2B dataset.', 'error');
+            }
+        } catch (err: any) {
+            console.error('Import failed:', err);
+            showToast(err.response?.data?.message || 'Import failed due to database connection exception.', 'error');
+        } finally {
+            setImporting(false);
         }
     };
 
@@ -393,6 +418,66 @@ const AdminSettings = () => {
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg>
                                         {downloadingBackup ? (t('preparing_backup') || 'Preparing backup...') : (t('download_backup') || 'Download Backup')}
                                     </button>
+                                </div>
+                            </div>
+                        </FieldRow>
+
+                        <FieldRow label={t('dummy_data_management') || "Demo Data & Import"} hint={t('dummy_data_management_hint') || "Clean dynamic datasets and restore default relational demo catalog"}>
+                            <div className={styles['admin-section-box']} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <style>{`
+                                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                                    .spinner { animation: spin 1s linear infinite; }
+                                `}</style>
+                                <div>
+                                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)', marginBottom: '4px' }}>{t('restore_dummy_data') || 'Import / Restore Predefined B2B Catalog'}</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--admin-text-muted)', marginBottom: '14px', lineHeight: '1.5' }}>
+                                        {t('restore_dummy_data_desc') || 'Instantly restore baseline dummy B2B categories, products, customer accounts, orders, reviews, and inquiries.'}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                        <button
+                                            type="button"
+                                            onClick={handleDirectImport}
+                                            disabled={importing}
+                                            className={`${styles['admin-btn']} ${styles['admin-btn-primary']}`}
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                        >
+                                            {importing ? (
+                                                <>
+                                                    <span className="spinner" style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%' }} />
+                                                    Importing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                        <polyline points="7 10 12 15 17 10" />
+                                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                                    </svg>
+                                                    {t('import_dummy_now') || 'Import Dummy Data'}
+                                                </>
+                                            )}
+                                        </button>
+
+                                        <button type="button" onClick={() => router.push('/admin/dummy-data')}
+                                            className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`}
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            {t('detailed_management') || 'Detailed History & Cleanup'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '16px', marginTop: '4px' }}>
+                                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)', marginBottom: '8px' }}>Daily Automated Reset (Cron)</div>
+                                    <Toggle
+                                        on={settings.enable_cron_reset}
+                                        onToggle={() => setSettings(prev => ({ ...prev, enable_cron_reset: !prev.enable_cron_reset }))}
+                                        labelOn="Enabled — Cron job runs at 2:00 AM everyday"
+                                        labelOff="Disabled — Daily cron reset will not run"
+                                    />
                                 </div>
                             </div>
                         </FieldRow>

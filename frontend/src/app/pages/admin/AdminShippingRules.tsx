@@ -190,12 +190,12 @@ const AdminShippingRules = () => {
             </div>
 
             {showForm ? (
-                <div className={"admin-card"}>
+                <div className={"admin-card"} style={{ overflow: 'visible' }}>
                     <div className={"admin-card-header"}>
                         <h2>{editingId ? 'Edit Mapping' : 'Create New Logistics Rule'}</h2>
                         <button onClick={() => setShowForm(false)} className={styles['admin-back-btn']}>← Back</button>
                     </div>
-                    <div className={"admin-card-body"}>
+                    <div className={"admin-card-body"} style={{ overflow: 'visible' }}>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div className={styles['admin-form-grid']}>
                                 <div className={styles['admin-form-group']}>
@@ -206,9 +206,9 @@ const AdminShippingRules = () => {
                                     </select>
                                 </div>
                                 {form.type === 'country' ? (
-                                    <div className={styles['admin-form-group']} style={{ maxWidth: '100%', overflow: 'hidden' }}>
+                                    <div className={styles['admin-form-group']} style={{ position: 'relative', zIndex: 10 }}>
                                         <label className={styles['admin-form-label']}>Destination Country</label>
-                                        <select className={styles['admin-form-select']} style={{ maxWidth: '100%' }} value={form.country_code} onChange={handleCountryChange} required={form.type === 'country'}>
+                                        <select className={styles['admin-form-select']} style={{ width: '100%' }} value={form.country_code} onChange={handleCountryChange} required={form.type === 'country'}>
                                             <option value="">Select a country</option>
                                             {countries.map(c => <option key={c._id} value={c.code}>{c.name} ({c.code})</option>)}
                                         </select>

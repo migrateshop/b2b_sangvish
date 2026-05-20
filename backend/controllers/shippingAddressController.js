@@ -4,6 +4,29 @@ exports.createAddress = async (req, res) => {
     try {
         const { fullName, phone, phoneCountry, addressLine, city, state, country, postalCode, isDefault } = req.body;
 
+        if (!fullName || fullName.trim().length < 2) {
+            return res.status(400).json({ message: 'Please enter a valid Full Name (at least 2 characters).' });
+        }
+        const cleanPhone = (phone || '').replace(/\D/g, '');
+        if (!cleanPhone || cleanPhone.length < 7 || cleanPhone.length > 15) {
+            return res.status(400).json({ message: 'Phone number must be a valid number between 7 and 15 digits.' });
+        }
+        if (!addressLine || !addressLine.trim()) {
+            return res.status(400).json({ message: 'Street Address is required.' });
+        }
+        if (!country || !country.trim()) {
+            return res.status(400).json({ message: 'Country is required.' });
+        }
+        if (!state || !state.trim()) {
+            return res.status(400).json({ message: 'State / Province is required.' });
+        }
+        if (!city || !city.trim()) {
+            return res.status(400).json({ message: 'City is required.' });
+        }
+        if (!postalCode || postalCode.trim().length < 3) {
+            return res.status(400).json({ message: 'Please enter a valid Postal Code (at least 3 characters).' });
+        }
+
         // If this is set as default, unset other defaults for this user
         if (isDefault) {
             await ShippingAddress.updateMany({ user: req.user._id }, { isDefault: false });
@@ -43,6 +66,31 @@ exports.getAddresses = async (req, res) => {
 exports.updateAddress = async (req, res) => {
     try {
         const { fullName, phone, phoneCountry, addressLine, city, state, country, postalCode, isDefault } = req.body;
+
+        if (fullName !== undefined && fullName.trim().length < 2) {
+            return res.status(400).json({ message: 'Please enter a valid Full Name (at least 2 characters).' });
+        }
+        if (phone !== undefined) {
+            const cleanPhone = (phone || '').replace(/\D/g, '');
+            if (!cleanPhone || cleanPhone.length < 7 || cleanPhone.length > 15) {
+                return res.status(400).json({ message: 'Phone number must be a valid number between 7 and 15 digits.' });
+            }
+        }
+        if (addressLine !== undefined && !addressLine.trim()) {
+            return res.status(400).json({ message: 'Street Address cannot be empty.' });
+        }
+        if (country !== undefined && !country.trim()) {
+            return res.status(400).json({ message: 'Country cannot be empty.' });
+        }
+        if (state !== undefined && !state.trim()) {
+            return res.status(400).json({ message: 'State / Province cannot be empty.' });
+        }
+        if (city !== undefined && !city.trim()) {
+            return res.status(400).json({ message: 'City cannot be empty.' });
+        }
+        if (postalCode !== undefined && postalCode.trim().length < 3) {
+            return res.status(400).json({ message: 'Please enter a valid Postal Code (at least 3 characters).' });
+        }
 
         const address = await ShippingAddress.findOne({ _id: req.params.id, user: req.user._id });
         if (!address) {

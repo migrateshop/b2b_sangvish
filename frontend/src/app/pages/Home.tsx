@@ -9,23 +9,22 @@ import AllProducts from '@/components/js/AllProducts';
 import MobileHomePage from '@/components/js/MobileHomePage';
 
 // Lazy-loaded homepage sections for performance
-import HeroBanner from '@/components/js/HeroBanner';
-import HomeCategories from '@/components/js/HomeCategories';
-import TrendingProducts from '@/components/js/TrendingProducts';
-import FeaturedSuppliers from '@/components/js/FeaturedSuppliers';
-import IndustrySection from '@/components/js/IndustrySection';
-import RFQSection from '@/components/js/RFQSection';
-import FeaturedSelections from '@/components/js/FeaturedSelections';
-import WhyChooseUs from '@/components/js/WhyChooseUs';
-import AppPromoSection from '@/components/js/AppPromoSection';
+const HeroBanner = lazy(() => import('@/components/js/HeroBanner'));
+const HomeCategories = lazy(() => import('@/components/js/HomeCategories'));
+const FeaturedSuppliers = lazy(() => import('@/components/js/FeaturedSuppliers'));
+const IndustrySection = lazy(() => import('@/components/js/IndustrySection'));
+const RFQSection = lazy(() => import('@/components/js/RFQSection'));
+const FeaturedSelections = lazy(() => import('@/components/js/FeaturedSelections'));
+const WhyChooseUs = lazy(() => import('@/components/js/WhyChooseUs'));
+const AppPromoSection = lazy(() => import('@/components/js/AppPromoSection'));
 
 /* ─── Custom hook: detect mobile viewport ─── */
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
-        const checkMobile = () => window.innerWidth <= 767;
+        const checkMobile = () => window.innerWidth <= 991;
         setIsMobile(checkMobile());
-        const mq = window.matchMedia('(max-width: 767px)');
+        const mq = window.matchMedia('(max-width: 991px)');
         const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
         mq.addEventListener('change', handler);
         return () => mq.removeEventListener('change', handler);
@@ -100,17 +99,19 @@ const Home = () => {
     /* ── DESKTOP layout ── */
     return (
         <div className="home-page alibaba-home">
-            {sections
-                .filter(s => s.is_active)
-                .sort((a, b) => a.order - b.order)
-                .map((section: any) => {
-                    const Comp = (componentMap as any)[section.id_name];
-                    if (!Comp) return null;
-                    return (
-                        <Comp key={section._id || section.id_name} config={section} />
-                    );
-                })
-            }
+            <Suspense fallback={<SectionLoader />}>
+                {sections
+                    .filter(s => s.is_active)
+                    .sort((a, b) => a.order - b.order)
+                    .map((section: any) => {
+                        const Comp = (componentMap as any)[section.id_name];
+                        if (!Comp) return null;
+                        return (
+                            <Comp key={section._id || section.id_name} config={section} />
+                        );
+                    })
+                }
+            </Suspense>
         </div>
     );
 };

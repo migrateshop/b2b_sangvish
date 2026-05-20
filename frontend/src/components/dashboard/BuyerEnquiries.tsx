@@ -41,7 +41,7 @@ const BuyerEnquiries = () => {
     const fetchEnquiries = async () => {
         setLoading(true);
         try {
-            const { data } = await api.get('/product-enquiries');
+            const { data } = await api.get('/product-enquiries?role=buyer');
             setEnquiries(data);
         } catch (err: any) {
             console.error('Failed to load general enquiries:', err);
@@ -135,14 +135,18 @@ const BuyerEnquiries = () => {
 
                                 {/* Details Body */}
                                 <div style={{ padding: isMobile ? '16px' : '20px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '16px' : '20px' }}>
-                                    <img 
-                                        src={getImgUrl(enq.product?.main_image)} 
-                                        alt={enq.product?.name} 
-                                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #eee' }} 
-                                    />
+                                    {enq.product ? (
+                                        <img 
+                                            src={getImgUrl(enq.product?.main_image)} 
+                                            alt={enq.product?.name} 
+                                            style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #eee' }} 
+                                        />
+                                    ) : (
+                                        <div style={{ width: '80px', height: '80px', borderRadius: '10px', border: '1px solid #eee', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>🏢</div>
+                                    )}
                                     <div>
-                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 700, color: '#0f172a', cursor: 'pointer' }} onClick={() => navigate.push(`/product/${enq.product?._id}`)}>
-                                            {enq.product?.name}
+                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 700, color: '#0f172a', cursor: enq.product ? 'pointer' : 'default' }} onClick={() => enq.product && navigate.push(`/product/${enq.product?._id}`)}>
+                                            {enq.product?.name || 'General Supplier Inquiry'}
                                         </h3>
                                         <p style={{ margin: '0 0 12px 0', fontSize: '0.825rem', color: '#64748b', fontWeight: 500 }}>To Supplier: <strong style={{ color: '#334155' }}>{supplierName}</strong></p>
 

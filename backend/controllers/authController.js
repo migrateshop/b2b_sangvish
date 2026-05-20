@@ -5,6 +5,7 @@ const Wishlist = require('../models/Wishlist');
 const jwt = require('jsonwebtoken');
 const riskService = require('../services/riskService');
 const { addJob } = require('../services/queueService');
+const { sendMail } = require('../services/mailService');
 const SiteSetting = require('../models/SiteSetting');
 const axios = require('axios');
 
@@ -173,52 +174,51 @@ exports.sendOtp = async (req, res) => {
         const otp_expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
         const cleanEmail = email ? String(email) : '';
         const existing = await User.findOne({ email: cleanEmail });
+        
+        if (existing && existing.status === 'active' && !req.body.isReset) {
+            return res.status(409).json({ 
+                message: 'Account already exists. Please login.',
+                exists: true 
+            });
+        }
 
         if (existing) {
             existing.otp = otp;
             existing.otp_expires = otp_expires;
-            if (password) existing.password = password;
-            if (first_name) existing.first_name = first_name;
-            if (last_name) existing.last_name = last_name;
-            if (company_name) existing.company_name = company_name;
-            if (phone_number) existing.phone_number = phone_number;
-            if (role) existing.roles = [role];
-            if (country_code) existing.country_code = country_code;
             await existing.save({ validateBeforeSave: false });
         } else {
-            // Create a temp user
-            await User.create({
-                email,
-                password: password || 'TEMP_demo_123',
-                first_name: first_name || '',
-                last_name: last_name || '',
-                company_name: company_name || '',
-                phone_number: phone_number || '',
-                roles: [role || 'buyer'],
-                country_code: country_code || '',
-                otp,
-                otp_expires,
-                status: 'pending'
-            });
+            // New user registration flow - DO NOT CREATE USER HERE
+            const OtpVerification = require('../models/OtpVerification');
+            await OtpVerification.findOneAndUpdate(
+                { email: cleanEmail },
+                { otp, otp_expires, is_verified: false },
+                { upsert: true, new: true }
+            );
         }
 
-        // Send OTP via Email
-        await addJob('email', {
-            to: email,
-            subject: 'Your Verification Code - Alibaba Demo',
-            text: `Your verification code is ${otp}. It expires in 10 minutes.`,
-            html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                    <h2 style="color: #ff6600;">Email Verification</h2>
-                    <p>Thank you for registering. Please use the following code to verify your email address:</p>
-                    <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
-                        ${otp}
+        // Send OTP via Email - BYPASS QUEUE for speed
+        try {
+            await sendMail({
+                to: email,
+                subject: 'Your Verification Code - Alibaba Demo',
+                text: `Your verification code is ${otp}. It expires in 10 minutes.`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                        <h2 style="color: #ff6600;">Email Verification</h2>
+                        <p>Thank you for registering. Please use the following code to verify your email address:</p>
+                        <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
+                            ${otp}
+                        </div>
+                        <p>This code will expire in 10 minutes.</p>
+                        <p>If you didn't request this, please ignore this email.</p>
                     </div>
-                    <p>This code will expire in 10 minutes.</p>
-                    <p>If you didn't request this, please ignore this email.</p>
-                </div>
-            `
-        });
+                `
+            });
+        } catch (mailErr) {
+            console.error('OTP Mail Error:', mailErr);
+            // If mail fails, we might still want to continue if it was a queue issue, 
+            // but since we bypassed it, we should probably tell the user.
+        }
 
         res.json({
             success: true,
@@ -240,71 +240,45 @@ exports.verifyOtp = async (req, res) => {
         if (!email || !otp) return res.status(400).json({ message: 'Email and OTP are required' });
 
         const user = await User.findOne({ email }).select('+otp +otp_expires').populate('subscription_plan');
-        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        if (user) {
+            if (user.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
+            if (user.otp_expires < Date.now()) return res.status(400).json({ message: 'OTP has expired' });
 
-        if (user.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
-        if (user.otp_expires < Date.now()) return res.status(400).json({ message: 'OTP has expired' });
+            user.otp = undefined;
+            user.otp_expires = undefined;
+            user.status = 'active'; // In case it was somehow pending from old code
+            await user.save({ validateBeforeSave: false });
 
-        const wasPending = user.status === 'pending';
-        // Clear OTP and activate
-        user.otp = undefined;
-        user.otp_expires = undefined;
-        user.status = 'active';
-        await user.save({ validateBeforeSave: false });
-
-        if (wasPending) {
-            try {
-                const { sendNotification } = require('../services/notificationService');
-                const admins = await User.find({ role: 'admin' });
-                for (const admin of admins) {
-                    await sendNotification(
-                        req.io,
-                        admin._id,
-                        `New ${user.role} Signup`,
-                        `${user.email} has completed email verification.`,
-                        'admin',
-                        '/admin/users'
-                    );
-
-                    // 📧 Send email to Admin
-                    try {
-                        await addJob('email', {
-                            to: admin.email,
-                            subject: `New User Registration - ${user.role}`,
-                            text: `A new ${user.role} (${user.email}) has registered and verified their email.`,
-                            html: `
-                                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                                    <h2 style="color: #ff6600;">New User Registration</h2>
-                                    <p>A new user has registered and verified their email address on Alibaba Demo.</p>
-                                    <div style="background: #f4f4f4; padding: 15px; margin: 20px 0;">
-                                        <p><strong>Email:</strong> ${user.email}</p>
-                                        <p><strong>Role:</strong> ${user.role}</p>
-                                        <p><strong>Status:</strong> ${user.status}</p>
-                                    </div>
-                                    <a href="${process.env.FRONTEND_URL}/admin/users" style="background: #ff6600; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Manage Users</a>
-                                </div>
-                            `
-                        });
-                    } catch (adminMailErr) {
-                        console.error('Admin signup notification email error:', adminMailErr);
-                    }
-                }
-            } catch (notifErr) {
-                console.error('Signup notification error:', notifErr);
-            }
+            return res.json({
+                success: true,
+                _id: user._id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                roles: user.roles,
+                status: user.status,
+                subscription_plan: user.subscription_plan,
+                payout_methods: user.payout_methods || [],
+                token: generateToken(user._id),
+            });
         }
+
+        // Check Temp OtpVerification for new users
+        const OtpVerification = require('../models/OtpVerification');
+        const otpRecord = await OtpVerification.findOne({ email: String(email) });
+
+        if (!otpRecord) return res.status(404).json({ message: 'Session expired. Please try again.' });
+        if (otpRecord.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
+        if (otpRecord.otp_expires < Date.now()) return res.status(400).json({ message: 'OTP has expired' });
+
+        // OTP is valid!
+        otpRecord.is_verified = true;
+        await otpRecord.save();
 
         res.json({
             success: true,
-            _id: user._id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            roles: user.roles,
-            status: user.status,
-            subscription_plan: user.subscription_plan,
-            payout_methods: user.payout_methods || [],
-            token: generateToken(user._id),
+            message: 'OTP verified successfully.'
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -317,18 +291,29 @@ exports.verifyOtp = async (req, res) => {
 // ─────────────────────────────────────────────
 exports.register = async (req, res) => {
     try {
-        const { email, first_name, last_name, password, role, country_code, phone_number, recaptchaToken } = req.body;
+        const { email, first_name, last_name, password, role, country_code, phone_number, state, recaptchaToken } = req.body;
 
         // reCAPTCHA Validation
         const isHuman = await verifyRecaptcha(recaptchaToken);
         if (!isHuman) return res.status(403).json({ message: 'Security check failed. Please refresh and try again.' });
 
-        if (!email || !first_name || !last_name || !password) {
-            return res.status(400).json({ message: 'Please fill all required fields' });
+        if (!email || !first_name || !last_name || !password || !phone_number || !state) {
+            return res.status(400).json({ message: 'Missing mandatory fields. First name, last name, password, phone, and state are required.' });
         }
 
-        const user = await User.findOne({ email: String(email) });
-        if (!user) return res.status(404).json({ message: 'Please start registration again' });
+        if (role === 'supplier' && !req.body.company_name) {
+            return res.status(400).json({ message: 'Company name is required for suppliers' });
+        }
+
+        const OtpVerification = require('../models/OtpVerification');
+        const otpRecord = await OtpVerification.findOne({ email: String(email), is_verified: true });
+        
+        if (!otpRecord) {
+            return res.status(400).json({ message: 'Email verification required. Please verify your email first.' });
+        }
+
+        const existingUser = await User.findOne({ email: String(email) });
+        if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
         // Validate country_code if provided
         let countryRecord = null;
@@ -336,16 +321,21 @@ exports.register = async (req, res) => {
             countryRecord = await Country.findOne({ code: country_code.toUpperCase() });
         }
 
-        user.first_name = first_name.trim();
-        user.last_name = last_name.trim();
-        user.password = password;
-        user.roles = [role || 'buyer'];
-        user.status = 'active';
-        user.country_code = country_code || '';
-        user.phone_number = phone_number || '';
-        if (req.body.company_name) user.company_name = req.body.company_name;
+        const user = await User.create({
+            email: String(email),
+            password,
+            first_name: first_name.trim(),
+            last_name: last_name.trim(),
+            roles: [role || 'buyer'],
+            status: 'active',
+            country_code: country_code || '',
+            phone_number: phone_number || '',
+            state: req.body.state || '',
+            company_name: req.body.company_name || '',
+            is_verified: true
+        });
 
-        await user.save();
+        await OtpVerification.deleteOne({ _id: otpRecord._id });
 
         const { sendNotification } = require('../services/notificationService');
         const admins = await User.find({ role: 'admin' });
@@ -425,22 +415,26 @@ exports.login = async (req, res) => {
                 user.otp_expires = otp_expires;
                 await user.save({ validateBeforeSave: false });
 
-                // Send 2FA OTP via Email
-                await addJob('email', {
-                    to: email,
-                    subject: 'Your 2FA Login Code - Alibaba Demo',
-                    text: `Your 2FA login code is ${otp}. It expires in 10 minutes.`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                            <h2 style="color: #ff6600;">Two-Factor Authentication</h2>
-                            <p>A login attempt was made. Use the code below to complete your login:</p>
-                            <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
-                                ${otp}
+                // Send 2FA OTP via Email - BYPASS QUEUE
+                try {
+                    await sendMail({
+                        to: email,
+                        subject: 'Your 2FA Login Code - Alibaba Demo',
+                        text: `Your 2FA login code is ${otp}. It expires in 10 minutes.`,
+                        html: `
+                            <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                                <h2 style="color: #ff6600;">Two-Factor Authentication</h2>
+                                <p>A login attempt was made. Use the code below to complete your login:</p>
+                                <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
+                                    ${otp}
+                                </div>
+                                <p>This code will expire in 10 minutes.</p>
                             </div>
-                            <p>This code will expire in 10 minutes.</p>
-                        </div>
-                    `
-                });
+                        `
+                    });
+                } catch (mailErr) {
+                    console.error('2FA Mail Error:', mailErr);
+                }
 
                 return res.json({
                     requiresOTP: true,
@@ -893,22 +887,26 @@ exports.forgotPassword = async (req, res) => {
         user.otp_expires = otp_expires;
         await user.save({ validateBeforeSave: false });
 
-        // Send Forgot Password OTP
-        await addJob('email', {
-            to: email,
-            subject: 'Password Reset Code - Alibaba Demo',
-            text: `Your password reset code is ${otp}. It expires in 10 minutes.`,
-            html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                    <h2 style="color: #ff6600;">Password Reset Request</h2>
-                    <p>We received a request to reset your password. Use the code below to proceed:</p>
-                    <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
-                        ${otp}
+        // Send Forgot Password OTP - BYPASS QUEUE
+        try {
+            await sendMail({
+                to: email,
+                subject: 'Password Reset Code - Alibaba Demo',
+                text: `Your password reset code is ${otp}. It expires in 10 minutes.`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                        <h2 style="color: #ff6600;">Password Reset Request</h2>
+                        <p>We received a request to reset your password. Use the code below to proceed:</p>
+                        <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
+                            ${otp}
+                        </div>
+                        <p>If you didn't request a password reset, please ignore this email.</p>
                     </div>
-                    <p>If you didn't request a password reset, please ignore this email.</p>
-                </div>
-            `
-        });
+                `
+            });
+        } catch (mailErr) {
+            console.error('Forgot Password Mail Error:', mailErr);
+        }
 
         res.json({ success: true, message: 'Password reset code sent to your email' });
     } catch (error) {

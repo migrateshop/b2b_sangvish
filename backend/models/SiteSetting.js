@@ -9,6 +9,7 @@ const siteSettingSchema = new mongoose.Schema({
     pagination_limit: { type: Number, default: 10 },
     // New Fields
     maintenance_mode: { type: Boolean, default: false },
+    enable_cron_reset: { type: Boolean, default: true },
     default_currency: { type: String, default: 'USD' },
     default_language: { type: String, default: 'en' },
     date_format: { type: String, default: 'DD/MM/YYYY' },

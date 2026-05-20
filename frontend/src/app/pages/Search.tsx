@@ -79,6 +79,19 @@ interface ProductCardProps {
     viewMode?: string;
 }
 
+const getProductSlug = (prod: any) => {
+    if (prod?.slug) return prod.slug;
+    if (prod?.name) {
+        return prod.name
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    return prod?._id || '';
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({ product, convertPrice, isImageSearch, onInquiry, viewMode }) => {
     const { t } = useAuth();
     const basePrice = product.main_price || product.price_tiers?.[0]?.price || 0;
@@ -90,13 +103,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, convertPrice, isImag
     if (viewMode === 'list') {
         return (
             <div className={styles['sr-list-item'] + " " + styles['alibaba-list-style']}>
-                <Link href={`/product/${product.slug || product._id}`} className={styles['sr-list-img']}>
+                <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-list-img']}>
                     {imgUrl ? <img src={imgUrl} alt={product.name} loading="lazy" /> : <div className={styles['sr-card-img-placeholder']}><svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg></div>}
                     {(product.isPromoted || product.ppc_bid > 0) && <div className={styles['sr-ad-badge'] + " " + styles['list-ad']}>Ad</div>}
                 </Link>
                 <div className={styles['sr-list-content']}>
                     <div className={styles['sr-list-main']}>
-                        <Link href={`/product/${product.slug || product._id}`} className={styles['sr-list-title']}>{product.name}</Link>
+                        <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-list-title']}>{product.name}</Link>
                         {product.key_attributes && product.key_attributes.length > 0 && (
                             <div className={styles['sr-list-attributes']}>
                                 {product.key_attributes.slice(0, 3).map((attr: any, i: number) => (
@@ -145,7 +158,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, convertPrice, isImag
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" /></svg>
                                     {t('contact_supplier') || 'Contact Supplier'}
                                 </button>
-                                <Link href={`/product/${product.slug || product._id}`} className={styles['sr-list-btn'] + " " + styles['secondary']}>
+                                <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-list-btn'] + " " + styles['secondary']}>
                                     {t('view_details') || 'View Details'}
                                 </Link>
                             </div>
@@ -158,14 +171,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, convertPrice, isImag
 
     return (
         <div className={styles['sr-product-card']}>
-            <Link href={`/product/${product.slug || product._id}`} className={styles['sr-card-img-link']}>
+            <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-card-img-link']}>
                 <div className={styles['sr-card-img-wrap']}>
                     {imgUrl ? <img src={imgUrl} alt={product.name} loading="lazy" /> : <div className={styles['sr-card-img-placeholder']}><svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg></div>}
                     {(product.isPromoted || product.ppc_bid > 0) && <div className={styles['sr-ad-badge']}>Ad</div>}
                 </div>
             </Link>
             <div className={styles['sr-card-body']}>
-                <Link href={`/product/${product.slug || product._id}`} className={styles['sr-card-title-link']}>
+                <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-card-title-link']}>
                     <h3 className={styles['sr-card-title']}>{product.name}</h3>
                 </Link>
                 <div className={styles['sr-card-price-row']}>
@@ -187,7 +200,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, convertPrice, isImag
                         {supplierObj.country_code && <span className={styles['sr-supplier-country']}>{supplierObj.country_code}</span>}
                     </div>
                 )}
-                <Link href={`/product/${product.slug || product._id}`} className={styles['sr-inquiry-btn']}>
+                <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-inquiry-btn']}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '4px' }}><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     {t('view_details') || 'View Details'}
                 </Link>
@@ -212,7 +225,7 @@ const WorldwideCard: React.FC<WorldwideCardProps> = ({ product, convertPrice, on
 
     return (
         <div className={styles['sr-ww-card']}>
-            <Link href={`/product/${product.slug || product._id}`} className={styles['sr-ww-img-link']}>
+            <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-ww-img-link']}>
                 <div className={styles['sr-ww-img-wrap']}>
                     {imgUrl
                         ? <img src={imgUrl} alt={product.name} loading="lazy" />
@@ -224,7 +237,7 @@ const WorldwideCard: React.FC<WorldwideCardProps> = ({ product, convertPrice, on
                 </div>
             </Link>
             <div className={styles['sr-ww-body']}>
-                <Link href={`/product/${product.slug || product._id}`} className={styles['sr-ww-title']}>{product.name}</Link>
+                <Link href={`/product/${getProductSlug(product)}`} className={styles['sr-ww-title']}>{product.name}</Link>
                 <div className={styles['sr-ww-price']}>{price.formatted} <span className={styles['sr-card-unit']}>/ {product.unit || 'pc'}</span></div>
 
                 <div className={styles['sr-ww-meta-row']}>
@@ -349,7 +362,7 @@ const SupplierCard: React.FC<SupplierCardProps> = ({ supplier, convertPrice, onI
 
                 <div className={styles['sr-spc-gallery']}>
                     {displayProducts.slice(0, 4).map((prod: any, idx: number) => (
-                        <Link key={idx} href={`/product/${prod.slug || prod._id}`} className={styles['sr-spc-gallery-item']} style={{ position: 'relative' }}>
+                        <Link key={idx} href={`/product/${getProductSlug(prod)}`} className={styles['sr-spc-gallery-item']} style={{ position: 'relative' }}>
                             <img src={getImgUrl(prod.images?.[0] || prod.main_image)} alt="" />
                             <div className={styles['sr-spc-gallery-price']}>
                                 {convertPrice(prod.main_price).formatted}
@@ -734,7 +747,7 @@ const Search = () => {
                     <div className={styles['sr-tab-inner']}>
                         <div className={styles['sr-tab-links']}>
                             <Link href="/ai-sourcing" className={styles['sr-tab-btn'] + " " + styles['ai-mode']} style={{ textDecoration: 'none' }}>
-                                <span className={styles['ai-sparkle']}>✨</span> {t('ai_mode') || 'AI Mode'}
+                                {t('ai_mode') || 'AI Mode'}
                             </Link>
                             {[
                                 { key: 'products', label: t('products') || 'Products' },

@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const EmailTemplate = require('../models/EmailTemplate');
+const SiteSetting = require('../models/SiteSetting');
 
 let transporter = null;
 
@@ -38,12 +39,43 @@ const resetTransporter = () => {
  */
 const sendMail = async ({ to, subject, text, html }) => {
     try {
+        let siteName = process.env.MAIL_FROM_NAME || 'Alibaba Demo';
+        try {
+            const settings = await SiteSetting.findOne();
+            if (settings && settings.site_name) {
+                siteName = settings.site_name;
+            }
+        } catch (dbErr) {
+            console.error('Error fetching site name from SiteSetting:', dbErr);
+        }
+
+        let finalSubject = subject;
+        if (finalSubject) {
+            finalSubject = finalSubject
+                .replace(/Alibaba Live Demo/gi, siteName)
+                .replace(/Alibaba Demo/gi, siteName);
+        }
+
+        let finalHtml = html;
+        if (finalHtml) {
+            finalHtml = finalHtml
+                .replace(/Alibaba Live Demo/gi, siteName)
+                .replace(/Alibaba Demo/gi, siteName);
+        }
+
+        let finalTxt = text;
+        if (finalTxt) {
+            finalTxt = finalTxt
+                .replace(/Alibaba Live Demo/gi, siteName)
+                .replace(/Alibaba Demo/gi, siteName);
+        }
+
         const info = await getTransporter().sendMail({
-            from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
+            from: `"${siteName}" <${process.env.MAIL_FROM_ADDRESS}>`,
             to,
-            subject,
-            text,
-            html,
+            subject: finalSubject,
+            text: finalTxt,
+            html: finalHtml,
         });
 
         console.log('Message sent: %s', info.messageId);

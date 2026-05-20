@@ -71,15 +71,7 @@ exports.openDispute = async (req, res) => {
 // @access  Private
 exports.getMyDisputes = async (req, res) => {
     try {
-        const hasBuyer = req.user.roles?.includes('buyer') || req.user.role === 'buyer';
-        const hasSupplier = req.user.roles?.includes('supplier') || req.user.role === 'supplier';
-
-        const query =
-            hasBuyer && hasSupplier
-                ? { $or: [{ buyer_id: req.user._id }, { supplier_id: req.user._id }] }
-                : hasBuyer
-                    ? { buyer_id: req.user._id }
-                    : { supplier_id: req.user._id };
+        const query = { $or: [{ buyer_id: req.user._id }, { supplier_id: req.user._id }] };
 
         const disputes = await Dispute.find(query)
             .populate('order_id')

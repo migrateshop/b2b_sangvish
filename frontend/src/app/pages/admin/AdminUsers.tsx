@@ -494,7 +494,10 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ roleFilter }) => {
                                         {roleFilter && (
                                             <td style={{ textAlign: 'right' }}>
                                                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                                                    <button onClick={() => handleEditUser(user)} className={styles['admin-action-btn-edit']}>{t('edit') || 'Edit'}</button>
+                                                    <button onClick={() => handleEditUser(user)} className={styles['admin-action-btn-edit']}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                        <span>{t('edit') || 'Edit'}</span>
+                                                    </button>
                                                     <button onClick={async () => {
                                                         if (window.confirm(t('confirm_delete') || 'Delete this user? This cannot be undone.')) {
                                                             try {
@@ -505,7 +508,10 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ roleFilter }) => {
                                                                 showToast(t('failed_delete_user') || 'Failed to delete user', 'error');
                                                             }
                                                         }
-                                                    }} className={styles['admin-action-btn-delete']}>{t('delete') || 'Delete'}</button>
+                                                    }} className={styles['admin-action-btn-delete']}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                        <span>{t('delete') || 'Delete'}</span>
+                                                    </button>
                                                 </div>
                                             </td>
                                         )}
@@ -517,14 +523,18 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ roleFilter }) => {
                 </div>
 
                 {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--admin-border)' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
+                    <div className={styles['admin-pagination-footer']}>
+                        <span className={styles['admin-pagination-info']}>
                             {t('showing') || 'Showing'} {indexOfFirstItem + 1} {t('to') || 'to'} {Math.min(indexOfLastItem, filteredUsers.length)} {t('of') || 'of'} {filteredUsers.length} {t('records') || 'records'}
                         </span>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p: number) => p - 1)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ padding: '6px 12px' }}>{t('prev') || 'Prev'}</button>
+                        <div className={styles['admin-pagination-controls']}>
+                            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p: number) => p - 1)} className={styles['admin-pagination-btn-arrow']} title="Prev">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
                             <span className="text-admin-main" style={{ fontSize: '12px', fontWeight: 800 }}>{t('page') || 'Page'} {currentPage} {t('of') || 'of'} {totalPages}</span>
-                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p: number) => p + 1)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ padding: '6px 12px' }}>{t('next') || 'Next'}</button>
+                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p: number) => p + 1)} className={styles['admin-pagination-btn-arrow']} title="Next">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
                         </div>
                     </div>
                 )}
@@ -566,6 +576,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ roleFilter }) => {
                                         value={editFormData.email}
                                         onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                                         required
+                                        autoComplete="off"
                                     />
                                 </div>
                                 <div className={styles['admin-form-group'] + " " + styles['full-width']}>
@@ -659,6 +670,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ roleFilter }) => {
                                         value={newUserData.email}
                                         onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
                                         required
+                                        autoComplete="off"
                                     />
                                 </div>
                                 <div className={styles['admin-form-group'] + " " + styles['full-width']}>
@@ -749,6 +761,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ roleFilter }) => {
                                         value={newUserData.password}
                                         onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
                                         required
+                                        autoComplete="new-password"
                                     />
                                 </div>
                                 {!roleFilter && (

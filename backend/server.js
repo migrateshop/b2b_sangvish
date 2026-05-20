@@ -136,6 +136,10 @@ const startServer = async () => {
             runMaintenance();
             setInterval(runMaintenance, 24 * 60 * 60 * 1000);
 
+            // ⏰ Daily Demo Reset Cron Scheduler
+            const { startCronScheduler } = require('./cron/scheduler');
+            startCronScheduler();
+
             // 🚀 Start Background Job Processor (Queue)
             if (process.env.QUEUE_CONNECTION === 'database') {
                 const { processJobs } = require('./services/queueService');

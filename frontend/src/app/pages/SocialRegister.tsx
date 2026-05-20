@@ -94,12 +94,21 @@ const SocialRegister = () => {
     const handleSetupSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        
+        // Basic validation
+        if (!firstName.trim()) return setError('First name is required');
+        if (!lastName.trim()) return setError('Last name is required');
+        if (!phoneNumber.trim()) return setError('Phone number is required');
+        if (!/^\d{7,15}$/.test(phoneNumber.replace(/\s+/g, ''))) return setError('Invalid phone number format');
+        if (!stateProvince.trim()) return setError('State/Province is required');
+        if (role === 'supplier' && !companyName.trim()) return setError('Company name is required');
+
         if (!agreed) return setError('Please agree to terms.');
 
         if (role === 'supplier') {
             setStep(STEPS.BUSINESS);
         } else {
-            await finalizeRegistration();
+            await finalizeRegistration({ state: stateProvince });
         }
     };
 
@@ -115,6 +124,7 @@ const SocialRegister = () => {
                 country_code: selectedCountry,
                 phone_number: phoneNumber,
                 company_name: role === 'supplier' ? companyName : '',
+                state: stateProvince,
                 ...businessData
             });
 
@@ -208,9 +218,28 @@ const SocialRegister = () => {
                                     <label className={styles['float-label-active']}>Code</label>
                                 </div>
                                 <div className={styles['float-input-wrap'] + " " + styles['flex-1'] + " " + styles['no-margin']}>
-                                    <input type="tel" className={styles['float-input']} placeholder=" " value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} required />
+                                    <input type="tel" className={styles['float-input']} placeholder=" " value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} required autoComplete="off" />
                                     <label className={styles['float-label']}>Phone number</label>
                                 </div>
+                            </div>
+
+                            <div className={styles['float-input-wrap'] + " " + styles['mt-1']}>
+                                {states && states.length > 0 ? (
+                                    <select
+                                        className={styles['float-select']}
+                                        value={stateProvince}
+                                        onChange={e => setStateProvince(e.target.value)}
+                                        required
+                                    >
+                                        <option value="">Select State/Province</option>
+                                        {states.map(s => (
+                                            <option key={s._id} value={s.name}>{s.name}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <input type="text" className={styles['float-input']} placeholder=" " value={stateProvince} onChange={e => setStateProvince(e.target.value)} required autoComplete="off" />
+                                )}
+                                <label className={styles['float-label-active']}>State/province</label>
                             </div>
 
                             <label className={styles['terms-row']}>
@@ -250,27 +279,7 @@ const SocialRegister = () => {
                                 ))}
                             </div>
 
-                            {states && states.length > 0 ? (
-                                <div className={styles['float-input-wrap'] + " " + styles['mt-1']} style={{ marginBottom: '24px' }}>
-                                    <select
-                                        className={styles['float-select']}
-                                        value={stateProvince}
-                                        onChange={e => setStateProvince(e.target.value)}
-                                        required
-                                    >
-                                        <option value="">Select State/Province</option>
-                                        {states.map(s => (
-                                            <option key={s._id} value={s.name}>{s.name}</option>
-                                        ))}
-                                    </select>
-                                    <label className={styles['float-label-active']}>State/province</label>
-                                </div>
-                            ) : (
-                                <div className={styles['float-input-wrap'] + " " + styles['mt-1']} style={{ marginBottom: '24px' }}>
-                                    <input type="text" className={styles['float-input']} placeholder=" " value={stateProvince} onChange={e => setStateProvince(e.target.value)} required />
-                                    <label className={styles['float-label']}>State/province</label>
-                                </div>
-                            )}
+                            {/* State moved to Setup */}
 
                             {error && <p className={styles['reg-error']}>{error}</p>}
                             <div className={styles['d-flex'] + " " + styles['gap-1']}>

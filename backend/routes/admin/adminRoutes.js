@@ -50,6 +50,13 @@ router.get('/site-settings', getSiteSettings);
 router.put('/site-settings', updateSiteSettings);
 router.get('/database-backup', exportDatabaseBackup);
 
+// Dummy Data Reset & Import Management
+const dummyDataController = require('../../controllers/admin/dummyDataController');
+router.get('/dummy-data/status', dummyDataController.getStatus);
+router.post('/dummy-data/import', dummyDataController.triggerImport);
+router.post('/dummy-data/cleanup', dummyDataController.triggerCleanup);
+router.get('/dummy-data/logs', dummyDataController.getLogs);
+
 // Email Settings (.env modification)
 const { getEmailSettings, updateEmailSettings } = require('../../controllers/admin/emailSettingController');
 router.get('/email-settings', getEmailSettings);

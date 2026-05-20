@@ -113,18 +113,19 @@ const AdminEmailTemplateForm = () => {
                 </div>
                 <div className={styles['aetf-header-actions']}>
                     <button 
-                        className={`aetf-btn-tab ${!isPreviewMode ? 'active' : ''}`}
+                        className={`${styles['aetf-btn-tab']} ${!isPreviewMode ? styles['active'] : ''}`}
                         onClick={() => setIsPreviewMode(false)}
                     >
                         Editor
                     </button>
                     <button 
-                        className={`aetf-btn-tab ${isPreviewMode ? 'active' : ''}`}
+                        className={`${styles['aetf-btn-tab']} ${isPreviewMode ? styles['active'] : ''}`}
                         onClick={() => setIsPreviewMode(true)}
                     >
                         Preview
                     </button>
                 </div>
+
             </div>
 
             <div className={styles['aetf-main-grid']}>
@@ -191,7 +192,8 @@ const AdminEmailTemplateForm = () => {
                             </form>
                         </div>
                     ) : (
-                        <div className={styles['aetf-preview-card']} style={{ padding: '16px' }}>
+                        <div className={styles['aetf-preview-card']}>
+
                             <div className={styles['aetf-preview-header']}>
                                 <span>Subject:</span> {formData.subject || '(Empty Subject)'}
                             </div>
@@ -230,14 +232,14 @@ const AdminEmailTemplateForm = () => {
                         </div>
                     </div>
 
-                    <div className={styles['aetf-actions-card']}>
+                    <div className={`${styles['aetf-actions-card']} d-flex`} style={{ gap: '10px', padding: '16px' }}>
                         <button 
                             type="submit" 
                             form="templateForm" 
                             className={styles['aetf-btn-save']} 
                             disabled={saving}
                         >
-                            {saving ? 'Saving...' : (isEditMode ? 'Update Template' : 'Create Template')}
+                            {saving ? 'Saving...' : (isEditMode ? 'Update' : 'Save')}
                         </button>
                         <button className={styles['aetf-btn-cancel']} onClick={() => navigate.push('/admin/email-templates')}>Cancel</button>
                     </div>

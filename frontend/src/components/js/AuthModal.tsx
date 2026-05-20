@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/axiosConfig';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import Select from 'react-select';
 
 const STEPS = {
     AUTH_START: 'auth_start',
@@ -57,7 +58,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [resendTimer, setResendTimer] = useState(60);
+    const [resendTimer, setResendTimer] = useState(30);
     const [businessType, setBusinessType] = useState<string[]>([]);
     const [businessTypes, setBusinessTypes] = useState<any[]>([]);
     const [stateProvince, setStateProvince] = useState('');
@@ -77,9 +78,24 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
 
     useEffect(() => {
         if (isOpen) {
+            // Reset all input state values to initial empty states on open
+            setEmail('');
+            setPassword('');
+            setOtp(['', '', '', '', '', '']);
+            setFirstName('');
+            setLastName('');
+            setCompanyName('');
+            setPhoneNumber('');
+            setShowPassword(false);
+            setAgreed(false);
+            setLoading(false);
+            setError('');
+            setResendTimer(30);
+            setBusinessType([]);
+            setStateProvince('');
+
             setMode((initialMode as any) || authModal.mode || STEPS.AUTH_START);
             setRole(authModal.role || 'buyer');
-            setError('');
             
             // Initialization data
             api.get('/auth/countries').then(({ data }) => {
@@ -133,7 +149,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
 
             if (data.requiresOTP) {
                 setMode(STEPS.OTP);
-                setResendTimer(60);
+                setResendTimer(30);
                 return;
             }
 
@@ -158,7 +174,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
         setLoading(true);
         try {
             await api.post('/auth/forgot-password', { email });
-            setResendTimer(60);
+            setResendTimer(30);
             setMode(STEPS.RESET_PASSWORD);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to send reset code');
@@ -194,11 +210,12 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
         setLoading(true);
         try {
             await api.post('/auth/send-otp', { email, role, recaptchaToken });
-            setResendTimer(60);
+            setResendTimer(30);
             setMode(STEPS.OTP);
         } catch (err: any) {
             // Check if user exists but has password (redirect to login)
             if (err.response?.status === 409) {
+                 setError('Account already exists. Please login with your password.');
                  setMode(STEPS.LOGIN);
             } else {
                  setError(err.response?.data?.message || 'Failed to send OTP');
@@ -227,8 +244,10 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
         setLoading(true);
         try {
             const { data } = await api.post('/auth/verify-otp', { email, otp: code });
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data));
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data));
+            }
 
             if (data.first_name) {
                 onClose();
@@ -259,13 +278,23 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
     const handleSetupSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        
+        // Basic validation
+        if (!firstName.trim()) return setError('First name is required');
+        if (!lastName.trim()) return setError('Last name is required');
+        if (password.length < 6) return setError('Password must be at least 6 characters');
+        if (!phoneNumber.trim()) return setError('Phone number is required');
+        if (!/^\d{7,15}$/.test(phoneNumber.replace(/\s+/g, ''))) return setError('Invalid phone number format');
+        if (!stateProvince.trim()) return setError('State/Province is required');
+        if (role === 'supplier' && !companyName.trim()) return setError('Company name is required');
+        
         if (!agreed) return setError('Please agree to terms.');
         setLoading(true);
         try {
             const { data } = await api.post('/auth/register', {
                 email, password, first_name: firstName, last_name: lastName,
                 phone_number: phoneNumber, role, company_name: companyName,
-                country_code: selectedCountry, recaptchaToken
+                country_code: selectedCountry, state: stateProvince, recaptchaToken
             });
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.setItem('token', data.token);
@@ -319,7 +348,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
     };
 
     return (
-        <div className="auth-modal-overlay d-flex align-center justify-center" onClick={onClose}>
+        <div className="auth-modal-overlay d-flex align-center justify-center" onClick={(e) => e.target === e.currentTarget && onClose()}>
             {siteSettings?.enable_recaptcha && siteSettings?.recaptcha_site_key && (
                 <ReCaptchaHandler onToken={setRecaptchaToken} />
             )}
@@ -340,7 +369,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                         {renderSocialButtons()}
                         <form onSubmit={handleEmailContinue}>
                             <div className="float-input-wrap">
-                                <input type="email" className="float-input" placeholder=" " value={email} onChange={e => setEmail(e.target.value)} required />
+                                <input type="email" className="float-input" placeholder=" " value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" />
                                 <label className="float-label">Enter your email address</label>
                             </div>
                             {error && <p className="reg-error">{error}</p>}
@@ -355,11 +384,11 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                         {renderSocialButtons()}
                         <form onSubmit={handleLogin}>
                             <div className="float-input-wrap">
-                                <input type="email" className="float-input" placeholder=" " value={email} onChange={e => setEmail(e.target.value)} required />
+                                <input type="email" className="float-input" placeholder=" " value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username email" />
                                 <label className="float-label">Email address</label>
                             </div>
                             <div className="float-input-wrap mt-1">
-                                <input type={showPassword ? 'text' : 'password'} className="float-input" placeholder=" " value={password} onChange={e => setPassword(e.target.value)} required />
+                                <input type={showPassword ? 'text' : 'password'} className="float-input" placeholder=" " value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" />
                                 <label className="float-label">Password</label>
                                 <button type="button" className="toggle-pw-v2" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? <EyeOffIcon /> : <EyeIcon />}
@@ -371,7 +400,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                             {error && <p className="reg-error">{error}</p>}
                             <button type="submit" className="reg-btn-primary-v2" disabled={loading}>Sign in</button>
                         </form>
-                        <p className="reg-footer-text-v2">New user? <button type="button" className="reg-link-btn" onClick={() => setMode(STEPS.AUTH_START)}>Register</button></p>
+                        <p className="reg-footer-text-v2">New user? <button type="button" className="reg-link-btn" onClick={() => { setMode(STEPS.AUTH_START); setError(''); }}>Register</button></p>
                     </>
                 )}
 
@@ -429,23 +458,23 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                         <form onSubmit={handleSetupSubmit}>
                             <div className="name-row">
                                 <div className="float-input-wrap">
-                                    <input type="text" className="float-input" placeholder=" " value={firstName} onChange={e => setFirstName(e.target.value)} required />
-                                    <label className="float-label">First name</label>
+                                    <input type="text" className="float-input" placeholder=" " value={firstName} onChange={e => setFirstName(e.target.value)} required autoComplete="off" />
+                                    <label className="float-label">First name <span style={{ color: '#ef4444' }}>*</span></label>
                                 </div>
                                 <div className="float-input-wrap">
-                                    <input type="text" className="float-input" placeholder=" " value={lastName} onChange={e => setLastName(e.target.value)} required />
-                                    <label className="float-label">Last name</label>
+                                    <input type="text" className="float-input" placeholder=" " value={lastName} onChange={e => setLastName(e.target.value)} required autoComplete="off" />
+                                    <label className="float-label">Last name <span style={{ color: '#ef4444' }}>*</span></label>
                                 </div>
                             </div>
                             {role === 'supplier' && (
                                 <div className="float-input-wrap mt-1">
-                                    <input type="text" className="float-input" placeholder=" " value={companyName} onChange={e => setCompanyName(e.target.value)} required />
-                                    <label className="float-label">Company name</label>
+                                    <input type="text" className="float-input" placeholder=" " value={companyName} onChange={e => setCompanyName(e.target.value)} required autoComplete="off" />
+                                    <label className="float-label">Company name <span style={{ color: '#ef4444' }}>*</span></label>
                                 </div>
                             )}
                             <div className="float-input-wrap mt-1">
-                                <input type={showPassword ? 'text' : 'password'} className="float-input" placeholder=" " value={password} onChange={e => setPassword(e.target.value)} required />
-                                <label className="float-label">Set password</label>
+                                <input type={showPassword ? 'text' : 'password'} className="float-input" placeholder=" " value={password} onChange={e => setPassword(e.target.value)} required autoComplete="new-password" />
+                                <label className="float-label">Set password <span style={{ color: '#ef4444' }}>*</span></label>
                                 <button type="button" className="toggle-pw-v2" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOffIcon /> : <EyeIcon />}</button>
                             </div>
                             <div className="phone-row mt-1">
@@ -455,13 +484,53 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                                     </select>
                                 </div>
                                 <div className="float-input-wrap flex-1 no-margin">
-                                    <input type="tel" className="float-input" placeholder=" " value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} required />
-                                    <label className="float-label">Phone number</label>
+                                    <input type="tel" className="float-input" placeholder=" " value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} required autoComplete="off" />
+                                    <label className="float-label">Phone number <span style={{ color: '#ef4444' }}>*</span></label>
                                 </div>
+                            </div>
+                            <div className="float-input-wrap mt-1 custom-select-v2">
+                                {states.length > 0 ? (
+                                    <>
+                                        <Select
+                                            value={states.find(s => s.name === stateProvince) ? { value: stateProvince, label: stateProvince } : null}
+                                            onChange={(opt: any) => setStateProvince(opt ? opt.value : '')}
+                                            options={Array.from(new Set(states.map(s => s.name))).sort().map(name => ({ value: name, label: name }))}
+                                            placeholder=" "
+                                            isSearchable={true}
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
+                                            required
+                                            styles={{
+                                                control: (base, state) => ({
+                                                    ...base,
+                                                    minHeight: '48px',
+                                                    paddingTop: '10px',
+                                                    background: '#fff',
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '8px',
+                                                    boxShadow: 'none',
+                                                    '&:hover': { borderColor: '#111' },
+                                                    borderColor: state.isFocused ? '#111' : '#ddd'
+                                                }),
+                                                placeholder: (base) => ({ ...base, display: 'none' }),
+                                                input: (base) => ({ ...base, color: '#111', fontSize: '0.95rem', margin: 0, padding: 0 }),
+                                                singleValue: (base) => ({ ...base, color: '#111', fontSize: '0.95rem' }),
+                                                valueContainer: (base) => ({ ...base, padding: '0 1rem' }),
+                                                menu: (base) => ({ ...base, zIndex: 9999 })
+                                            }}
+                                        />
+                                        <label className={`float-label ${stateProvince ? 'float-label-active' : ''}`} style={{ zIndex: 10 }}>State/Province <span style={{ color: '#ef4444' }}>*</span></label>
+                                    </>
+                                ) : (
+                                    <>
+                                        <input type="text" className="float-input" placeholder=" " value={stateProvince} onChange={e => setStateProvince(e.target.value)} required autoComplete="off" />
+                                        <label className="float-label">State/Province <span style={{ color: '#ef4444' }}>*</span></label>
+                                    </>
+                                )}
                             </div>
                             <label className="terms-row">
                                 <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} required />
-                                <span>Agree to <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</span>
+                                <span>Agree to <a href="#">Terms</a> and <a href="#">Privacy Policy</a> <span style={{ color: '#ef4444' }}>*</span></span>
                             </label>
                             {error && <p className="reg-error">{error}</p>}
                             <button type="submit" className="reg-btn-primary-v2" disabled={loading}>Create account</button>
@@ -481,10 +550,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                                     </label>
                                 ))}
                             </div>
-                            <div className="float-input-wrap mt-1">
-                                <input type="text" className="float-input" placeholder=" " value={stateProvince} onChange={e => setStateProvince(e.target.value)} required />
-                                <label className="float-label">State/province</label>
-                            </div>
+                            {/* State/Province moved to SETUP step */}
                             {error && <p className="reg-error">{error}</p>}
                             <button type="submit" className="reg-btn-primary-v2" disabled={loading}>Submit</button>
                         </form>
@@ -527,7 +593,7 @@ const AuthModal = ({ isOpen: propIsOpen, onClose: propOnClose, initialMode }: { 
                             ))}
                         </div>
                         <div className="float-input-wrap mt-2">
-                            <input type={showPassword ? 'text' : 'password'} className="float-input" placeholder=" " value={password} onChange={e => setPassword(e.target.value)} required />
+                            <input type={showPassword ? 'text' : 'password'} className="float-input" placeholder=" " value={password} onChange={e => setPassword(e.target.value)} required autoComplete="new-password" />
                             <label className="float-label">New password</label>
                             <button type="button" className="toggle-pw-v2" onClick={() => setShowPassword(!showPassword)}>
                                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}

@@ -54,11 +54,36 @@ const AdminPayoutManagement: React.FC = () => {
 
     return (
         <div className="admin-page">
-            <div className="admin-page-header">
+            <div className="admin-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <h1 className="admin-page-title">Payout Management</h1>
                     <p className="admin-page-subtitle">Review and manage supplier payment account details</p>
                 </div>
+                <button
+                    onClick={fetchSuppliers}
+                    disabled={loading}
+                    style={{
+                        padding: '10px 20px',
+                        background: 'var(--primary-color)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 12px rgba(255, 102, 0, 0.2)',
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={loading ? 'spin' : ''}>
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    {loading ? 'Refreshing...' : 'Refresh Data'}
+                </button>
             </div>
 
             <div className="admin-card" style={{ marginBottom: '24px' }}>
@@ -112,18 +137,30 @@ const AdminPayoutManagement: React.FC = () => {
                                         <td>
                                             {s.payout_methods && s.payout_methods.length > 0 ? (
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                    {s.payout_methods.map((pm, idx) => (
+                                                    {s.payout_methods.map((pm: any, idx) => (
                                                         <div key={idx} style={{ padding: '10px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                                                                <span style={{ fontSize: '10px', fontWeight: 900, background: 'var(--primary-color)', color: '#fff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>{pm.type}</span>
+                                                                <span style={{ fontSize: '10px', fontWeight: 900, background: 'var(--primary-color)', color: '#fff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>{pm.type?.replace('_', ' ')}</span>
                                                                 {pm.is_default && <span style={{ fontSize: '10px', fontWeight: 900, background: '#10b981', color: '#fff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>Default</span>}
                                                             </div>
-                                                            {pm.type === 'bank' && (
+                                                            {(pm.type === 'bank' || pm.type === 'bank_transfer') && (
                                                                 <div style={{ fontSize: '11px', color: '#334155' }}>
-                                                                    <div><b>Bank:</b> {pm.bank_name}</div>
-                                                                    <div><b>A/N:</b> {pm.account_name}</div>
-                                                                    <div><b>A/C:</b> {pm.account_number}</div>
-                                                                    {pm.swift_code && <div><b>SWIFT:</b> {pm.swift_code}</div>}
+                                                                    <div><b>Bank:</b> {pm.bank_name || pm.details?.bank_name || 'N/A'}</div>
+                                                                    <div><b>A/N:</b> {pm.account_name || pm.details?.account_name || 'N/A'}</div>
+                                                                    <div><b>A/C:</b> {pm.account_number || pm.details?.account_number || 'N/A'}</div>
+                                                                    {(pm.swift_code || pm.details?.swift_code) && <div><b>SWIFT:</b> {pm.swift_code || pm.details?.swift_code}</div>}
+                                                                </div>
+                                                            )}
+                                                            {pm.type === 'paypal' && (
+                                                                <div style={{ fontSize: '11px', color: '#334155' }}>
+                                                                    <div><b>PayPal Email:</b> {pm.details?.email || pm.account_name || 'N/A'}</div>
+                                                                </div>
+                                                            )}
+                                                            {pm.type !== 'bank' && pm.type !== 'bank_transfer' && pm.type !== 'paypal' && pm.details && (
+                                                                <div style={{ fontSize: '11px', color: '#334155' }}>
+                                                                    {Object.entries(pm.details).map(([key, val]: any) => (
+                                                                        <div key={key}><b>{key.replace('_', ' ').toUpperCase()}:</b> {String(val)}</div>
+                                                                    ))}
                                                                 </div>
                                                             )}
                                                         </div>

@@ -41,6 +41,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
+    // Set tomorrow's date as the minimum date allowed
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const minDateStr = tomorrow.toISOString().split('T')[0];
+
     useEffect(() => {
         if (user) {
             setFormData(prev => ({
@@ -71,6 +76,59 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
         if (isOwner) {
             showToast('Suppliers cannot request customization on their own products', 'error');
             onClose();
+            return;
+        }
+
+        // Email Validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(formData.buyer_email)) {
+            showToast('Please enter a valid email address', 'error');
+            return;
+        }
+
+        // Phone Validation
+        const cleanPhone = formData.buyer_phone.replace(/\D/g, '');
+        if (!cleanPhone) {
+            showToast('Phone number is required', 'error');
+            return;
+        }
+
+        const selectedCountryObj = availableCountries?.find((c: any) => (c.dial_code || `+${c.phone_code}`) === formData.phone_code);
+        const expectedLength = selectedCountryObj?.phone_length || 10;
+
+        if (cleanPhone.length !== expectedLength) {
+            showToast(`Phone number must be exactly ${expectedLength} digits for the selected country (${selectedCountryObj?.name || 'selected country'})`, 'error');
+            return;
+        }
+
+        // Delivery Date Validation
+        if (!formData.expected_delivery_date) {
+            showToast('Expected delivery date is required', 'error');
+            return;
+        }
+        const selectedDate = new Date(formData.expected_delivery_date);
+        if (isNaN(selectedDate.getTime())) {
+            showToast('Please enter a valid expected delivery date', 'error');
+            return;
+        }
+        const year = selectedDate.getFullYear();
+        if (year < 1000 || year > 9999) {
+            showToast('Please enter a valid 4-digit year', 'error');
+            return;
+        }
+        const tomorrowDate = new Date();
+        tomorrowDate.setHours(0, 0, 0, 0);
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+        if (selectedDate < tomorrowDate) {
+            showToast('Expected delivery date must be at least tomorrow', 'error');
+            return;
+        }
+
+        // Max 1 Year in Future Validation
+        const maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        if (selectedDate > maxDate) {
+            showToast('Expected delivery date cannot be more than 1 year in the future', 'error');
             return;
         }
 
@@ -123,9 +181,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
     };
 
     // Min expected delivery date is tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const minDateStr = tomorrow.toISOString().split('T')[0];
+    const activeCountryObj = availableCountries?.find((c: any) => (c.dial_code || `+${c.phone_code}`) === formData.phone_code);
+    const dynamicMaxLen = activeCountryObj?.phone_length || 15;
 
     return (
         <div className={styles['modal-overlay']} onClick={onClose}>
@@ -212,6 +269,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
                                         <input 
                                             type="tel" 
                                             required 
+                                            maxLength={dynamicMaxLen}
                                             style={{ flex: 1 }}
                                             value={formData.buyer_phone} 
                                             onChange={e => {

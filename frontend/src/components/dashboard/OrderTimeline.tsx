@@ -11,11 +11,11 @@ const OrderTimeline = ({ timeline, currentStatus }) => {
     ];
 
     const getStatusIndex = (status) => {
-        const idx = steps.findIndex(s => s.status === status.toLowerCase());
+        const idx = steps.findIndex(s => s.status === (status || '').toLowerCase());
         return idx === -1 ? 0 : idx;
     };
 
-    const currentIdx = getStatusIndex(currentStatus);
+    const currentIdx = getStatusIndex(currentStatus || 'pending');
 
     return (
         <div className={styles['ot-container']}>
@@ -24,10 +24,10 @@ const OrderTimeline = ({ timeline, currentStatus }) => {
                 {steps.map((step, index) => {
                     const isCompleted = index <= currentIdx;
                     const isCurrent = index === currentIdx;
-                    const logEntry = timeline?.find(l => l.status.toLowerCase() === step.status.toLowerCase() ||
-                        (l.status === 'Confirmed' && step.status === 'confirmed'));
+                    const logEntry = timeline?.find(l => (l?.status || '').toLowerCase() === step.status.toLowerCase() ||
+                        (l?.status === 'Confirmed' && step.status === 'confirmed'));
 
-                    const customLog = timeline?.find(l => l.status === step.label);
+                    const customLog = timeline?.find(l => l?.status === step.label);
                     const finalLog = customLog || logEntry;
 
                     return (

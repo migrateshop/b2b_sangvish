@@ -85,8 +85,9 @@ const AdminEmailTemplates: React.FC = () => {
                                 <tr key={t._id}>
                                     <td>
                                         <div className={styles['aet-template-name']}>{t.name}</div>
-                                        <div style={{ fontSize: '12px', color: '#64748b' }}>{t.description}</div>
+                                        <div className={styles['aet-template-desc']}>{t.description}</div>
                                     </td>
+
                                     <td><span className={styles['aet-template-slug']}>{t.slug}</span></td>
                                     <td>{t.subject}</td>
                                     <td>
@@ -95,8 +96,9 @@ const AdminEmailTemplates: React.FC = () => {
                                         </span>
                                     </td>
                                     <td>
-                                        <div className={styles['aet-actions']} style={{ justifyContent: 'flex-end' }}>
+                                        <div className={styles['aet-actions']}>
                                             <button className={styles['aet-btn-icon']} title="Edit" onClick={() => navigate.push(`/admin/email-templates/edit/${t._id}`)}>
+
                                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                                 </svg>

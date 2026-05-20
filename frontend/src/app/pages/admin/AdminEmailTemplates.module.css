@@ -4,6 +4,13 @@
     margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+    .aet-container {
+        padding: 20px 15px;
+    }
+}
+
+
 .aet-header {
     display: flex;
     justify-content: space-between;
@@ -11,7 +18,17 @@
     margin-bottom: 30px;
     border-bottom: 1px solid #e2e8f0;
     padding-bottom: 20px;
+    gap: 20px;
 }
+
+@media (max-width: 640px) {
+    .aet-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+
 
 .aet-title-box h1 {
     font-size: 28px;
@@ -44,7 +61,16 @@
     gap: 8px;
     transition: all 0.2s;
     box-shadow: 0 4px 14px rgba(13, 46, 103, 0.3);
+    flex-shrink: 0;
 }
+
+@media (max-width: 640px) {
+    .aet-btn-add {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 
 .aet-btn-add:hover {
     transform: translateY(-2px);
@@ -57,8 +83,9 @@
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     border: 1px solid #f1f5f9;
-    overflow: hidden;
+    overflow-x: auto;
 }
+
 
 .aet-table {
     width: 100%;
@@ -75,6 +102,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
 }
 
 .aet-table td {
@@ -85,19 +113,58 @@
     font-weight: 500;
 }
 
+.aet-table th:first-child,
+.aet-table td:first-child {
+    min-width: 250px;
+}
+
+.aet-table th:nth-child(2),
+.aet-table td:nth-child(2) {
+    min-width: 180px;
+}
+
+.aet-table th:nth-child(3),
+.aet-table td:nth-child(3) {
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .aet-table th, .aet-table td {
+        padding: 12px 16px;
+    }
+}
+
+
+
 .aet-template-name {
     font-weight: 700;
     color: #0f172a;
+    font-size: 15px;
+}
+
+.aet-template-desc {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+    font-weight: 400;
+    line-height: 1.4;
+    max-width: 300px;
 }
 
 .aet-template-slug {
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
     background: #f1f5f9;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
     color: #475569;
+    display: inline-block;
+    word-break: break-all;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
 }
+
+
 
 .aet-badge {
     padding: 4px 10px;
@@ -120,7 +187,9 @@
 .aet-actions {
     display: flex;
     gap: 8px;
+    justify-content: flex-end;
 }
+
 
 .aet-btn-icon {
     width: 36px;

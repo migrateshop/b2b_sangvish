@@ -149,6 +149,13 @@ const AdminDashboard = () => {
             }
         };
         fetchDashboardData();
+
+        const interval = setInterval(() => {
+            api.get('/admin/stats').then(({ data }) => setStats(data)).catch(() => {});
+            api.get('/admin/companies').then(({ data }) => setRecentCompanies(data.slice(0, 5))).catch(() => {});
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, []);
 
     if (loading) return (
@@ -271,13 +278,41 @@ const AdminDashboard = () => {
     return (
         <div className={styles['adm-dashboard']}>
             {/* Welcome Banner */}
-            <div className={styles['adm-welcome']}>
+            <div className={styles['adm-welcome']} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div className={styles['adm-welcome-text']}>
                     <h1>{t('dashboard') || 'Dashboard'}</h1>
                     <p>{t('platform_overview') || 'Platform overview and key metrics at a glance'}</p>
                 </div>
-                <div className={styles['adm-welcome-date']}>
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                    <div className={styles['adm-welcome-date']}>
+                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </div>
+                    <button
+                        onClick={() => {
+                            window.location.reload();
+                        }}
+                        style={{
+                            padding: '10px 20px',
+                            background: 'var(--primary-color)',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontWeight: 700,
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            boxShadow: '0 4px 12px rgba(255, 102, 0, 0.2)',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        Refresh Live Counts
+                    </button>
                 </div>
             </div>
 

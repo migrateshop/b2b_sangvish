@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/axiosConfig';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import styles from './ShippingAddress.module.css';
 import GoogleAddressAutocomplete from '../js/GoogleAddressAutocomplete';
 
 const ShippingAddress = () => {
     const { user } = useAuth();
+    const { showToast } = useToast();
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [countries, setCountries] = useState([]);
@@ -43,6 +45,9 @@ const ShippingAddress = () => {
         try {
             const { data } = await api.get('/common/countries');
             setCountries(data);
+            if (data.length > 0 && !formData.phoneCountry) {
+                setFormData(prev => ({ ...prev, phoneCountry: data[0]._id }));
+            }
         } catch (err) {
             console.error('Failed to fetch countries:', err);
         }
@@ -51,15 +56,17 @@ const ShippingAddress = () => {
     const fetchStates = async (countryId) => {
         if (!countryId) {
             setStates([]);
-            return;
+            return [];
         }
         try {
             console.log('Fetching states for:', countryId);
             const { data } = await api.get(`/common/states/${countryId}`);
             console.log('States received:', data.length);
             setStates(data);
+            return data;
         } catch (err) {
             console.error('Failed to fetch states:', err);
+            return [];
         }
     };
 
@@ -103,7 +110,7 @@ const ShippingAddress = () => {
 
     const handleUseLocation = () => {
         if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your browser");
+            showToast("Geolocation is not supported by your browser", "error");
             return;
         }
 
@@ -122,22 +129,21 @@ const ShippingAddress = () => {
                     const matchedCountry = countries.find(c => c.name.toLowerCase() === countryName.toLowerCase());
                     
                     if (matchedCountry) {
+                        const fetchedStates = await fetchStates(matchedCountry._id);
+                        let matchedStateName = '';
+                        if (addr.state) {
+                            const matchedState = fetchedStates.find(s => s.name.toLowerCase() === addr.state.toLowerCase());
+                            matchedStateName = matchedState ? matchedState.name : addr.state;
+                        }
+
                         setFormData(prev => ({
                             ...prev,
                             country: matchedCountry.name,
+                            state: matchedStateName,
                             city: addr.city || addr.town || addr.village || '',
                             postalCode: addr.postcode || '',
                             addressLine: `${addr.road || ''} ${addr.suburb || ''}`.trim()
                         }));
-                        await fetchStates(matchedCountry._id);
-                        
-                        // Try to match state
-                        if (addr.state) {
-                            const matchedState = states.find(s => s.name.toLowerCase() === addr.state.toLowerCase());
-                            if (matchedState) {
-                                setFormData(prev => ({ ...prev, state: matchedState.name }));
-                            }
-                        }
                     } else {
                         setFormData(prev => ({
                             ...prev,
@@ -157,7 +163,7 @@ const ShippingAddress = () => {
         }, (err) => {
             console.error("Geolocation error:", err);
             setLocating(false);
-            alert("Could not get your location. Please check your browser permissions.");
+            showToast("Could not get your location. Please check your browser permissions.", "error");
         });
     };
 
@@ -186,7 +192,7 @@ const ShippingAddress = () => {
             setFormData({
                 fullName: '',
                 phone: '',
-                phoneCountry: '',
+                phoneCountry: countries[0]?._id || '',
                 addressLine: '',
                 city: '',
                 state: '',
@@ -208,16 +214,66 @@ const ShippingAddress = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Full Name Validation
+        if (!formData.fullName || !formData.fullName.trim() || formData.fullName.trim().length < 2) {
+            showToast('Please enter a valid Full Name (at least 2 characters).', 'error');
+            return;
+        }
+
+        // Phone Validation
+        const cleanPhone = (formData.phone || '').replace(/\D/g, '');
+        if (!cleanPhone) {
+            showToast('Phone Number is required.', 'error');
+            return;
+        }
+        if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+            showToast('Phone Number must be a valid number between 7 and 15 digits.', 'error');
+            return;
+        }
+
+        // Street Address Validation
+        if (!formData.addressLine || !formData.addressLine.trim()) {
+            showToast('Street Address is required. Please search and select a valid address.', 'error');
+            return;
+        }
+
+        // Country Validation
+        if (!formData.country || !formData.country.trim()) {
+            showToast('Country is required.', 'error');
+            return;
+        }
+
+        // State Validation
+        if (!formData.state || !formData.state.trim()) {
+            showToast('State / Province is required.', 'error');
+            return;
+        }
+
+        // City Validation
+        if (!formData.city || !formData.city.trim()) {
+            showToast('City is required.', 'error');
+            return;
+        }
+
+        // Postal Code Validation
+        if (!formData.postalCode || !formData.postalCode.trim() || formData.postalCode.trim().length < 3) {
+            showToast('Please enter a valid Postal Code.', 'error');
+            return;
+        }
+
         try {
             if (editingAddress) {
                 await api.put(`/shipping-address/${editingAddress._id}`, formData);
+                showToast('Address updated successfully!', 'success');
             } else {
                 await api.post('/shipping-address', formData);
+                showToast('Address added successfully!', 'success');
             }
             fetchAddresses();
             handleCloseModal();
-        } catch (error) {
-            alert(error.response?.data?.message || 'Failed to save address');
+        } catch (error: any) {
+            showToast(error.response?.data?.message || 'Failed to save address', 'error');
         }
     };
 
@@ -225,18 +281,20 @@ const ShippingAddress = () => {
         if (!window.confirm('Are you sure you want to delete this address?')) return;
         try {
             await api.delete(`/shipping-address/${id}`);
+            showToast('Address deleted successfully', 'success');
             fetchAddresses();
         } catch (error) {
-            alert('Failed to delete address');
+            showToast('Failed to delete address', 'error');
         }
     };
 
     const handleSetDefault = async (id) => {
         try {
             await api.put(`/shipping-address/${id}/set-default`);
+            showToast('Default address updated', 'success');
             fetchAddresses();
         } catch (error) {
-            alert('Failed to set default address');
+            showToast('Failed to set default address', 'error');
         }
     };
 
@@ -329,6 +387,7 @@ const ShippingAddress = () => {
                                         </select>
                                         <input 
                                             type="text" 
+                                            required
                                             value={formData.phone}
                                             onChange={e => {
                                                 const val = e.target.value.replace(/\D/g, '');

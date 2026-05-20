@@ -440,6 +440,21 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         if (!name.trim()) return showToast('Product name is required.', 'error', 'Validation Error');
         if (!description.trim()) return showToast('Description is required.', 'error', 'Validation Error');
         if (!category) return showToast('Please select a category.', 'error', 'Validation Error');
+
+        // Subcategory check
+        if (subCategories.length > 0 && category === parentCategory) {
+            return showToast('Please select a specific subcategory.', 'error', 'Validation Error');
+        }
+
+        if (!sku || !sku.trim()) return showToast('SKU is required.', 'error', 'Validation Error');
+        if (!moq || isNaN(Number(moq)) || Number(moq) <= 0) return showToast('MOQ must be a positive number greater than 0.', 'error', 'Validation Error');
+        if (countInStock === undefined || countInStock === null || countInStock === '') return showToast('Stock is required.', 'error', 'Validation Error');
+        if (!currency || !currency.trim()) return showToast('Currency is required.', 'error', 'Validation Error');
+
+        if (salesType === 'specific' && selectedCountries.length === 0) {
+            return showToast('At least one country must be selected for specific Sales Region.', 'error', 'Validation Error');
+        }
+
         if (tiers.length === 0) return showToast('At least one price tier is required.', 'error', 'Validation Error');
         if (!existingCoverImage && !newCoverFile) return showToast('Cover Image is required.', 'error', 'Validation Error');
 
@@ -583,15 +598,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
                         </div>
                         <div className={styles['pm-form-row'] + " " + styles['three-col']}>
                             <div className={styles['pm-form-group']}>
-                                <label className={styles['pm-form-label']}>SKU</label>
+                                <label className={styles['pm-form-label']}>SKU <span>*</span></label>
                                 <input className={styles['pm-form-input']} value={sku} onChange={e => setSku(e.target.value)} placeholder="e.g. HLM-RED-XL" />
                             </div>
                             <div className={styles['pm-form-group']}>
-                                <label className={styles['pm-form-label']}>MOQ (Min Order Qty)</label>
+                                <label className={styles['pm-form-label']}>MOQ (Min Order Qty) <span>*</span></label>
                                 <input className={styles['pm-form-input']} type="number" min="1" value={moq} onChange={e => setMoq(e.target.value)} />
                             </div>
                             <div className={styles['pm-form-group']}>
-                                <label className={styles['pm-form-label']}>Stock (Inventory)</label>
+                                <label className={styles['pm-form-label']}>Stock (Inventory) <span>*</span></label>
                                 <input className={styles['pm-form-input']} type="number" min="-1" value={countInStock} onChange={e => setCountInStock(e.target.value)} />
                                 <span className={styles['helper-text']} style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Enter -1 for unlimited stock</span>
                             </div>
@@ -781,7 +796,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
                                 <input className={styles['pm-form-input']} type="number" min="1" placeholder="Min Qty (e.g. 10)" value={t.min_quantity} onChange={e => updateTier(i, 'min_quantity', e.target.value)} />
                                 <input className={styles['pm-form-input']} type="number" min="0" placeholder="Max Qty (e.g. 500)" value={t.max_quantity || ''} onChange={e => updateTier(i, 'max_quantity', e.target.value || null)} />
                                 <input className={styles['pm-form-input']} type="number" min="0" step="0.01" placeholder="Unit Price ($)" value={t.price} onChange={e => updateTier(i, 'price', e.target.value)} />
-                                {tiers.length > 1 && (
+                                {i > 0 && (
                                     <button type="button" className={styles['pm-remove-btn']} onClick={() => removeTier(i)}>✕</button>
                                 )}
                             </div>

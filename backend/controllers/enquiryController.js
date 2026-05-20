@@ -10,6 +10,7 @@ exports.createEnquiry = async (req, res) => {
     try {
         const {
             productId,
+            supplierId: bodySupplierId,
             buyer_name,
             buyer_email,
             buyer_phone,
@@ -19,12 +20,54 @@ exports.createEnquiry = async (req, res) => {
             country
         } = req.body;
 
-        const product = await Product.findById(productId).populate('supplier');
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
+        // Email Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!buyer_email || !emailRegex.test(buyer_email)) {
+            return res.status(400).json({ message: 'Please provide a valid email address' });
         }
 
-        const supplierId = product.supplier._id || product.supplier;
+        // Phone validation
+        const phoneParts = (buyer_phone || '').trim().split(' ');
+        const dialCode = phoneParts[0];
+        const nationalNumber = phoneParts.slice(1).join('').replace(/\D/g, '');
+
+        if (!dialCode || !nationalNumber) {
+            return res.status(400).json({ message: 'Please provide a valid phone number with dial code' });
+        }
+
+        const Country = require('../models/Country');
+        const countryObj = await Country.findOne({
+            $or: [
+                { dial_code: dialCode },
+                { dial_code: '+' + dialCode.replace('+', '') }
+            ]
+        });
+
+        if (countryObj) {
+            const expectedLength = countryObj.phone_length || 10;
+            if (nationalNumber.length !== expectedLength) {
+                return res.status(400).json({ message: `Phone number must be exactly ${expectedLength} digits for ${countryObj.name}` });
+            }
+        } else {
+            if (nationalNumber.length < 7 || nationalNumber.length > 15) {
+                return res.status(400).json({ message: 'Phone number must be a valid number between 7 and 15 digits' });
+            }
+        }
+
+        let product = null;
+        let supplierId = bodySupplierId;
+
+        if (productId && productId !== 'mock_prod_id') {
+            product = await Product.findById(productId).populate('supplier');
+            if (product) {
+                supplierId = product.supplier._id || product.supplier;
+            }
+        }
+
+        if (!supplierId) {
+            return res.status(400).json({ message: 'Supplier context is required' });
+        }
+
         const buyerId = req.user._id;
 
         // Ensure buyer and supplier are different users
@@ -50,32 +93,38 @@ exports.createEnquiry = async (req, res) => {
             });
         }
 
-        // 2. Post Chat Message with Product Context
-        const chatMsg = `Hello! I have sent a Product Enquiry regarding "${product.name}".\n\n` +
+        // 2. Post Chat Message with Context
+        const contextName = product ? `regarding "${product.name}"` : 'regarding your company';
+        const chatMsg = `Hello! I have sent a General Enquiry ${contextName}.\n\n` +
                         `• Subject: ${subject}\n` +
                         `• Quantity interested: ${quantity} units\n` +
                         `• Message: ${message}`;
 
-        const newMessage = await Message.create({
+        const messageData = {
             conversationId: conversation._id,
             senderId: buyerId,
             receiverId: supplierId,
             content: chatMsg,
-            messageType: 'text',
-            productDetails: {
+            messageType: 'text'
+        };
+
+        if (product) {
+            messageData.productDetails = {
                 productId: product._id,
                 name: product.name,
                 price: product.main_price,
                 image: product.main_image
-            }
-        });
+            };
+        }
+
+        const newMessage = await Message.create(messageData);
 
         conversation.lastMessage = newMessage._id;
         await conversation.save();
 
         // 3. Create Product Enquiry Record
         const productEnquiry = await ProductEnquiry.create({
-            product: productId,
+            product: product ? product._id : null,
             supplier: supplierId,
             buyer: buyerId,
             buyer_name,
@@ -93,11 +142,16 @@ exports.createEnquiry = async (req, res) => {
         // 4. Send socket notification to Supplier
         const io = req.app.get('io');
         if (io) {
+            const notifTitle = product ? 'New Product Enquiry' : 'New Company Enquiry';
+            const notifMsg = product 
+                ? `New enquiry for "${product.name}" from "${buyer_name}".`
+                : `New general enquiry from "${buyer_name}".`;
+
             await sendNotification(
                 io,
                 supplierId,
-                'New Product Enquiry',
-                `New enquiry for "${product.name}" from "${buyer_name}".`,
+                notifTitle,
+                notifMsg,
                 'enquiry',
                 `/supplier/dashboard/product-enquiries`
             );
@@ -110,11 +164,12 @@ exports.createEnquiry = async (req, res) => {
             const { enqueueTemplatedMail } = require('../services/mailService');
             const supplierUser = await User.findById(supplierId);
             if (supplierUser && supplierUser.email) {
+                const mailProductName = product ? product.name : 'General Company Profile';
                 enqueueTemplatedMail('new-inquiry-received', supplierUser.email, {
                     first_name: supplierUser.first_name || 'Supplier',
                     buyer_name,
-                    product_name: product.name,
-                    subject: subject || `Enquiry for ${product.name}`,
+                    product_name: mailProductName,
+                    subject: subject || `Enquiry for ${mailProductName}`,
                     quantity,
                     unit: 'pieces',
                     message: message,
@@ -136,14 +191,21 @@ exports.getMyEnquiries = async (req, res) => {
     try {
         const isSupplier = req.user.roles?.includes('supplier') || req.user.role === 'supplier';
         const isBuyer = req.user.roles?.includes('buyer') || req.user.role === 'buyer';
+        const { role } = req.query;
 
         let query = {};
-        if (isSupplier && isBuyer) {
-            query = { $or: [{ supplier: req.user._id }, { buyer: req.user._id }] };
-        } else if (isSupplier) {
+        if (role === 'supplier') {
             query = { supplier: req.user._id };
-        } else {
+        } else if (role === 'buyer') {
             query = { buyer: req.user._id };
+        } else {
+            if (isSupplier && isBuyer) {
+                query = { $or: [{ supplier: req.user._id }, { buyer: req.user._id }] };
+            } else if (isSupplier) {
+                query = { supplier: req.user._id };
+            } else {
+                query = { buyer: req.user._id };
+            }
         }
 
         const enquiries = await ProductEnquiry.find(query)
@@ -190,11 +252,12 @@ exports.replyEnquiry = async (req, res) => {
         }
 
         if (conversation) {
+            const contextText = enquiry.product ? `regarding "${enquiry.product.name}"` : 'regarding your company';
             const chatReply = await Message.create({
                 conversationId: conversation._id,
                 senderId: req.user._id,
                 receiverId: enquiry.buyer._id,
-                content: `In response to your Enquiry regarding "${enquiry.product.name}":\n\n${replyMessage}`,
+                content: `In response to your Enquiry ${contextText}:\n\n${replyMessage}`,
                 messageType: 'text'
             });
 

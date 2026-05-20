@@ -20,16 +20,30 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response) {
-            console.error(`[AXIOS ERROR] ${error.config.method.toUpperCase()} ${error.config.url} failed with ${error.response.status}`);
-            console.error(`[AXIOS RESPONSE DATA]:`, error.response.data);
+            // Only log unexpected errors to console to avoid Next.js dev overlays for handled cases
+            if (error.response.status !== 401 && error.response.status !== 409) {
+                console.error(`[AXIOS ERROR] ${error.config.method.toUpperCase()} ${error.config.url} failed with ${error.response.status}`);
+                console.error(`[AXIOS RESPONSE DATA]:`, error.response.data);
+            }
             
             if (typeof window !== 'undefined' && error.response.status === 401) {
-                // Only logout if it's not the login/auth endpoints
-                const url = error.config.url;
-                if (url && !url.includes('/auth/login') && !url.includes('/auth/verify-otp') && !url.includes('/auth/register')) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/'; // Redirect to home/login
+                const url = error.config.url || '';
+                // Do not trigger logout/redirect for login, register, verify-otp, or initial non-critical auth checks
+                const excludedUrls = ['/auth/login', '/auth/verify-otp', '/auth/register', '/auth/profile', '/auth/supplier/stats', '/admin/menu'];
+                const isExcluded = excludedUrls.some(endpoint => url.includes(endpoint));
+
+                if (!isExcluded) {
+                    const token = localStorage.getItem('token');
+                    // Only perform forced logout if a token was actually present (meaning an active session expired)
+                    if (token) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        if (window.location.pathname.startsWith('/admin')) {
+                            window.location.href = '/admin/login';
+                        } else {
+                            window.location.href = '/'; // Redirect to home/login
+                        }
+                    }
                 }
             }
         } else {

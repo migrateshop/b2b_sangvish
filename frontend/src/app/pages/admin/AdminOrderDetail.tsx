@@ -145,7 +145,7 @@ const AdminOrderDetail = () => {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '24px' }} className={styles['admin-form-grid']}>
+            <div className={styles['admin-order-detail-grid']}>
                 
                 {/* Left side: Items & Addresses */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -155,7 +155,8 @@ const AdminOrderDetail = () => {
                             <h2>Order Items</h2>
                         </div>
                         <div className={"admin-card-body"} style={{ padding: '0' }}>
-                            <table className={"admin-table"}>
+                            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                                <table className={"admin-table"} style={{ minWidth: '600px' }}>
                                 <thead>
                                     <tr>
                                         <th>Product</th>
@@ -200,9 +201,10 @@ const AdminOrderDetail = () => {
                                     })}
                                 </tbody>
                             </table>
+                        </div>
 
-                            {/* Price Summary Breakdown */}
-                            <div style={{ background: 'var(--admin-bg)', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', borderTop: '1px solid var(--admin-border-subtle)' }}>
+                        {/* Price Summary Breakdown */}
+                            <div className={styles['admin-order-summary-box']}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '250px', fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
                                     <span>Subtotal</span>
                                     <span style={{ color: 'var(--admin-text-secondary)' }}>{convertPrice(order.total_amount - (order.tax_amount || 0) - (order.shipping_fee || 0) - (order.service_fee || 0)).formatted}</span>
@@ -352,7 +354,7 @@ const AdminOrderDetail = () => {
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid var(--admin-border-subtle)', paddingTop: '24px' }}>
-                                <div style={{ fontSize: '13px', fontWeight: 900, color: 'var(--admin-text-main)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px', lineHeight: '1.4' }}>Update Status</div>
+                                <div style={{ fontSize: '13px', fontWeight: 900, color: 'var(--admin-text-main)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px', lineHeight: '1.4', paddingTop: '16px' }}>Update Status</div>
                                 
                                 <button
                                     onClick={() => updateStatus('confirmed')}

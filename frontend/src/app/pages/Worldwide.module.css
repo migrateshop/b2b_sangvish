@@ -484,5 +484,22 @@
 
     .ww-inspiration-grid {
         grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
+    }
+
+    .ww-section-title {
+        text-align: center;
+    }
+
+    .ww-rank-category-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ww-rank-group-title {
+        border-left: none;
+        padding-left: 0;
+        text-align: center;
     }
 }

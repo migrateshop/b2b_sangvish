@@ -252,7 +252,7 @@ body.mega-menu-open .header.is-fixed {
 }
 
 .btn-create-account:hover {
-    background-color: var(--text-dark);
+    background-color: var(--clr-accent);
 }
 
 /* Unified Profile Dropdown */
@@ -3092,11 +3092,11 @@ body.mega-menu-open .header.is-fixed {
     color: #1a1a2e;
 }
 
-.location-dropdown-wrapper .chevron-icon {
+.chevron-icon {
     transition: transform 0.2s;
 }
 
-.location-dropdown-wrapper .chevron-icon.rotate {
+.chevron-icon.rotate {
     transform: rotate(180deg);
 }
 
@@ -3113,6 +3113,7 @@ body.mega-menu-open .header.is-fixed {
     padding: 24px;
     z-index: 10005;
     animation: slideDown 0.2s ease-out;
+    white-space: normal !important;
 }
 
 @media (max-width: 768px) {

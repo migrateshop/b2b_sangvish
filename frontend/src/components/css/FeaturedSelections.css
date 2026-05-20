@@ -135,6 +135,12 @@
     gap: 10px;
 }
 
+.grid-6-cols {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+}
+
 /* ══ Deal Card — Premium ══ */
 .deal-card {
     text-decoration: none;
@@ -432,6 +438,9 @@
     .section-items-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+    .grid-6-cols {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
 @media (max-width: 992px) {
@@ -458,6 +467,11 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .grid-6-cols {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
     .rfq-banner-section {
         flex-direction: column;
         text-align: center;
@@ -473,6 +487,11 @@
 @media (max-width: 480px) {
     .section-items-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .grid-6-cols {
+        grid-template-columns: repeat(2, 1fr);
         gap: 6px;
     }
 

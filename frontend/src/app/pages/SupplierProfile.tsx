@@ -10,6 +10,7 @@ import { useChat } from '@/context/ChatContext';
 import styles from './SupplierProfile.module.css';
 
 import { getImgUrl } from '@/utils/imageConfig';
+import GeneralEnquiryModal from '@/components/products/GeneralEnquiryModal';
 
 const SupplierProfile = () => {
     const { id } = useParams();
@@ -28,6 +29,10 @@ const SupplierProfile = () => {
     const [showCartPopup, setShowCartPopup] = useState(false);
     const [cartItems, setCartItems] = useState<any[]>([]);
     const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
+    const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+
+    const supplierUserId = supplierInfo?.user?._id || supplierInfo?.user || '';
+    const isOwner = authUser && supplierUserId && (authUser._id.toString() === supplierUserId.toString());
 
     useEffect(() => {
         const fetchCart = () => {
@@ -257,8 +262,15 @@ const SupplierProfile = () => {
 
                         <div className={styles['sp-header-actions']}>
                             <div className={styles['sp-main-actions']}>
-                                <button onClick={(e) => handleChatNow(e, null)} className={`${styles['sp-btn']} ${styles['sp-btn-primary']}`}>{t('chat_now') || 'Chat Now'}</button>
-                                <Link href="/rfq/post" className={`${styles['sp-btn']} ${styles['sp-btn-outline']}`}>{t('send_enquiry') || 'Send Inquiry'}</Link>
+                                {isOwner ? (
+                                    <button disabled className={`${styles['sp-btn']} ${styles['sp-btn-primary']}`} style={{ cursor: 'not-allowed', background: '#cbd5e1', color: '#64748b', border: 'none' }}>
+                                        Own Company
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button onClick={(e) => handleChatNow(e, null)} className={`${styles['sp-btn']} ${styles['sp-btn-primary']}`}>{t('chat_now') || 'Chat Now'}</button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -372,18 +384,20 @@ const SupplierProfile = () => {
                             <div className={styles['sp-products-tab-wrap']}>
                                 {/* Sidebar */}
                                 <aside className={styles['sp-sidebar-wrap']}>
-                                    <button
-                                        onClick={() => setSelectedCategory('top')}
-                                        className={styles['sp-sidebar-toppick']}
-                                    >
-                                        <div className={styles['sp-toppick-icon']}>🏢</div>
-                                        <span>{t('top_picks') || 'Top picks'}</span>
-                                    </button>
-
-                                    <div className={styles['sp-sidebar-cat-section']}>
-                                        <div className={styles['sp-sidebar-cat-title']}>{t('categories') || 'Product categories'}</div>
+                                    <div className={styles['sp-sidebar-header']}>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                                        <span>{t('categories') || 'Categories'}</span>
                                     </div>
                                     <ul className={styles['sp-sidebar-cat-list']}>
+                                        <li>
+                                            <button
+                                                onClick={() => setSelectedCategory('all')}
+                                                className={`${styles['sp-sidebar-cat-btn']} ${selectedCategory === 'all' ? styles['active'] : ''}`}
+                                            >
+                                                <span>{t('all_products') || 'All Products'}</span>
+                                                <span className={styles['sp-cat-count']}>{products.length}</span>
+                                            </button>
+                                        </li>
                                         {dynamicCategories.map((cat: any) => (
                                             <li key={cat}>
                                                 <button
@@ -391,7 +405,10 @@ const SupplierProfile = () => {
                                                     className={`${styles['sp-sidebar-cat-btn']} ${selectedCategory === cat ? styles['active'] : ''}`}
                                                 >
                                                     <span>{cat}</span>
-                                                    <span className={styles['sp-cat-arrow']}>›</span>
+                                                    <span className={styles['sp-cat-count']}>{products.filter((p: any) => {
+                                                        const c = p.category_info || p.category;
+                                                        return (c?.title || 'Uncategorized') === cat;
+                                                    }).length}</span>
                                                 </button>
                                             </li>
                                         ))}
@@ -401,62 +418,91 @@ const SupplierProfile = () => {
                                 {/* Products Area */}
                                 <div className={styles['sp-products-main']}>
                                     <div className={styles['sp-products-toolbar']}>
-                                        <h2 className={styles['sp-products-title']}>
-                                            {selectedCategory === 'all' ? (t('all_products') || 'All products') : selectedCategory === 'top' ? (t('top_picks') || 'Top picks') : selectedCategory}
-                                        </h2>
+                                        <div>
+                                            <h2 className={styles['sp-products-title']}>
+                                                {selectedCategory === 'all' ? (t('all_products') || 'All Products') : selectedCategory}
+                                            </h2>
+                                            <p className={styles['sp-products-subtitle']}>{filteredProducts.length} products found</p>
+                                        </div>
                                     </div>
 
-                                    <div className={styles['sp-products-grid']}>
+                                    <div className={styles['sp-products-grid-premium']}>
                                         {filteredProducts.map((p: any) => (
-                                            <div key={p._id} className={styles['sp-product-card']}>
+                                            <div key={p._id} className={styles['sp-product-card-premium']}>
                                                 <Link href={`/product/${p._id}`} className={styles['sp-product-card-link']}>
-                                                    <div className={styles['sp-product-image']} style={{ borderRadius: '0', marginBottom: '0', background: '#fcfcfc', width: '100%', aspectRatio: '1' }}>
+                                                    <div className={styles['sp-product-img-wrap']}>
                                                         <img
                                                             src={getImgUrl(p.main_image)}
                                                             alt={p.name}
-                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                            className={styles['sp-product-img']}
                                                         />
                                                         <button
                                                             className={styles['sp-wishlist-btn-overlay']}
                                                             onClick={(e) => handleToggleWishlist(e, p._id)}
                                                             title="Add to wishlist"
                                                         >
-                                                            <svg
-                                                                width="22"
-                                                                height="22"
-                                                                viewBox="0 0 24 24"
-                                                                fill={authUser?.wishlist?.includes(p._id) ? "var(--clr-accent)" : "none"}
-                                                                stroke={authUser?.wishlist?.includes(p._id) ? "var(--clr-accent)" : "currentColor"}
-                                                                strokeWidth="2"
-                                                            >
+                                                            <svg width="18" height="18" viewBox="0 0 24 24"
+                                                                fill={authUser?.wishlist?.includes(p._id) ? 'var(--primary-color)' : 'none'}
+                                                                stroke={authUser?.wishlist?.includes(p._id) ? 'var(--primary-color)' : '#555'}
+                                                                strokeWidth="2.5">
                                                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                                                             </svg>
                                                         </button>
+                                                        {p.oldPrice && p.oldPrice > p.main_price && (
+                                                            <span className={styles['sp-product-badge']}>
+                                                                -{Math.round(100 - (p.main_price / p.oldPrice) * 100)}%
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                    <h3 className={styles['sp-product-name']}>{p.name}</h3>
-                                                    <div className={styles['sp-product-price']}>{convertPrice(p.main_price || p.price_tiers?.[0]?.price || p.price || 0).formatted}</div>
-                                                    <div className={styles['sp-product-moq']}>Min. Order: {p.moq || 1} piece</div>
+                                                    <div className={styles['sp-product-info']}>
+                                                        <h3 className={styles['sp-product-name']}>{p.name}</h3>
+                                                        {p.rating && (
+                                                            <div className={styles['sp-product-rating']}>
+                                                                {[1,2,3,4,5].map(s => (
+                                                                    <svg key={s} width="12" height="12" viewBox="0 0 24 24" fill={s <= Math.round(p.rating) ? '#f59e0b' : '#e2e8f0'}>
+                                                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                                    </svg>
+                                                                ))}
+                                                                <span className={styles['sp-rating-count']}>({p.numReviews || 0})</span>
+                                                            </div>
+                                                        )}
+                                                        <div className={styles['sp-product-price-row']}>
+                                                            <span className={styles['sp-product-price']}>{convertPrice(p.main_price || p.price_tiers?.[0]?.price || 0).formatted}</span>
+                                                            {p.oldPrice && p.oldPrice > p.main_price && (
+                                                                <span className={styles['sp-product-old-price']}>{convertPrice(p.oldPrice).formatted}</span>
+                                                            )}
+                                                        </div>
+                                                        <div className={styles['sp-product-moq']}>
+                                                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" /></svg>
+                                                            Min. {p.moq || 1} {p.unit || 'pcs'}
+                                                        </div>
+                                                    </div>
                                                 </Link>
-                                                <div className={styles['sp-product-actions']} style={{ position: 'relative', zIndex: 10 }}>
+                                                <div className={styles['sp-product-actions-premium']}>
                                                     <button
                                                         onClick={(e) => handleAddToCart(e, p)}
-                                                        className={styles['sp-btn-full-pill']}
-                                                        style={{ background: addedItems[p._id] ? '#059669' : undefined }}
+                                                        className={styles[addedItems[p._id] ? 'sp-btn-added' : 'sp-btn-cart']}
                                                     >
-                                                        {addedItems[p._id] ? '✓ Added' : (t('add_to_cart') || 'Add to cart')}
+                                                        {addedItems[p._id] ? (
+                                                            <><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg> Added</>
+                                                        ) : (
+                                                            <>{t('add_to_cart') || 'Add to Cart'}</>
+                                                        )}
                                                     </button>
                                                     <button
                                                         onClick={(e) => handleChatNow(e, p)}
-                                                        className={styles['sp-btn-outline-pill']}
+                                                        className={styles['sp-btn-chat']}
+                                                        title="Chat now"
                                                     >
-                                                        {t('chat_now') || 'Chat now'}
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                                     </button>
                                                 </div>
                                             </div>
                                         ))}
                                         {filteredProducts.length === 0 && (
-                                            <div style={{ gridColumn: '1/-1', padding: '80px 0', textAlign: 'center' }}>
-                                                <p style={{ color: '#aaa', fontWeight: 600 }}>No products found in this category.</p>
+                                            <div className={styles['sp-empty-products']}>
+                                                <div className={styles['sp-empty-icon']}>📦</div>
+                                                <p>No products found in this category.</p>
                                             </div>
                                         )}
                                     </div>
@@ -464,6 +510,7 @@ const SupplierProfile = () => {
                             </div>
                         </div>
                     )}
+
 
                     {/* COMPANY PROFILE TAB */}
                     {activeTab === 'profile' && (
@@ -590,7 +637,6 @@ const SupplierProfile = () => {
                                         </div>
                                     </div>
                                     <button onClick={(e) => handleChatNow(e, null)} className={styles['sp-contact-chat-btn']} style={{ border: 'none', cursor: 'pointer', display: 'block', width: '100%', textAlign: 'center' }}>{t('chat_now') || 'Chat now'}</button>
-                                    <Link href="/rfq/post" className={styles['sp-contact-inquiry-btn']}>{t('send_enquiry') || 'Send inquiry'}</Link>
                                 </div>
                             </div>
                         </div>
@@ -653,6 +699,24 @@ const SupplierProfile = () => {
                     </div>
                 </div>
             )}
+
+            {/* General Enquiry Modal */}
+            <GeneralEnquiryModal 
+                isOpen={isEnquiryModalOpen} 
+                onClose={() => setIsEnquiryModalOpen(false)} 
+                product={products[0] || {
+                    _id: 'mock_prod_id',
+                    name: `General Supplier Inquiry: ${companyName}`,
+                    moq: 1,
+                    main_image: company.logo || '/images/default-company.png',
+                    supplier: {
+                        _id: user._id,
+                        company_name: companyName,
+                        first_name: user.first_name,
+                        last_name: user.last_name
+                    }
+                }} 
+            />
 
         </div>
 

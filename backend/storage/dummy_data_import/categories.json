@@ -1,0 +1,92 @@
+[
+    {
+        "_id": "664c7e6b0000000000000001",
+        "title": "Machinery & Equipment",
+        "slug": "machinery",
+        "icon": "fa-cogs",
+        "description": "Industrial machines, tools, and heavy equipment.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000001.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000002",
+        "title": "Electronics & Accessories",
+        "slug": "electronics",
+        "icon": "fa-plug",
+        "description": "Wholesale consumer electronics and components.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000002.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000003",
+        "title": "Home & Garden",
+        "slug": "home-garden",
+        "icon": "fa-home",
+        "description": "Furniture, lights, and kitchenware in bulk.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000003.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000004",
+        "title": "Apparel & Textiles",
+        "slug": "apparel",
+        "icon": "fa-tshirt",
+        "description": "Clothing, fabrics, and wholesale textiles.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000004.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000005",
+        "title": "Beauty & Personal Care",
+        "slug": "beauty",
+        "icon": "fa-sparkles",
+        "description": "Wholesale skincare and cosmetic supplies.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000005.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000006",
+        "title": "Industrial Tools",
+        "slug": "tools",
+        "icon": "fa-wrench",
+        "description": "Professional tools and manufacturing equipment.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000006.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000007",
+        "title": "Automotive Parts",
+        "slug": "automotive",
+        "icon": "fa-car",
+        "description": "Auto accessories, vehicle tools, and wholesale parts.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000007.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000008",
+        "title": "Sports & Entertainment",
+        "slug": "sports",
+        "icon": "fa-futbol",
+        "description": "Fitness equipment, outdoor gear, and sporting goods.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000008.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b0000000000000009",
+        "title": "Packaging & Printing",
+        "slug": "packaging",
+        "icon": "fa-box-open",
+        "description": "Custom boxes, sustainable packaging, and printing services.",
+        "image": "/uploads/categories/cat_664c7e6b0000000000000009.jpg",
+        "isPublished": true
+    },
+    {
+        "_id": "664c7e6b000000000000000a",
+        "title": "Health & Medical",
+        "slug": "health",
+        "icon": "fa-heartbeat",
+        "description": "Medical devices, healthcare supplies, and wellness products.",
+        "image": "/uploads/categories/cat_664c7e6b000000000000000a.jpg",
+        "isPublished": true
+    }
+]

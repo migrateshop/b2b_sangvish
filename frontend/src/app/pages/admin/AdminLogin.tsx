@@ -87,7 +87,7 @@ const AdminLogin = () => {
         setLoading(true);
         try {
             await api.post('/auth/forgot-password', { email });
-            setResendTimer(60);
+            setResendTimer(30);
             setForgotMode(false);
             setResetMode(true);
         } catch (err: any) {
@@ -203,6 +203,7 @@ const AdminLogin = () => {
                             value={email} 
                             onChange={e => setEmail(e.target.value)} 
                             required 
+                            autoComplete="username email"
                         />
                         <label className="float-label">Administrator Email</label>
                     </div>
@@ -215,6 +216,7 @@ const AdminLogin = () => {
                             value={password} 
                             onChange={e => setPassword(e.target.value)} 
                             required 
+                            autoComplete="current-password"
                         />
                         <label className="float-label">Security Password</label>
                         <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>

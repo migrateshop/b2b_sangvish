@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import api from '@/services/axiosConfig';
 import { translations } from '@/utils/translations';
 
@@ -56,6 +57,7 @@ export interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const navigate = useRouter();
     const [authModal, setAuthModal] = useState<{
         isOpen: boolean;
         mode: string;
@@ -125,17 +127,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, []);
 
-    // Update current role when user changes
+    // Update current role when user changes (only if not set yet)
     useEffect(() => {
         if (user && isInitialized) {
             const availableRoles = user.roles || (user.role ? [user.role] : []);
-            if (!availableRoles.includes(currentRole)) {
+            if (!currentRole && availableRoles.length > 0) {
                 const nextRole = availableRoles[0] || 'buyer';
                 setCurrentRole(nextRole);
                 localStorage.setItem('currentRole', nextRole);
             }
         }
-    }, [user, isInitialized]);
+    }, [user, isInitialized, currentRole]);
 
     const switchRole = (newRole: string) => {
         setCurrentRole(newRole);
@@ -143,13 +145,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         // Redirect based on role
         if (newRole === 'supplier') {
-            window.location.href = '/supplier/dashboard';
+            navigate.push('/supplier/dashboard');
         } else if (newRole === 'buyer') {
-            window.location.href = '/buyer/dashboard';
+            navigate.push('/buyer/dashboard');
         } else if (newRole === 'admin') {
-            window.location.href = '/admin/dashboard';
+            navigate.push('/admin/dashboard');
         } else {
-            window.location.href = '/';
+            navigate.push('/');
         }
     };
 

@@ -806,6 +806,7 @@
 }
 
 @media (max-width: 1024px) {
+
     /* ── Outer Wrappers & Table Horizontal Scroll (Landscape & Portrait) ── */
     .pm-wrapper {
         overflow: visible;
@@ -981,6 +982,42 @@
         padding: 0 18px !important;
         height: 42px !important;
         flex-shrink: 0 !important;
+    }
+
+    /* Modern List Layout adjustments for tablets */
+    .pm-header-modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px;
+    }
+
+    .pm-header-actions-modern {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pm-toolbar-modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 16px 20px;
+    }
+
+    .pm-tabs-modern {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .pm-tab-modern {
+        padding: 12px 16px;
+        white-space: nowrap;
+    }
+
+    .pm-search-wrap-modern {
+        width: 100%;
     }
 }
 
@@ -1171,34 +1208,6 @@
 }
 
 @media (max-width: 768px) {
-    .pm-header-modern {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 20px;
-    }
-    .pm-header-actions-modern {
-        width: 100%;
-        flex-wrap: wrap;
-    }
-    .pm-toolbar-modern {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 16px 20px;
-    }
-    .pm-tabs-modern {
-        width: 100%;
-        overflow-x: auto;
-        padding-bottom: 4px;
-    }
-    .pm-tab-modern {
-        padding: 12px 16px;
-        white-space: nowrap;
-    }
-    .pm-search-wrap-modern {
-        width: 100%;
-    }
     .pm-col-hide-mobile {
         display: none !important;
     }
@@ -1295,13 +1304,25 @@
 }
 
 @keyframes pmFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes pmSlideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* ── New Upload Button Div Format ── */
@@ -1627,12 +1648,15 @@
         grid-template-columns: 1fr;
         padding: 16px;
     }
+
     .pm-variant-field.span-2 {
         grid-column: span 1;
     }
+
     .pm-variant-image-input-group {
         flex-wrap: nowrap;
     }
+
     .pm-variant-image-input-group input {
         min-width: 0;
         flex: 1;
@@ -1723,3 +1747,8 @@
     box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3);
 }
 
+@media (max-width: 768px) {
+    .pm-form-wrapper {
+        padding: 0 !important;
+    }
+}

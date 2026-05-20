@@ -162,7 +162,7 @@ const AdminBusinessTypes = () => {
                             </div>
                             <div className={styles['admin-form-actions']}>
                                 <button type="button" onClick={() => setShowForm(false)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`}>Cancel</button>
-                                <button type="submit" className={`${styles['admin-btn']} ${styles['admin-btn-primary']}`}>{editingId ? 'Update' : 'Save Business Type'}</button>
+                                <button type="submit" className={`${styles['admin-btn']} ${styles['admin-btn-primary']}`}>{editingId ? 'Update' : 'Save'}</button>
                             </div>
                         </form>
                     </div>

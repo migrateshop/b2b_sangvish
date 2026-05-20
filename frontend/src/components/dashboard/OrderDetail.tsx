@@ -42,6 +42,18 @@ const OrderDetail = ({ role = 'buyer', orderId: propOrderId }) => {
         if (orderId) fetchOrder();
     }, [orderId]);
 
+    const handleConfirmDelivery = async () => {
+        if (!window.confirm('Are you sure you want to confirm delivery? This will mark the order as delivered.')) return;
+        try {
+            await api.put(`/orders/${orderId}/confirm-delivery`);
+            const { data } = await api.get(`/orders/${orderId}`);
+            setOrder(data);
+            alert('Delivery confirmed successfully!');
+        } catch (err: any) {
+            alert(err.response?.data?.message || 'Failed to confirm delivery');
+        }
+    };
+
     if (loading) return (
         <div style={{ padding: 60, textAlign: 'center', fontWeight: 700, color: '#0f172a', animation: 'pulse 1.4s ease infinite', fontFamily: 'Inter, sans-serif' }}>
             Loading Order Details…
@@ -57,8 +69,11 @@ const OrderDetail = ({ role = 'buyer', orderId: propOrderId }) => {
 
     if (!order) return <div style={{ padding: 40, textAlign: 'center' }}>Order not found</div>;
 
-    const statusInfo = STATUS_MAP[order.status?.toLowerCase()] || { color: '#64748b', bg: '#f3f4f6', border: '#e5e7eb', label: order.status };
-    const subtotal = order.total_amount - (order.tax_amount || 0) - (order.shipping_fee || 0);
+    const statusInfo = STATUS_MAP[(order.status || '').toLowerCase()] || { color: '#64748b', bg: '#f3f4f6', border: '#e5e7eb', label: order.status };
+    const totalAmount = Number(order.total_amount || 0);
+    const taxAmount = Number(order.tax_amount || 0);
+    const shippingFee = Number(order.shipping_fee || 0);
+    const subtotal = totalAmount - taxAmount - shippingFee;
 
     return (
         <div className={styles['order-detail-page']}>
@@ -78,7 +93,10 @@ const OrderDetail = ({ role = 'buyer', orderId: propOrderId }) => {
                     </div>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                         <button
-                            onClick={() => navigate.push(`/dashboard/invoice/${orderId}`)}
+                            onClick={() => {
+                                const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/supplier/dashboard') ? '/supplier/dashboard' : '/dashboard';
+                                navigate.push(`${baseRoute}/invoice/${orderId}`);
+                            }}
                             className={styles['od-action-btn']}
                             style={{ background: 'white', color: '#374151', border: '1.5px solid #e2e8f0' }}
                         >
@@ -92,7 +110,10 @@ const OrderDetail = ({ role = 'buyer', orderId: propOrderId }) => {
                             View Invoice
                         </button>
                         {role === 'buyer' && order.status === 'shipped' && (
-                            <button className={styles['od-action-btn'] + " " + styles['primary']}>
+                            <button 
+                                onClick={handleConfirmDelivery}
+                                className={styles['od-action-btn'] + " " + styles['primary']}
+                            >
                                 ✓ Confirm Delivery
                             </button>
                         )}
@@ -242,8 +263,34 @@ const OrderDetail = ({ role = 'buyer', orderId: propOrderId }) => {
                                 <p className={styles['od-supplier-label']}>Supplier Information</p>
                                 <p className={styles['od-supplier-name']}>{order.supplier_id?.company_name || 'Verified Partner'}</p>
                                 <p className={styles['od-supplier-tag']}>✓ Verified Global Supplier</p>
-                                <button className={styles['od-supplier-btn']}>
-                                    💬 Contact Supplier
+                                <button 
+                                    className={styles['od-supplier-btn']}
+                                    onClick={() => {
+                                        const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/buyer/dashboard') ? '/buyer/dashboard' : '/dashboard';
+                                        navigate.push(`${baseRoute}/messages?chat_user=${order.supplier_id?._id}`);
+                                    }}
+                                >
+                                    Contact Supplier
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Buyer Info (Only show to supplier) */}
+                        {role === 'supplier' && (
+                            <div className={styles['od-supplier-card']}>
+                                <p className={styles['od-supplier-label']}>Buyer Information</p>
+                                <p className={styles['od-supplier-name']}>
+                                    {order.buyer_id?.first_name} {order.buyer_id?.last_name}
+                                </p>
+                                <p className={styles['od-supplier-tag']}>{order.buyer_id?.email}</p>
+                                <button 
+                                    className={styles['od-supplier-btn']}
+                                    onClick={() => {
+                                        const baseRoute = typeof window !== 'undefined' && window.location.pathname.includes('/supplier/dashboard') ? '/supplier/dashboard' : '/dashboard';
+                                        navigate.push(`${baseRoute}/messages?chat_user=${order.buyer_id?._id}`);
+                                    }}
+                                >
+                                    Message Buyer
                                 </button>
                             </div>
                         )}

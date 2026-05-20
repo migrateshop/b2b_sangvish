@@ -143,7 +143,7 @@ const AdminRevenue = () => {
             </div>
 
             {/* Bar Chart */}
-            <div className={"admin-card"} style={{ marginBottom: '24px', padding: '24px' }}>
+            <div className={"admin-card"} style={{ marginBottom: '24px', padding: '24px', marginTop: '40px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                     <h3 style={{ margin: 0, fontWeight: 800 }}>{t('monthly_revenue') || 'Monthly Revenue'}</h3>
                     <div style={{ display: 'flex', gap: '12px', fontSize: '10px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
@@ -173,7 +173,7 @@ const AdminRevenue = () => {
             </div>
 
             {/* Monthly Breakdown Table */}
-            <div className={"admin-card"}>
+            <div className={"admin-card"} style={{ marginTop: '40px' }}>
                 <div className={"admin-card-header"}>
                     <h2>{t('detailed_performance') || 'Detailed Performance'}</h2>
                     <button onClick={() => window.print()} className={"admin-btn" + " " + "admin-btn-secondary"} style={{ padding: '6px 14px', fontSize: '11px' }}>{t('export_pdf') || 'Export PDF'}</button>

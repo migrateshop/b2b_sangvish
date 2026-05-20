@@ -70,9 +70,11 @@ const MobileBottomNav = () => {
                             <div className="myalibaba-role-grid">
 
                                 {/* Buyer Card */}
-                                <button
+                                <div
                                     className={`myalibaba-role-card ${currentRole === 'buyer' ? 'active' : ''}`}
                                     onClick={() => handleSwitchRole('buyer')}
+                                    role="button"
+                                    tabIndex={0}
                                 >
                                     <div>
                                         <div className="myalibaba-role-name">Buyer</div>
@@ -83,13 +85,15 @@ const MobileBottomNav = () => {
                                             <svg width="14" height="14" fill="none" stroke="white" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         </div>
                                     )}
-                                </button>
+                                </div>
 
                                 {/* Supplier Card */}
                                 {(currentUser.roles?.includes('supplier') || currentUser.role === 'supplier') ? (
-                                    <button
+                                    <div
                                         className={`myalibaba-role-card ${currentRole === 'supplier' ? 'active' : ''}`}
                                         onClick={() => handleSwitchRole('supplier')}
+                                        role="button"
+                                        tabIndex={0}
                                     >
                                         <div>
                                             <div className="myalibaba-role-name">Supplier</div>
@@ -100,7 +104,7 @@ const MobileBottomNav = () => {
                                                 <svg width="14" height="14" fill="none" stroke="white" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                             </div>
                                         )}
-                                    </button>
+                                    </div>
                                 ) : (
                                     <Link href="/become-supplier" className="myalibaba-role-card start-selling" onClick={() => setMyAlibabaOpen(false)}>
                                         <div>

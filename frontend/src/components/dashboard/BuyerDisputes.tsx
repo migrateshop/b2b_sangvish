@@ -9,7 +9,7 @@ const STATUS_COLORS = {
     closed: { bg: '#f3f4f6', color: '#6b7280', label: 'Closed' },
 };
 
-const BuyerDisputes = () => {
+const BuyerDisputes = ({ role = 'buyer' }: { role?: 'buyer' | 'supplier' }) => {
     const [disputes, setDisputes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState(null);
@@ -280,7 +280,7 @@ const BuyerDisputes = () => {
                                 </div>
                             )}
                             {selected.messages?.map((msg, i) => {
-                                const isMe = msg.sender_role === 'buyer';
+                                const isMe = msg.sender_role === role;
                                 const isAdmin = msg.sender_role === 'admin';
                                 return (
                                     <div key={i} style={{ display: 'flex', gap: '12px', flexDirection: isMe ? 'row-reverse' : 'row' }}>
@@ -292,7 +292,7 @@ const BuyerDisputes = () => {
                                             color: isAdmin ? '#e11d48' : isMe ? '#fff' : '#10b981',
                                             boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
                                         }}>
-                                            {isAdmin ? 'A' : isMe ? 'B' : 'S'}
+                                            {isAdmin ? 'A' : msg.sender_role === 'buyer' ? 'B' : 'S'}
                                         </div>
                                         <div style={{
                                             background: isAdmin ? '#fff1f2' : isMe ? '#f8fafc' : '#f0fdf4',
@@ -302,7 +302,7 @@ const BuyerDisputes = () => {
                                             boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
                                         }}>
                                             <div style={{ fontSize: '10px', fontWeight: '800', color: isMe ? 'var(--primary-color)' : '#94a3b8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                                                {isAdmin ? 'Platform Admin' : isMe ? 'You' : 'Supplier'}
+                                                {isAdmin ? 'Platform Admin' : isMe ? 'You' : (msg.sender_role === 'buyer' ? 'Buyer' : 'Supplier')}
                                             </div>
                                             <div style={{ fontSize: '14px', color: '#1e293b', lineHeight: 1.5, fontWeight: 500 }}>{msg.message}</div>
                                             <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '6px', textAlign: 'right', fontWeight: 600 }}>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>

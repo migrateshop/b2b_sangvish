@@ -70,47 +70,49 @@ const HomeCategories = ({ config }) => {
                     <div className="hc-swiper-nav hc-swiper-next" id="hc-next">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
                     </div>
-                    <Swiper
-                        modules={[Navigation, Autoplay]}
-                        spaceBetween={16}
-                        slidesPerView={2}
-                        navigation={{ prevEl: '#hc-prev', nextEl: '#hc-next' }}
-                        autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
-                        loop={false}
-                        breakpoints={{
-                            480: { slidesPerView: 3, spaceBetween: 16 },
-                            768: { slidesPerView: 4, spaceBetween: 16 },
-                            1024: { slidesPerView: 5, spaceBetween: 16 },
-                            1280: { slidesPerView: 6, spaceBetween: 16 },
-                        }}
-                        className="hc-swiper"
-                    >
-                        {categories.map((cat) => (
-                            <SwiperSlide key={cat._id}>
-                                <Link
-                                    href={`/search?category_id=${cat._id}`}
-                                    className="hc-card"
-                                >
-                                    <div className="hc-card-img-wrap">
-                                        <img
-                                            src={getImgUrl(cat.image)}
-                                            alt={cat.title}
-                                            className="hc-card-img"
-                                            loading="lazy"
-                                            onError={e => e.target.src = 'https://placehold.co/200x200?text=' + encodeURIComponent(cat.title)}
-                                        />
-
-                                    </div>
-                                    <div className="hc-card-info">
-                                        <h3 className="hc-card-name">{cat.title}</h3>
-                                        {cat.children && cat.children.length > 0 && (
-                                            <p className="hc-card-count">{cat.children.length} {t('subcategories') || 'subcategories'}</p>
-                                        )}
-                                    </div>
-                                </Link>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
+                    {categories.length > 0 && (
+                        <Swiper
+                            key={categories.length}
+                            modules={[Navigation, Autoplay]}
+                            spaceBetween={16}
+                            slidesPerView={2}
+                            navigation={{ prevEl: '#hc-prev', nextEl: '#hc-next' }}
+                            autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+                            loop={false}
+                            breakpoints={{
+                                480: { slidesPerView: 3, spaceBetween: 16 },
+                                768: { slidesPerView: 4, spaceBetween: 16 },
+                                1024: { slidesPerView: 5, spaceBetween: 16 },
+                                1280: { slidesPerView: 6, spaceBetween: 16 },
+                            }}
+                            className="hc-swiper"
+                        >
+                            {categories.map((cat) => (
+                                <SwiperSlide key={cat._id}>
+                                    <Link
+                                        href={`/search?category_id=${cat._id}`}
+                                        className="hc-card"
+                                    >
+                                        <div className="hc-card-img-wrap">
+                                            <img
+                                                src={getImgUrl(cat.image)}
+                                                alt={cat.title}
+                                                className="hc-card-img"
+                                                loading="lazy"
+                                                onError={e => e.target.src = 'https://placehold.co/200x200?text=' + encodeURIComponent(cat.title)}
+                                            />
+                                        </div>
+                                        <div className="hc-card-info">
+                                            <h3 className="hc-card-name">{cat.title}</h3>
+                                            {cat.children && cat.children.length > 0 && (
+                                                <p className="hc-card-count">{cat.children.length} {t('subcategories') || 'subcategories'}</p>
+                                            )}
+                                        </div>
+                                    </Link>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    )}
                 </div>
             </div>
         </section>

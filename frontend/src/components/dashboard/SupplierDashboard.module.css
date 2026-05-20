@@ -314,7 +314,7 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - var(--sp-header-h));
   overflow: hidden;
   transition: width .3s cubic-bezier(.4, 0, .2, 1);
   border-right: 1px solid rgba(255, 255, 255, .05);
@@ -367,9 +367,31 @@
 /* Scrollable nav area */
 .supplier-sidebar-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto !important;
   overflow-x: hidden;
   padding: 6px 10px 24px;
+  
+  /* Scrollbar styles for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Custom scrollbar styles for WebKit browsers */
+.supplier-sidebar-content::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 99px !important;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Sidebar items */
@@ -1233,7 +1255,7 @@
   justify-content: space-between;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1.5px solid var(--sp-border);
+  border: 2px solid var(--sp-border);
   background: var(--sp-white);
   cursor: pointer;
   text-align: left;

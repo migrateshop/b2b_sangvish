@@ -152,9 +152,9 @@ const AdminOrders = () => {
                     <div className={styles['admin-stat-card-label']}>{t('completed_orders') || 'Completed Orders'}</div>
                     <div className={styles['admin-stat-card-value']} style={{ color: '#166534' }}>{completedOrders}</div>
                 </div>
-                <div className={styles['admin-stat-premium']} style={{ borderLeft: '4px solid #10b981' }}>
+                <div className={styles['admin-stat-premium']} style={{ borderLeft: '4px solid #10b981', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <div className={styles['admin-stat-card-label']}>{t('paid_revenue') || 'Paid Revenue'}</div>
-                    <div className={styles['admin-stat-card-value']} style={{ color: '#166534', fontSize: '1.5rem', wordBreak: 'break-all', whiteSpace: 'normal', lineHeight: '1.4', marginTop: '4px' }}>{convertPrice(orderRevenue).formatted}</div>
+                    <div className={styles['admin-stat-card-value']} style={{ color: '#166534', fontSize: '1.6rem', wordBreak: 'break-all', whiteSpace: 'normal', lineHeight: '1.2', marginTop: '6px', paddingBottom: '4px' }}>{convertPrice(orderRevenue).formatted}</div>
                 </div>
             </div>
 
@@ -244,14 +244,18 @@ const AdminOrders = () => {
                     </table>
                 </div>
                 {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--admin-border)' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
+                    <div className={styles['admin-pagination-footer']}>
+                        <span className={styles['admin-pagination-info']}>
                             {t('showing') || 'Showing'} {indexOfFirstItem + 1} {t('to') || 'to'} {Math.min(indexOfLastItem, filteredOrders.length)} {t('of') || 'of'} {filteredOrders.length}
                         </span>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ padding: '6px 12px' }}>{t('prev') || 'Prev'}</button>
+                        <div className={styles['admin-pagination-controls']}>
+                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className={styles['admin-pagination-btn-arrow']} title="Prev">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
                             <span className="text-admin-main" style={{ fontSize: '12px', fontWeight: 800 }}>{t('page') || 'Page'} {currentPage} {t('of') || 'of'} {totalPages}</span>
-                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ padding: '6px 12px' }}>{t('next') || 'Next'}</button>
+                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className={styles['admin-pagination-btn-arrow']} title="Next">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
                         </div>
                     </div>
                 )}

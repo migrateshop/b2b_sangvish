@@ -30,7 +30,7 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - var(--sp-header-h, 68px));
   overflow: hidden;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 1px solid rgba(255, 255, 255, 0.05);
@@ -158,7 +158,7 @@
   justify-content: space-between;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1.5px solid #e8edf5;
+  border: 2px solid #e8edf5;
   background: #fff;
   cursor: pointer;
   text-align: left;
@@ -240,4 +240,27 @@
 
 .supplier-mob-nav-item.active {
   color: #000;
+}
+
+/* Custom premium scrollbar for sidebar content scroller */
+.supplier-sidebar-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 99px !important;
+}
+
+.supplier-sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
 }

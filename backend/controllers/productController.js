@@ -35,7 +35,7 @@ exports.getProducts = async (req, res) => {
         } = req.query;
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
-        const query = { status: 'active', approval_status: 'approved' };
+        const query = { status: 'active', approval_status: 'approved', countInStock: { $gt: 0 } };
         if (isFeatured === 'true' || isFeatured === true) query.isFeatured = true;
 
         // ALGORITHMIC SECTION LOGIC
@@ -271,13 +271,25 @@ exports.getProductById = async (req, res) => {
             ? { _id: req.params.id }
             : { slug: req.params.id };
 
-        const product = await Product.findOne(query)
+        let product = await Product.findOne(query)
             .populate('category')
             .populate({
                 path: 'supplier',
                 select: 'first_name last_name company_name is_verified country_code business_type createdAt logo subscription_plan',
                 populate: { path: 'subscription_plan' }
             });
+
+        // Fallback for legacy products where slug wasn't saved in DB
+        if (!product && !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            const cleanSlug = req.params.id.replace(/-/g, ' ');
+            product = await Product.findOne({ name: { $regex: new RegExp(cleanSlug, 'i') } })
+                .populate('category')
+                .populate({
+                    path: 'supplier',
+                    select: 'first_name last_name company_name is_verified country_code business_type createdAt logo subscription_plan',
+                    populate: { path: 'subscription_plan' }
+                });
+        }
 
         if (!product) return res.status(404).json({ message: 'Product not found' });
 
@@ -305,6 +317,34 @@ exports.createProduct = async (req, res) => {
 
         if (!name || !description || !category) {
             return res.status(400).json({ message: 'Name, description and category are required.' });
+        }
+
+        if (!sku || !sku.trim()) {
+            return res.status(400).json({ message: 'SKU is required.' });
+        }
+        if (moq === undefined || moq === null || moq === '' || isNaN(Number(moq)) || Number(moq) <= 0) {
+            return res.status(400).json({ message: 'MOQ must be a positive number greater than 0.' });
+        }
+        if (countInStock === undefined || countInStock === null || countInStock === '') {
+            return res.status(400).json({ message: 'Stock is required.' });
+        }
+        if (!currency || !currency.trim()) {
+            return res.status(400).json({ message: 'Currency is required.' });
+        }
+        if (!sales_type) {
+            return res.status(400).json({ message: 'Sales Region is required.' });
+        }
+        if (sales_type === 'specific') {
+            const countriesArr = countries ? (typeof countries === 'string' ? JSON.parse(countries) : countries) : [];
+            if (!countriesArr || countriesArr.length === 0) {
+                return res.status(400).json({ message: 'At least one country must be selected for specific sales region.' });
+            }
+        }
+
+        // Verify that the category is a subcategory (no active children exist in Category)
+        const subCatsCount = await Category.countDocuments({ parent: category, status: 'active' });
+        if (subCatsCount > 0) {
+            return res.status(400).json({ message: 'Please select a specific subcategory, not a parent category.' });
         }
 
         // ── Subscription Check ──
@@ -456,6 +496,43 @@ exports.updateProduct = async (req, res) => {
             price_tiers, variants, key_attributes, countInStock, status, section, oldPrice, keep_images,
             sales_type, countries
         } = req.body;
+
+        if (name !== undefined && !name.trim()) {
+            return res.status(400).json({ message: 'Name is required.' });
+        }
+        if (description !== undefined && !description.trim()) {
+            return res.status(400).json({ message: 'Description is required.' });
+        }
+        if (category !== undefined) {
+            if (!category) {
+                return res.status(400).json({ message: 'Category is required.' });
+            }
+            const subCatsCount = await Category.countDocuments({ parent: category, status: 'active' });
+            if (subCatsCount > 0) {
+                return res.status(400).json({ message: 'Please select a specific subcategory, not a parent category.' });
+            }
+        }
+        if (sku !== undefined && (!sku || !sku.trim())) {
+            return res.status(400).json({ message: 'SKU is required.' });
+        }
+        if (moq !== undefined && (moq === '' || isNaN(Number(moq)) || Number(moq) <= 0)) {
+            return res.status(400).json({ message: 'MOQ must be a positive number greater than 0.' });
+        }
+        if (countInStock !== undefined && (countInStock === undefined || countInStock === null || countInStock === '')) {
+            return res.status(400).json({ message: 'Stock is required.' });
+        }
+        if (currency !== undefined && (!currency || !currency.trim())) {
+            return res.status(400).json({ message: 'Currency is required.' });
+        }
+        if (sales_type !== undefined && !sales_type) {
+            return res.status(400).json({ message: 'Sales Region is required.' });
+        }
+        if (sales_type === 'specific' || (sales_type === undefined && product.sales_type === 'specific')) {
+            const countriesArr = countries ? (typeof countries === 'string' ? JSON.parse(countries) : countries) : product.countries;
+            if (!countriesArr || countriesArr.length === 0) {
+                return res.status(400).json({ message: 'At least one country must be selected for specific sales region.' });
+            }
+        }
 
         // Parse JSON
         let parsedPriceTiers = product.price_tiers;
@@ -1007,6 +1084,7 @@ exports.searchByImage = async (req, res) => {
             seedProduct = await Product.findOne({
                 status: 'active',
                 approval_status: 'approved',
+                countInStock: { $gt: 0 },
                 $or: matchedKeywords.map(k => ({
                     $or: [
                         { name: { $regex: k, $options: 'i' } },
@@ -1031,6 +1109,7 @@ exports.searchByImage = async (req, res) => {
         const products = await Product.find({
             status: 'active',
             approval_status: 'approved',
+            countInStock: { $gt: 0 },
             _id: { $ne: seedProduct._id },
             $or: matchedKeywords.map(k => ({
                 $or: [
@@ -1135,7 +1214,7 @@ exports.aiSourcingSearch = async (req, res) => {
         }
 
         // Perform search
-        const query = { status: 'active', approval_status: 'approved' };
+        const query = { status: 'active', approval_status: 'approved', countInStock: { $gt: 0 } };
         if (refinedKeyword) query.$text = { $search: refinedKeyword };
 
         const products = await Product.find(query)
@@ -1167,7 +1246,7 @@ exports.searchWorldwide = async (req, res) => {
         } = req.query;
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
-        const baseQuery = { status: 'active', approval_status: 'approved' };
+        const baseQuery = { status: 'active', approval_status: 'approved', countInStock: { $gt: 0 } };
 
         if (keyword) baseQuery.$text = { $search: keyword };
 
@@ -1325,7 +1404,7 @@ exports.getTopRankingByCategory = async (req, res) => {
 
         // 3. Get all active/approved products with ranking data
         const products = await Product.aggregate([
-            { $match: { status: 'active', approval_status: 'approved' } },
+            { $match: { status: 'active', approval_status: 'approved', countInStock: { $gt: 0 } } },
             { $lookup: { from: 'users', localField: 'supplier', foreignField: '_id', as: 'supplier_info' } },
             { $unwind: { path: '$supplier_info', preserveNullAndEmptyArrays: true } },
             { $lookup: { from: 'subscriptionplans', localField: 'supplier_info.subscription_plan', foreignField: '_id', as: 'supplier_info.subscription_plan_info' } },

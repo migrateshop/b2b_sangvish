@@ -203,7 +203,7 @@ const AdminSubscriptionPlans = () => {
                             <button onClick={() => { setFormData({ ...emptyForm, plan_type: activeTab }); setEditingId(null); setIsFormOpen(true); window.scrollTo(0, 0); }} className={"admin-btn" + " " + "admin-btn-primary"}>{t('create_plan') || '+ Create Plan'}</button>
                         </div>
                     ) : (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+                        <div className={styles['admin-plans-grid']}>
                             {filteredPlans.map(plan => (
                                 <div key={plan._id} className={styles['admin-plan-card']}>
                                     <div style={{ position: 'absolute', top: 14, right: 14, display: 'flex', gap: '6px' }}>
@@ -258,13 +258,13 @@ const AdminSubscriptionPlans = () => {
                             <button onClick={() => setIsFormOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', fontSize: '13px', fontWeight: 700, cursor: 'pointer', padding: 0, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>{t('back_to_plans') || '← Back to Plans'}</button>
                             <h1 className={"admin-page-title"} style={{ fontSize: '2rem' }}>{editingId ? (t('refine_plan') || 'Refine Plan') : (t('architect_new_plan') || 'Architect New Plan')}</h1>
                         </div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
+                        <div className={styles['plan-form-header-actions']} style={{ display: 'flex', gap: '12px' }}>
                             <button type="button" onClick={() => setIsFormOpen(false)} className={"admin-btn"} style={{ padding: '12px 24px' }}>{t('discard_changes') || 'Discard Changes'}</button>
                             <button type="submit" form="plan-form" className={"admin-btn" + " " + "admin-btn-primary"} style={{ padding: '12px 32px' }}>{editingId ? (t('save_configuration') || 'Save Configuration') : (t('release_plan') || 'Release Plan')}</button>
                         </div>
                     </div>
 
-                    <form id="plan-form" onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'start' }}>
+                    <form id="plan-form" onSubmit={handleSubmit} className={styles['plan-form-grid']}>
                         {/* Main Settings */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             <div className={"admin-card"} style={{ padding: '32px' }}>
@@ -411,6 +411,12 @@ const AdminSubscriptionPlans = () => {
                             </div>
                         </div>
                     </form>
+
+                    {/* Mobile-only bottom action bar */}
+                    <div className={styles['plan-form-mobile-actions']}>
+                        <button type="button" onClick={() => setIsFormOpen(false)} className={"admin-btn admin-btn-secondary"} style={{ flex: 1, justifyContent: 'center' }}>{t('discard_changes') || 'Discard Changes'}</button>
+                        <button type="submit" form="plan-form" className={"admin-btn admin-btn-primary"} style={{ flex: 1, justifyContent: 'center' }}>{editingId ? (t('save_configuration') || 'Save Configuration') : (t('release_plan') || 'Release Plan')}</button>
+                    </div>
                 </div>
             )}
         </div>

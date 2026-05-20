@@ -48,7 +48,82 @@ const FeaturedSelections = ({ config }) => {
     };
 
     if (loading) {
-        return <div className="container mt-16 text-center">{t('loading')}</div>;
+        return (
+            <div className="marketplace-sections container skeleton-pulsing" style={{ padding: '24px 0' }}>
+                {/* Top Deals Section Skeleton */}
+                <div className="section-container deals-section mini-container">
+                    <div className="section-header-block compact">
+                        <div className="header-text-group">
+                            <div className="fs-skeleton-title" style={{ width: '150px', height: '22px', background: '#f1f5f9', borderRadius: '6px', marginBottom: '8px' }} />
+                            <div className="fs-skeleton-sub" style={{ width: '250px', height: '14px', background: '#f8fafc', borderRadius: '4px' }} />
+                        </div>
+                    </div>
+                    <div className="grid-6-cols">
+                        {Array(6).fill(0).map((_, i) => (
+                            <div key={i} className="fs-skeleton-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '8px', border: '1px solid #f1f5f9', borderRadius: '12px', background: '#fafbff' }}>
+                                <div className="fs-skeleton-img" style={{ aspectRatio: '1/1', background: '#f0f2f8', borderRadius: '8px', width: '100%' }} />
+                                <div className="fs-skeleton-text" style={{ height: '14px', background: '#e2e8f0', borderRadius: '4px', width: '60%' }} />
+                                <div className="fs-skeleton-text" style={{ height: '10px', background: '#f1f5f9', borderRadius: '4px', width: '40%' }} />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Side-by-Side Sections Skeleton */}
+                <div className="dual-section-row">
+                    <div className="section-container mini-container">
+                        <div className="section-header-block compact">
+                            <div className="header-text-group">
+                                <div className="fs-skeleton-title" style={{ width: '120px', height: '22px', background: '#f1f5f9', borderRadius: '6px', marginBottom: '8px' }} />
+                                <div className="fs-skeleton-sub" style={{ width: '200px', height: '14px', background: '#f8fafc', borderRadius: '4px' }} />
+                            </div>
+                        </div>
+                        <div className="grid-4-cols">
+                            {Array(4).fill(0).map((_, i) => (
+                                <div key={i} className="fs-skeleton-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '8px', border: '1px solid #f1f5f9', borderRadius: '12px', background: '#fafbff' }}>
+                                    <div className="fs-skeleton-img" style={{ aspectRatio: '1/1', background: '#f0f2f8', borderRadius: '8px', width: '100%' }} />
+                                    <div className="fs-skeleton-text" style={{ height: '14px', background: '#e2e8f0', borderRadius: '4px', width: '60%' }} />
+                                    <div className="fs-skeleton-text" style={{ height: '10px', background: '#f1f5f9', borderRadius: '4px', width: '40%' }} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="section-container mini-container">
+                        <div className="section-header-block compact">
+                            <div className="header-text-group">
+                                <div className="fs-skeleton-title" style={{ width: '120px', height: '22px', background: '#f1f5f9', borderRadius: '6px', marginBottom: '8px' }} />
+                                <div className="fs-skeleton-sub" style={{ width: '200px', height: '14px', background: '#f8fafc', borderRadius: '4px' }} />
+                            </div>
+                        </div>
+                        <div className="grid-4-cols">
+                            {Array(4).fill(0).map((_, i) => (
+                                <div key={i} className="fs-skeleton-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '8px', border: '1px solid #f1f5f9', borderRadius: '12px', background: '#fafbff' }}>
+                                    <div className="fs-skeleton-img" style={{ aspectRatio: '1/1', background: '#f0f2f8', borderRadius: '8px', width: '100%' }} />
+                                    <div className="fs-skeleton-text" style={{ height: '14px', background: '#e2e8f0', borderRadius: '4px', width: '60%' }} />
+                                    <div className="fs-skeleton-text" style={{ height: '10px', background: '#f1f5f9', borderRadius: '4px', width: '40%' }} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <style>{`
+                    .skeleton-pulsing .fs-skeleton-title,
+                    .skeleton-pulsing .fs-skeleton-sub,
+                    .skeleton-pulsing .fs-skeleton-img,
+                    .skeleton-pulsing .fs-skeleton-text {
+                        background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%) !important;
+                        background-size: 200% 100% !important;
+                        animation: fs-shimmer 1.5s infinite linear !important;
+                    }
+                    @keyframes fs-shimmer {
+                        0% { background-position: -200% 0; }
+                        100% { background-position: 200% 0; }
+                    }
+                `}</style>
+            </div>
+        );
     }
 
     const ProductCard = ({ product, showBadge }) => (
@@ -106,22 +181,22 @@ const FeaturedSelections = ({ config }) => {
     return (
         <div className="marketplace-sections container">
             {/* Top Deals Section */}
-            <div className="section-container deals-section">
-                <div className="section-header-block">
+            <div className="section-container deals-section mini-container">
+                <div className="section-header-block compact">
                     <div className="header-text-group">
-                        <h2 className="section-main-title">{t('top_deals') || 'Top Deals'}</h2>
+                        <h2 className="section-main-title small">{t('top_deals') || 'Top Deals'}</h2>
                         <p className="section-main-subtitle">Score the lowest prices on EliteMarket.com</p>
                     </div>
                     <button className="section-view-all icon-only" onClick={() => handleViewMore('Top Deals')}>
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
                     </button>
                 </div>
-                <div className="section-items-grid">
-                    {topDeals.map((product, index) => (
-                        <ProductCard key={product._id} product={product} showBadge={index === 0} />
+                <div className="grid-6-cols">
+                    {topDeals.map((product) => (
+                        <MiniProductCard key={product._id} product={product} />
                     ))}
                     {topDeals.length === 0 && Array(6).fill(0).map((_, i) => (
-                        <div key={i} className="deal-card-skeleton"></div>
+                        <div key={i} className="deal-card-skeleton" style={{ aspectRatio: '1/1', background: '#f0f2f8', borderRadius: '8px' }}></div>
                     ))}
                 </div>
             </div>

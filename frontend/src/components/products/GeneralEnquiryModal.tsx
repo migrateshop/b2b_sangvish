@@ -84,12 +84,39 @@ const GeneralEnquiryModal: React.FC<GeneralEnquiryModalProps> = ({ isOpen, onClo
             return;
         }
 
+        // Email Validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(formData.buyer_email)) {
+            showToast('Please enter a valid email address', 'error');
+            return;
+        }
+
+        // Phone Validation
+        const cleanPhone = formData.buyer_phone.replace(/\D/g, '');
+        if (!cleanPhone) {
+            showToast('Phone number is required', 'error');
+            return;
+        }
+
+        const selectedCountryObj = availableCountries?.find((c: any) => (c.dial_code || `+${c.phone_code}`) === formData.phone_code);
+        const expectedLength = selectedCountryObj?.phone_length || 10;
+
+        if (cleanPhone.length !== expectedLength) {
+            showToast(`Phone number must be exactly ${expectedLength} digits for the selected country (${selectedCountryObj?.name || 'selected country'})`, 'error');
+            return;
+        }
+
         setLoading(true);
 
         try {
             // Build FormData
             const data = new FormData();
             data.append('productId', product._id);
+            if (product.supplier?._id) {
+                data.append('supplierId', product.supplier._id);
+            } else if (typeof product.supplier === 'string') {
+                data.append('supplierId', product.supplier);
+            }
             data.append('buyer_name', formData.buyer_name);
             data.append('buyer_email', formData.buyer_email);
             data.append('buyer_phone', `${formData.phone_code} ${formData.buyer_phone}`);
@@ -128,6 +155,9 @@ const GeneralEnquiryModal: React.FC<GeneralEnquiryModalProps> = ({ isOpen, onClo
             setLoading(false);
         }
     };
+
+    const activeCountryObj = availableCountries?.find((c: any) => (c.dial_code || `+${c.phone_code}`) === formData.phone_code);
+    const dynamicMaxLen = activeCountryObj?.phone_length || 15;
 
     return (
         <div className={styles['modal-overlay']} onClick={onClose}>
@@ -212,6 +242,7 @@ const GeneralEnquiryModal: React.FC<GeneralEnquiryModalProps> = ({ isOpen, onClo
                                         <input 
                                             type="tel" 
                                             required 
+                                            maxLength={dynamicMaxLen}
                                             style={{ flex: 1 }}
                                             value={formData.buyer_phone} 
                                             onChange={e => {

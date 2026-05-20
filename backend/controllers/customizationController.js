@@ -20,6 +20,62 @@ exports.createCustomizationRequest = async (req, res) => {
             budget_range
         } = req.body;
 
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!buyer_email || !emailRegex.test(buyer_email)) {
+            return res.status(400).json({ message: 'Please provide a valid email address' });
+        }
+
+        // Phone validation
+        const phoneParts = (buyer_phone || '').trim().split(' ');
+        const dialCode = phoneParts[0];
+        const nationalNumber = phoneParts.slice(1).join('').replace(/\D/g, '');
+
+        if (!dialCode || !nationalNumber) {
+            return res.status(400).json({ message: 'Please provide a valid phone number with dial code' });
+        }
+
+        const Country = require('../models/Country');
+        const countryObj = await Country.findOne({
+            $or: [
+                { dial_code: dialCode },
+                { dial_code: '+' + dialCode.replace('+', '') }
+            ]
+        });
+
+        if (countryObj) {
+            const expectedLength = countryObj.phone_length || 10;
+            if (nationalNumber.length !== expectedLength) {
+                return res.status(400).json({ message: `Phone number must be exactly ${expectedLength} digits for ${countryObj.name}` });
+            }
+        } else {
+            if (nationalNumber.length < 7 || nationalNumber.length > 15) {
+                return res.status(400).json({ message: 'Phone number must be a valid number between 7 and 15 digits' });
+            }
+        }
+
+        // Expected Delivery Date validation
+        if (!expected_delivery_date) {
+            return res.status(400).json({ message: 'Expected delivery date is required' });
+        }
+        const deliveryDate = new Date(expected_delivery_date);
+        if (isNaN(deliveryDate.getTime())) {
+            return res.status(400).json({ message: 'Invalid expected delivery date' });
+        }
+        const tomorrowDate = new Date();
+        tomorrowDate.setHours(0, 0, 0, 0);
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+        if (deliveryDate < tomorrowDate) {
+            return res.status(400).json({ message: 'Expected delivery date must be at least tomorrow' });
+        }
+        
+        // Enforce max 1 year in the future
+        const maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        if (deliveryDate > maxDate) {
+            return res.status(400).json({ message: 'Expected delivery date cannot be more than 1 year in the future' });
+        }
+
         const product = await Product.findById(productId).populate('supplier');
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });

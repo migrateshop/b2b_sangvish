@@ -420,22 +420,51 @@
   transform: scale(1.05);
 }
 
+.sr-tab-bar {
+  background: #fff;
+  border-bottom: 1px solid var(--sr-gray-100);
+  margin-bottom: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 54px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 960px) {
+  .sr-tab-bar {
+    top: 54px; /* Account for fixed global header */
+    height: 48px;
+  }
+}
+
+.sr-tab-inner {
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+}
+
 .sr-tab-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
   height: 100%;
 }
 
 .sr-tab-btn {
-  padding: 0 24px;
+  padding: 0 4px;
   height: 100%;
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
   font-size: 15px;
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: 700;
+  color: #111;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -444,16 +473,26 @@
 }
 
 .sr-tab-btn:hover {
-  color: #111;
+  color: var(--primary-color);
 }
 
 .sr-tab-btn.active {
   color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
+}
+
+.sr-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 2px;
 }
 
 .sr-tab-btn.ai-mode {
-  color: #8b5cf6;
+  color: #111;
   gap: 6px;
 }
 
@@ -3287,26 +3326,26 @@
 
     /* List view: modern horizontal layout on mobile */
     .sr-list-item {
-        flex-direction: row !important;
+        flex-direction: column !important;
         height: auto !important;
         align-items: stretch !important;
     }
 
     .sr-list-img {
-        width: 120px !important;
-        min-width: 120px !important;
-        height: 100% !important;
-        min-height: 140px !important;
-        aspect-ratio: auto !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        height: auto !important;
+        min-height: 200px !important;
+        aspect-ratio: 1/1 !important;
         padding: 8px !important;
     }
 
     .sr-list-content {
         flex-direction: column !important;
-        padding: 12px 16px 12px 12px !important;
-        gap: 8px !important;
-        flex: 1 !important;
-        min-width: 0 !important;
+        padding: 16px !important;
+        gap: 12px !important;
+        flex: none !important;
+        width: 100% !important;
     }
 
     .sr-list-title {

@@ -42,13 +42,23 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
-    // Refs for click-outside logic
+    const profileDropdownRef = React.useRef<HTMLDivElement>(null);
+    const notifyDropdownRef = React.useRef<HTMLDivElement>(null);
+    const langDropdownRef = React.useRef<HTMLDivElement>(null);
     const headerRightRef = React.useRef<HTMLDivElement>(null);
 
     // Global click listener to close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (headerRightRef.current && !headerRightRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            
+            // Check if click is outside header buttons AND outside dropdowns
+            const isOutsideHeader = headerRightRef.current && !headerRightRef.current.contains(target);
+            const isOutsideProfile = !profileDropdownRef.current || !profileDropdownRef.current.contains(target);
+            const isOutsideNotify = !notifyDropdownRef.current || !notifyDropdownRef.current.contains(target);
+            const isOutsideLang = !langDropdownRef.current || !langDropdownRef.current.contains(target);
+
+            if (isOutsideHeader && isOutsideProfile && isOutsideNotify && isOutsideLang) {
                 setShowLangDropdown(false);
                 setShowNotifyDropdown(false);
                 setShowProfileDropdown(false);
@@ -108,6 +118,10 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     const [showNotifyDropdown, setShowNotifyDropdown] = useState(false);
 
     useEffect(() => {
+        if (!isInitialized || !user) return;
+        const roles = user.roles || (user.role ? [user.role] : []);
+        if (!roles.includes('admin')) return;
+
         const fetchData = async () => {
             try {
                 const mRes = await api.get('/admin/menu');
@@ -117,7 +131,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             }
         };
         fetchData();
-    }, []);
+    }, [isInitialized, user]);
 
     const getPageTitle = () => {
         const segments = location.split('/').filter(s => s && s !== 'admin');
@@ -171,13 +185,48 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                     {siteSettings?.logo_light ? (
                         <img src={siteSettings.logo_light} alt="Logo" style={{ height: '24px' }} />
                     ) : (
-                        <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                             <span className={styles['admin-logo-a']}>{siteSettings?.site_name?.[0] || 'A'}</span>
                             <span className={styles['admin-logo-libaba']}>{siteSettings?.site_name?.substring(1) || 'libaba'}</span>
-                        </>
+                        </div>
                     )}
                 </div>
-                <div style={{ width: '40px' }}></div>
+                <div className={styles['admin-mobile-header-right']}>
+                    <div className="relative" style={{ position: 'relative' }}>
+                        <button 
+                            className={styles['header-action-btn']}
+                            onClick={() => {
+                                setShowNotifyDropdown(!showNotifyDropdown);
+                                setShowProfileDropdown(false);
+                            }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            {unreadCount > 0 && (
+                                <span className={styles['notification-badge-count']}>
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                    <div 
+                        className={styles['mobile-profile-icon']}
+                        onClick={() => {
+                            setShowProfileDropdown(!showProfileDropdown);
+                            setShowNotifyDropdown(false);
+                        }}
+                    >
+                        <div style={{
+                            width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', 
+                            backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            {user?.profile_image ? (
+                                <img src={getImgUrl(user.profile_image)} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </header>
 
             {/* Overlay */}
@@ -296,136 +345,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                                     <span style={{ color: 'var(--admin-text-main, #1a1a2e)' }}>{activeLangName} - {activeCurrCode}</span>
                                 </button>
 
-                                {showLangDropdown && (
-                                    <div
-                                        onMouseLeave={() => setShowLangDropdown(false)}
-                                        style={{
-                                            position: 'absolute', top: 'calc(100% + 12px)', right: '-8px',
-                                            width: '300px', zIndex: 2000,
-                                            background: '#fff',
-                                            borderRadius: '16px',
-                                            boxShadow: '0 20px 60px rgba(13,46,103,0.15), 0 4px 16px rgba(0,0,0,0.08)',
-                                            border: '1px solid #e8edf5',
-                                            overflow: 'hidden'
-                                        }}
-                                    >
-                                        {/* Header */}
-                                        <div style={{
-                                            background: 'var(--primary-color, #0d2e67)',
-                                            padding: '16px 20px',
-                                            display: 'flex', alignItems: 'center', gap: '10px',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{
-                                                    width: '32px', height: '32px', borderRadius: '10px',
-                                                    background: 'rgba(255,255,255,0.15)',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                                                }}>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <line x1="2" y1="12" x2="22" y2="12" />
-                                                        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <div style={{ color: '#fff', fontWeight: '800', fontSize: '13px', lineHeight: 1.2 }}>Language & Currency</div>
-                                                    <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: '600' }}>Display preferences</div>
-                                                </div>
-                                            </div>
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); setShowLangDropdown(false); }}
-                                                style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', fontSize: '18px', cursor: 'pointer', width: '30px', height: '30px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
-                                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                                            >✕</button>
-                                        </div>
-
-                                        {/* Body */}
-                                        <div style={{ padding: '16px' }}>
-                                            {/* Language */}
-                                            <div style={{ marginBottom: '12px' }}>
-                                                <label style={{
-                                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                                    fontSize: '10px', fontWeight: '800', color: '#64748b',
-                                                    textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px'
-                                                }}>
-                                                    <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
-                                                    Language
-                                                </label>
-                                                <select
-                                                    value={selectedLang}
-                                                    onChange={(e) => setSelectedLang(e.target.value)}
-                                                    style={{
-                                                        width: '100%', height: '42px',
-                                                        background: '#f8fafc', border: '1.5px solid #e8edf5',
-                                                        borderRadius: '10px', padding: '0 36px 0 12px',
-                                                        fontSize: '13px', fontWeight: '700', color: '#1a2b4b',
-                                                        outline: 'none', appearance: 'none', cursor: 'pointer',
-                                                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230d2e67' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`,
-                                                        backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '12px'
-                                                    }}
-                                                >
-                                                    {availableLanguages.map(lang => (
-                                                        <option key={lang.code} value={lang.name}>{lang.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            {/* Currency */}
-                                            <div style={{ marginBottom: '16px' }}>
-                                                <label style={{
-                                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                                    fontSize: '10px', fontWeight: '800', color: '#64748b',
-                                                    textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px'
-                                                }}>
-                                                    <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                    Currency
-                                                </label>
-                                                <select
-                                                    value={selectedCurr}
-                                                    onChange={(e) => setSelectedCurr(e.target.value)}
-                                                    style={{
-                                                        width: '100%', height: '42px',
-                                                        background: '#f8fafc', border: '1.5px solid #e8edf5',
-                                                        borderRadius: '10px', padding: '0 36px 0 12px',
-                                                        fontSize: '13px', fontWeight: '700', color: '#1a2b4b',
-                                                        outline: 'none', appearance: 'none', cursor: 'pointer',
-                                                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230d2e67' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`,
-                                                        backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '12px'
-                                                    }}
-                                                >
-                                                    {availableCurrencies.map(curr => (
-                                                        <option key={curr.code} value={curr.code}>{curr.code} - {curr.symbol}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            {/* Save Button */}
-                                            <button
-                                                onClick={handleSaveLangCurr}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '12px',
-                                                    borderRadius: '12px',
-                                                    border: 'none',
-                                                    background: 'var(--primary-color, #0d2e67)',
-                                                    color: '#fff',
-                                                    fontWeight: '800',
-                                                    fontSize: '13px',
-                                                    cursor: 'pointer',
-                                                    boxShadow: '0 4px 12px rgba(13, 46, 103, 0.25)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '8px'
-                                                }}
-                                            >
-                                                Save Changes
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             <div className={styles['relative']} style={{ position: 'relative' }}>
@@ -445,122 +364,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                                     {unreadCount > 0 && <span className={styles['notification-badge-count']}>{unreadCount}</span>}
                                 </button>
 
-                                {showNotifyDropdown && (
-                                    <div
-                                        onMouseLeave={() => setShowNotifyDropdown(false)}
-                                        style={{
-                                            position: 'absolute', top: 'calc(100% + 12px)', right: '-8px',
-                                            width: '360px', zIndex: 2000,
-                                            background: '#fff',
-                                            borderRadius: '16px',
-                                            boxShadow: '0 20px 60px rgba(13,46,103,0.15), 0 4px 16px rgba(0,0,0,0.08)',
-                                            border: '1px solid #e8edf5',
-                                            overflow: 'hidden'
-                                        }}
-                                    >
-                                        {/* Header */}
-                                        <div style={{
-                                            background: 'var(--primary-color, #0d2e67)',
-                                            padding: '16px 20px',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-                                        }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{
-                                                    width: '32px', height: '32px', borderRadius: '10px',
-                                                    background: 'rgba(255,255,255,0.15)',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                                }}>
-                                                    <svg width="16" height="16" fill="none" stroke="#fff" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                                                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <div style={{ color: '#fff', fontWeight: '800', fontSize: '13px', lineHeight: 1.2 }}>Notifications</div>
-                                                    <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: '600' }}>{notifications.length} unread</div>
-                                                </div>
-                                            </div>
-                                            {unreadCount > 0 && (
-                                                <span style={{
-                                                    background: 'var(--clr-accent)', color: '#fff',
-                                                    fontSize: '10px', fontWeight: '900',
-                                                    padding: '3px 8px', borderRadius: '99px'
-                                                }}>
-                                                    {unreadCount} NEW
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Notification List */}
-                                        <div style={{ maxHeight: '300px', overflowY: 'auto', padding: '8px 0' }}>
-                                            {notifications.length > 0 ? notifications.slice(0, 5).map((n, idx) => {
-                                                const colors = [
-                                                    { bg: '#f0f4ff', icon: 'var(--primary-color)' },
-                                                    { bg: '#fff7ed', icon: '#f97316' },
-                                                    { bg: '#f0fdf4', icon: '#10b981' },
-                                                    { bg: '#fdf4ff', icon: '#a855f7' }
-                                                ];
-                                                const color = colors[idx % colors.length];
-                                                return (
-                                                    <div
-                                                        key={n._id || idx}
-                                                        onClick={() => { n.link && navigate.push(n.link); setShowNotifyDropdown(false); }}
-                                                        style={{
-                                                            display: 'flex', alignItems: 'flex-start', gap: '12px',
-                                                            padding: '12px 16px', cursor: 'pointer',
-                                                            transition: 'background 0.15s',
-                                                            borderBottom: idx < Math.min(notifications.length, 5) - 1 ? '1px solid #f1f5f9' : 'none'
-                                                        }}
-                                                        onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                                                    >
-                                                        {/* Icon */}
-                                                        <div style={{
-                                                            width: '36px', height: '36px', borderRadius: '10px',
-                                                            background: color.bg, flexShrink: 0,
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                                        }}>
-                                                            <svg width="16" height="16" fill="none" stroke={color.icon} viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                                                                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                                                            </svg>
-                                                        </div>
-                                                        {/* Text */}
-                                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                                            <div style={{
-                                                                fontSize: '13px', fontWeight: '700',
-                                                                color: '#1a2b4b', marginBottom: '2px',
-                                                                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                                                            }}>{n.title}</div>
-                                                            <div style={{
-                                                                fontSize: '11.5px', color: '#64748b', lineHeight: '1.4',
-                                                                display: '-webkit-box', WebkitLineClamp: 2,
-                                                                WebkitBoxOrient: 'vertical', overflow: 'hidden'
-                                                            }}>{n.message}</div>
-                                                            <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: '600', marginTop: '4px' }}>
-                                                                {new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                            </div>
-                                                        </div>
-                                                        {/* Unread dot */}
-                                                        {!n.isRead && (
-                                                            <div style={{
-                                                                width: '7px', height: '7px', borderRadius: '50%',
-                                                                background: 'var(--primary-color)', flexShrink: 0, marginTop: '4px'
-                                                            }} />
-                                                        )}
-                                                    </div>
-                                                );
-                                            }) : (
-                                                <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '32px', marginBottom: '8px', opacity: 0.4, display: 'flex', justifyContent: 'center' }}>
-                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                                                    </div>
-                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>No new notifications</div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         </div>
 
@@ -614,7 +417,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                                         <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#1e293b' }}>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
                                     )}
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                <div className={styles['profile-pill-name-box']} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                                     <span className="text-admin-main" style={{ fontSize: '13px', fontWeight: '700', lineHeight: '1.2' }}>{user?.first_name} {user?.last_name}</span>
                                     <span className="text-admin-muted" style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0.02em', marginTop: '2px', textTransform: 'uppercase' }}>Super Admin</span>
                                 </div>
@@ -623,55 +426,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                                 </svg>
                             </div>
 
-                            {showProfileDropdown && (
-                                <div
-                                    onMouseLeave={() => setShowProfileDropdown(false)}
-                                    className={styles['premium-dropdown']}
-                                >
-                                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9', marginBottom: '8px' }}>
-                                        <div style={{ color: '#0f172a', fontSize: '13px', fontWeight: '700' }}>Signed in as</div>
-                                        <div style={{ color: '#64748b', fontSize: '12px', fontWeight: '500', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email || (user?.first_name + ' ' + user?.last_name)}</div>
-                                    </div>
-
-                                    <button
-                                        onClick={() => { navigate.push('/admin/profile'); setShowProfileDropdown(false); }}
-                                        style={{
-                                            display: 'flex', alignItems: 'center', gap: '10px',
-                                            width: '100%', padding: '10px 16px', background: 'transparent',
-                                            border: 'none', borderRadius: '10px', cursor: 'pointer',
-                                            color: '#334155', fontSize: '13px', fontWeight: '600', transition: 'background 0.2s', textAlign: 'left'
-                                        }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0f172a'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                        Edit Profile
-                                    </button>
-
-                                    <button
-                                        onClick={() => { handleLogout(); setShowProfileDropdown(false); }}
-                                        style={{
-                                            display: 'flex', alignItems: 'center', gap: '10px',
-                                            width: '100%', padding: '10px 16px', background: 'transparent',
-                                            border: 'none', borderRadius: '10px', cursor: 'pointer',
-                                            color: '#ef4444', fontSize: '13px', fontWeight: '600', transition: 'background 0.2s', textAlign: 'left',
-                                            marginTop: '4px'
-                                        }}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = '#fef2f2'}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                            <polyline points="16 17 21 12 16 7"></polyline>
-                                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                                        </svg>
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </header>
@@ -687,6 +441,264 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                 title="Admin Logout"
                 message="Are you sure you want to sign out from Admin Panel?"
             />
+            {showLangDropdown && (
+                <div
+                    ref={langDropdownRef}
+                    className={styles['admin-lang-dropdown-container']}
+                >
+                    {/* Header */}
+                    <div style={{
+                        background: 'var(--primary-color, #0d2e67)',
+                        padding: '16px 20px',
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        justifyContent: 'space-between'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{
+                                width: '32px', height: '32px', borderRadius: '10px',
+                                background: 'rgba(255,255,255,0.15)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                            }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                    <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div style={{ color: '#fff', fontWeight: '800', fontSize: '13px', lineHeight: 1.2 }}>Language & Currency</div>
+                                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: '600' }}>Display preferences</div>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setShowLangDropdown(false); }}
+                            style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', fontSize: '18px', cursor: 'pointer', width: '30px', height: '30px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                        >✕</button>
+                    </div>
+
+                    {/* Body */}
+                    <div style={{ padding: '16px' }}>
+                        {/* Language */}
+                        <div style={{ marginBottom: '12px' }}>
+                            <label style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                fontSize: '10px', fontWeight: '800', color: '#64748b',
+                                textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px'
+                            }}>
+                                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+                                Language
+                            </label>
+                            <select
+                                value={selectedLang}
+                                onChange={(e) => setSelectedLang(e.target.value)}
+                                style={{
+                                    width: '100%', height: '42px',
+                                    background: '#f8fafc', border: '1.5px solid #e8edf5',
+                                    borderRadius: '10px', padding: '0 36px 0 12px',
+                                    fontSize: '13px', fontWeight: '700', color: '#1a2b4b',
+                                    outline: 'none', appearance: 'none', cursor: 'pointer',
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230d2e67' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`,
+                                    backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '12px'
+                                }}
+                            >
+                                {availableLanguages.map(lang => (
+                                    <option key={lang.code} value={lang.name}>{lang.name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Currency */}
+                        <div style={{ marginBottom: '16px' }}>
+                            <label style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                fontSize: '10px', fontWeight: '800', color: '#64748b',
+                                textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px'
+                            }}>
+                                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Currency
+                            </label>
+                            <select
+                                value={selectedCurr}
+                                onChange={(e) => setSelectedCurr(e.target.value)}
+                                style={{
+                                    width: '100%', height: '42px',
+                                    background: '#f8fafc', border: '1.5px solid #e8edf5',
+                                    borderRadius: '10px', padding: '0 36px 0 12px',
+                                    fontSize: '13px', fontWeight: '700', color: '#1a2b4b',
+                                    outline: 'none', appearance: 'none', cursor: 'pointer',
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230d2e67' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`,
+                                    backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '12px'
+                                }}
+                            >
+                                {availableCurrencies.map(curr => (
+                                    <option key={curr.code} value={curr.code}>{curr.code} - {curr.symbol}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Save Button */}
+                        <button
+                            onClick={handleSaveLangCurr}
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                background: 'var(--primary-color, #0d2e67)',
+                                color: '#fff',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                boxShadow: '0 4px 12px rgba(13,46,103,0.2)'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                        >
+                            Apply Changes
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {showNotifyDropdown && (
+                <div
+                    ref={notifyDropdownRef}
+                    className={styles['admin-notification-dropdown']}
+                >
+                    <div style={{
+                        background: 'var(--primary-color, #0d2e67)',
+                        padding: '16px 20px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{
+                                width: '32px', height: '32px', borderRadius: '10px',
+                                background: 'rgba(255,255,255,0.15)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                                <svg width="16" height="16" fill="none" stroke="#fff" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div style={{ color: '#fff', fontWeight: '800', fontSize: '13px', lineHeight: 1.2 }}>Notifications</div>
+                                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: '600' }}>{notifications.length} unread</div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            {unreadCount > 0 && (
+                                <span style={{
+                                    background: 'var(--clr-accent)', color: '#fff',
+                                    fontSize: '10px', fontWeight: '900',
+                                    padding: '3px 8px', borderRadius: '99px'
+                                }}>
+                                    {unreadCount} NEW
+                                </span>
+                            )}
+                            <button 
+                                onClick={() => setShowNotifyDropdown(false)}
+                                style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '8px 0' }}>
+                        {notifications.length > 0 ? notifications.slice(0, 5).map((n, idx) => {
+                            const colors = [
+                                { bg: '#f0f4ff', icon: 'var(--primary-color)' },
+                                { bg: '#fff7ed', icon: '#f97316' },
+                                { bg: '#f0fdf4', icon: '#10b981' },
+                                { bg: '#fdf4ff', icon: '#a855f7' }
+                            ];
+                            const color = colors[idx % colors.length];
+                            return (
+                                <div
+                                    key={n._id || idx}
+                                    onClick={() => { n.link && navigate.push(n.link); setShowNotifyDropdown(false); }}
+                                    style={{
+                                        display: 'flex', alignItems: 'flex-start', gap: '12px',
+                                        padding: '12px 16px', cursor: 'pointer',
+                                        transition: 'background 0.15s',
+                                        borderBottom: idx < Math.min(notifications.length, 5) - 1 ? '1px solid #f1f5f9' : 'none'
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <div style={{
+                                        width: '36px', height: '36px', borderRadius: '10px',
+                                        background: color.bg, flexShrink: 0,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                    }}>
+                                        <svg width="16" height="16" fill="none" stroke={color.icon} viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                                        </svg>
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a2b4b', marginBottom: '2px' }}>{n.title}</div>
+                                        <div style={{ fontSize: '11.5px', color: '#64748b', lineHeight: '1.4' }}>{n.message}</div>
+                                    </div>
+                                </div>
+                            );
+                        }) : (
+                            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8' }}>No new notifications</div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {showProfileDropdown && (
+                <div
+                    ref={profileDropdownRef}
+                    className={styles['admin-profile-dropdown']}
+                >
+                    <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                            <div style={{ color: '#0f172a', fontSize: '13px', fontWeight: '700' }}>Signed in as</div>
+                            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: '500', marginTop: '2px' }}>{user?.email}</div>
+                        </div>
+                        <button 
+                            onClick={() => setShowProfileDropdown(false)}
+                            style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    <button
+                        onMouseDown={(e) => { e.preventDefault(); navigate.push('/admin/profile'); setShowProfileDropdown(false); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#334155', fontSize: '13px', fontWeight: '600' }}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        Edit Profile
+                    </button>
+                    <div className={styles['mobile-only-dropdown-items']}>
+                        <button
+                            onMouseDown={(e) => { e.preventDefault(); setShowLangDropdown(true); setShowProfileDropdown(false); }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#334155', fontSize: '13px', fontWeight: '600' }}
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+                            Language: {activeLangName}
+                        </button>
+                        <button
+                            onMouseDown={(e) => { e.preventDefault(); toggleTheme(); setShowProfileDropdown(false); }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#334155', fontSize: '13px', fontWeight: '600' }}
+                        >
+                            {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+                        </button>
+                    </div>
+                    <button
+                        onMouseDown={(e) => { e.preventDefault(); handleLogout(); setShowProfileDropdown(false); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#ef4444', fontSize: '13px', fontWeight: '600' }}
+                    >
+                        Logout
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

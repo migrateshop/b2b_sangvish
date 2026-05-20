@@ -345,42 +345,7 @@ const MobileHomePage = () => {
             {/* ═══════════════════════════
                 SEARCH BAR & TABS
             ═══════════════════════════ */}
-            <div className="mph-search-bar-wrap">
-                {/* ─── Header Top (Logo & Quick Options) ─── */}
-                <div className="mph-mobile-header-top">
-                    <div className="mph-mobile-logo-container">
-                        {siteSettings?.logo_light ? (
-                            <img
-                                src={getImgUrl(siteSettings.logo_light)}
-                                alt={siteSettings?.siteName || 'Logo'}
-                                className="mph-mobile-logo"
-                                onClick={() => navigate.push('/')}
-                            />
-                        ) : (
-                            <span className="mph-mobile-logo-text" onClick={() => navigate.push('/')}>
-                                {siteSettings?.siteName || 'Alibaba Demo'}
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="mph-mobile-header-actions">
-                        <button className="mph-hdr-btn" onClick={() => setIsDeliverToOpen(!isDeliverToOpen)} title="Location">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        </button>
-                        <button className="mph-hdr-btn" onClick={() => setIsSettingsOpen(true)} title="Language & Currency">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
-                        </button>
-                        <Link href={user ? "/dashboard/notifications" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn mph-hdr-badge-wrap" title="Notifications">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            {unreadCount > 0 && <span className="mph-hdr-badge">{unreadCount}</span>}
-                        </Link>
-                        <Link href={user ? "/buyer/dashboard/saved" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn" title="Favorites">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        </Link>
-
-                    </div>
-                </div>
-
+            <div className="mph-search-bar-wrap" style={{ marginTop: '54px' }}>
                 {/* Location Selection Dropdown Banner */}
                 {isDeliverToOpen && (
                     <div className="mph-location-dropdown">
@@ -599,7 +564,7 @@ const MobileHomePage = () => {
                     QUICK ACTIONS GRID
                 ═══════════════════════════ */}
                     <div className="mph-quick-actions-wrap">
-                        <div className="mph-quick-actions-grid">
+                        <div className="mph-quick-actions-grid" style={{ justifyContent: 'center' }}>
                             {QUICK_ACTIONS.map((item, i) => (
                                 <Link
                                     key={i}
@@ -752,9 +717,7 @@ const MobileHomePage = () => {
                     {/* ═══════════════════════════
                         FEATURED SUPPLIERS
                     ═══════════════════════════ */}
-                    <div className="mph-section-card">
-                        <FeaturedSuppliers />
-                    </div>
+                    <FeaturedSuppliers />
 
                     {/* ═══════════════════════════
                     INDUSTRY BLOCKS

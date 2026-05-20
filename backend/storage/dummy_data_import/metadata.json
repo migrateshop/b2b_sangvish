@@ -1,0 +1,15 @@
+{
+  "version": "v1.0.4",
+  "schemaVersion": 5,
+  "createdAt": "2026-05-18T17:14:04Z",
+  "requiredFiles": [
+    "categories.json",
+    "users.json",
+    "companies.json",
+    "products.json",
+    "orders.json",
+    "transactions.json",
+    "reviews.json",
+    "disputes.json"
+  ]
+}

@@ -118,7 +118,7 @@
 
 .float-input:focus,
 .float-select:focus {
-    border-color: var(--primary-color);
+    border-color: #111;
 }
 
 .float-label {
@@ -138,7 +138,7 @@
     top: 0.5rem;
     transform: none;
     font-size: 0.72rem;
-    color: var(--primary-color);
+    color: #111;
 }
 
 .float-label-active {
@@ -146,7 +146,7 @@
     left: 1rem;
     top: 0.5rem;
     font-size: 0.72rem;
-    color: var(--primary-color);
+    color: #111;
     pointer-events: none;
     background: transparent;
 }
@@ -283,10 +283,11 @@
 }
 
 .reg-error {
-    color: var(--primary-color);
+    color: #ef4444;
     font-size: 0.85rem;
     margin-bottom: 0.5rem;
     margin-top: -0.25rem;
+    font-weight: 500;
 }
 
 /* ─── Role Selection ─── */
@@ -512,7 +513,7 @@
 .business-type-card input {
     width: 18px;
     height: 18px;
-    accent-color: var(--primary-color);
+    accent-color: #111;
     margin: 0;
     flex-shrink: 0;
     cursor: pointer;
@@ -532,6 +533,7 @@
     margin: 0;
     flex-shrink: 0;
     cursor: pointer;
+    accent-color: #111;
 }
 
 .terms-row span {
@@ -589,15 +591,15 @@
 }
 
 .otp-box-v2:focus {
-    border-color: #ff0066;
+    border-color: #111;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(255, 0, 102, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .otp-box-v2.filled {
-    border-color: #ff0066;
+    border-color: #111;
     background: #fff;
-    color: #ff0066;
+    color: #111;
 }
 
 .otp-resend-row {
@@ -693,6 +695,6 @@
 }
 
 .role-card-v2.selected {
-    border-color: #ff0066;
-    background: #fff0f5;
+    border-color: #111;
+    background: #f8fafc;
 }

@@ -28,18 +28,19 @@
 
 .mph-mobile-header-top {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    gap: 14px;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 8px;
+    padding: 0 4px;
 }
 
 .mph-mobile-logo-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 100%;
+    justify-content: flex-start;
+    flex: 0 0 auto;
 }
 
 .mph-mobile-logo {
@@ -61,17 +62,70 @@
 .mph-mobile-header-actions {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
-    width: 100%;
+    justify-content: flex-end;
+    gap: 10px;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar for cleaner look */
+    -ms-overflow-style: none;
+    padding-left: 8px;
+}
+
+.mph-mobile-header-actions::-webkit-scrollbar {
+    display: none;
+}
+
+.mph-section-card {
+    background: #ffffff;
+    margin: 10px 10px 16px;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    /* overflow: hidden removed — was clipping product grid rows */
+}
+
+.mph-section-card--deals {
+    background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%);
+    border: 1px solid #ffe4d6;
+}
+
+.mph-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mph-section-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a2e;
+}
+
+.mph-section-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.mph-view-all-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
 }
 
 .mph-hdr-btn {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 50%;
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -156,33 +210,84 @@
     cursor: pointer;
 }
 
+.mph-banner-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    padding: 0;
+    transition: all 0.3s;
+}
+
+.mph-banner-dot.active {
+    background: #ffffff;
+    width: 20px;
+    border-radius: 4px;
+    opacity: 1;
+}
+
+/* ═══════════════════════════════
+   QUICK ACTIONS
+   ═══════════════════════════════ */
+.mph-quick-actions-wrap {
+    padding: 16px 10px;
+}
+
+.mph-quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.mph-quick-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.mph-quick-action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    transition: transform 0.2s;
+}
+
+.mph-quick-action-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    text-align: center;
+}
+
 .mph-search-tabs {
     display: flex;
+    overflow-x: auto;
     gap: 20px;
     margin-bottom: 12px;
     align-items: center;
-    justify-content: flex-start;
-    overflow-x: auto;
+    justify-content: center;
     padding: 0 4px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
 }
 
-.mph-search-tabs::-webkit-scrollbar {
-    display: none;
-}
-
 .mph-search-tab {
     background: transparent;
     border: none;
-    color: #000;
-    font-size: 14px;
+    color: #475569;
+    font-size: 15px;
     font-weight: 700;
-    padding: 0 4px;
+    padding: 8px 4px;
     cursor: pointer;
     white-space: nowrap;
     position: relative;
-    padding-bottom: 6px;
     transition: all 0.2s;
     flex-shrink: 0;
 }
@@ -197,9 +302,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 3px;
     background: var(--primary-color);
-    border-radius: 2px;
+    border-radius: 4px;
 }
 
 .mph-search-tab--ai {
@@ -208,10 +313,14 @@
     gap: 4px;
     color: #000;
     text-decoration: none;
+    white-space: nowrap;
+    min-width: max-content;
+    flex-shrink: 0;
 }
 
 .mph-sparkle {
     color: #ffd700;
+    flex-shrink: 0;
 }
 
 .mph-search-form {
@@ -336,8 +445,10 @@
     min-height: 180px;
     position: relative;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
+    padding: 24px 0;
 }
 
 .mph-banner-bg-img {
@@ -360,28 +471,29 @@
 .mph-banner-content {
     position: relative;
     z-index: 2;
-    padding: 20px 16px 36px;
+    padding: 20px 20px 24px;
     width: 100%;
+    text-align: center;
 }
 
 .mph-banner-title {
-    font-size: 20px;
-    font-weight: 900;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
     color: #fff;
-    margin: 0 0 6px;
-    line-height: 1.3;
-    letter-spacing: -0.3px;
-    word-break: break-word;
-    white-space: normal;
 }
 
 .mph-banner-subtitle {
-    font-size: 13px;
-    color: rgba(255,255,255,0.9);
-    margin: 0 0 14px;
-    line-height: 1.5;
-    word-break: break-word;
-    white-space: normal;
+    font-size: 14px;
+    margin-bottom: 20px;
+    opacity: 0.95;
+    line-height: 1.4;
+    max-width: 280px;
+    color: #fff;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .mph-banner-cta {
@@ -451,9 +563,10 @@
 }
 
 .mph-quick-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
 }
 
 .mph-quick-action-item {
@@ -924,6 +1037,7 @@
     padding: 0;
     overflow: hidden;
 }
+
 
 .mph-industry-banner {
     display: flex;
