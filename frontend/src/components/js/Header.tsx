@@ -218,43 +218,147 @@ const Header = () => {
 
     if (isMobile) {
         return (
-            <header className="mobile-header-fixed">
-                <div className="mph-search-bar-wrap" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: '#fff', borderBottom: '1px solid #eee' }}>
-                    <div className="mph-mobile-header-top">
-                        <div className="mph-mobile-logo-container">
+            <>
+                <header className="mhdr-root">
+                    {/* ── Top bar: hamburger | logo | icons ── */}
+                    <div className="mhdr-top">
+                        {/* Hamburger */}
+                        <button
+                            className="mhdr-hamburger"
+                            onClick={() => setIsMenuOpen(true)}
+                            aria-label="Open menu"
+                        >
+                            <span /><span /><span />
+                        </button>
+
+                        {/* Logo */}
+                        <div className="mhdr-logo" onClick={() => navigate.push('/')} style={{ cursor: 'pointer' }}>
                             {siteSettings?.logo_dark || siteSettings?.logo_light ? (
                                 <img
                                     src={getImgUrl(siteSettings.logo_dark || siteSettings.logo_light)}
                                     alt={siteSettings?.site_name || 'Logo'}
-                                    className="mph-mobile-logo"
-                                    onClick={() => navigate.push('/')}
-                                    style={{ height: '30px', cursor: 'pointer' }}
+                                    style={{ height: '32px', objectFit: 'contain' }}
                                 />
                             ) : (
-                                <span className="mph-mobile-logo-text" onClick={() => navigate.push('/')}>
-                                    {siteSettings?.site_name || 'Alibaba Demo'}
-                                </span>
+                                <span className="mhdr-logo-text">{siteSettings?.site_name || 'B2B'}</span>
                             )}
                         </div>
 
-                        <div className="mph-mobile-header-actions">
-                            <button className="mph-hdr-btn" onClick={() => setIsDeliverToOpen?.(true)} title="Location">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            </button>
-                            <button className="mph-hdr-btn" onClick={() => setIsSettingsOpen?.(true)} title="Language & Currency">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
-                            </button>
-                            <Link href={user ? "/dashboard/notifications" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn mph-hdr-badge-wrap" title="Notifications">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                                {unreadCount > 0 && <span className="mph-hdr-badge">{unreadCount}</span>}
+
+                    </div>
+                </header>
+
+                {/* ── Drawer overlay ── */}
+                {isMenuOpen && (
+                    <div className="mhdr-overlay" onClick={() => setIsMenuOpen(false)} />
+                )}
+
+                {/* ── Slide-in Drawer ── */}
+                <div className={`mhdr-drawer ${isMenuOpen ? 'mhdr-drawer--open' : ''}`}>
+                    {/* Drawer header: auth buttons + close */}
+                    <div className="mhdr-drawer-head">
+                        <div className="mhdr-drawer-user">
+                            {user ? (
+                                <>
+                                    <div className="mhdr-drawer-avatar">
+                                        {user.first_name?.[0]?.toUpperCase() || 'U'}
+                                    </div>
+                                    <div>
+                                        <p className="mhdr-drawer-name">{user.first_name} {user.last_name}</p>
+                                        <p className="mhdr-drawer-email">{user.email}</p>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="mhdr-drawer-auth">
+                                    <button className="mhdr-drawer-login-btn" onClick={() => { openLogin(); setIsMenuOpen(false); }}>Sign In</button>
+                                    <button className="mhdr-drawer-register-btn" onClick={() => { openRegister(); setIsMenuOpen(false); }}>Create account</button>
+                                </div>
+                            )}
+                        </div>
+                        <button className="mhdr-drawer-close" onClick={() => setIsMenuOpen(false)} aria-label="Close">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    {/* Utility items — mirrors desktop top bar (image 3) */}
+                    <div className="mhdr-drawer-utils">
+                        {/* Deliver to */}
+                        <button className="mhdr-util-row" onClick={() => { setIsDeliverToOpen(true); setIsMenuOpen(false); }}>
+                            <div className="mhdr-util-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <div className="mhdr-util-text">
+                                <span className="mhdr-util-label">Deliver to</span>
+                                <span className="mhdr-util-value">{selectedCountry || user?.country_code || 'IN'}</span>
+                            </div>
+                            <svg className="mhdr-util-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 18l6-6-6-6"/></svg>
+                        </button>
+
+                        {/* Language & Currency */}
+                        <button className="mhdr-util-row" onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}>
+                            <div className="mhdr-util-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20" strokeLinecap="round"/></svg>
+                            </div>
+                            <div className="mhdr-util-text">
+                                <span className="mhdr-util-label">Language & Currency</span>
+                                <span className="mhdr-util-value">{language} – {currency}</span>
+                            </div>
+                            <svg className="mhdr-util-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 18l6-6-6-6"/></svg>
+                        </button>
+
+                        <div className="mhdr-util-divider" />
+
+                        {/* Icon grid row: Notifications · Chat · Wishlist · Cart */}
+                        <div className="mhdr-util-icon-grid">
+                            <Link href={user ? "/dashboard/notifications" : "#"} className="mhdr-util-icon-item" onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } setIsMenuOpen(false); }}>
+                                <div className="mhdr-util-icon-circle mhdr-badge-wrap">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                    {unreadCount > 0 && <span className="mhdr-badge">{unreadCount}</span>}
+                                </div>
+                                <span>Alerts</span>
                             </Link>
-                            <Link href={user ? "/buyer/dashboard/saved" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn" title="Favorites">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            <Link href={user ? "/chat" : "#"} className="mhdr-util-icon-item" onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } setIsMenuOpen(false); }}>
+                                <div className="mhdr-util-icon-circle mhdr-badge-wrap">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    {unreadTotal > 0 && <span className="mhdr-badge">{unreadTotal}</span>}
+                                </div>
+                                <span>Chat</span>
+                            </Link>
+                            <Link href={user ? "/buyer/dashboard/saved" : "#"} className="mhdr-util-icon-item" onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } setIsMenuOpen(false); }}>
+                                <div className="mhdr-util-icon-circle">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                </div>
+                                <span>Wishlist</span>
+                            </Link>
+                            <Link href="/cart" className="mhdr-util-icon-item" onClick={() => setIsMenuOpen(false)}>
+                                <div className="mhdr-util-icon-circle">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                                </div>
+                                <span>Cart</span>
                             </Link>
                         </div>
+
+                        {user && (
+                            <>
+                                <div className="mhdr-util-divider" />
+                                <button className="mhdr-util-row mhdr-util-row--danger" onClick={() => { setShowLogoutModal(true); setIsMenuOpen(false); }}>
+                                    <div className="mhdr-util-icon">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    </div>
+                                    <div className="mhdr-util-text">
+                                        <span className="mhdr-util-label">Sign Out</span>
+                                    </div>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
-            </header>
+
+                {/* Modals */}
+                <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+                <LogoutModal isOpen={showLogoutModal} onClose={() => setShowLogoutModal(false)} onConfirm={() => { logout(); setShowLogoutModal(false); }} />
+                {authModal && <AuthModal />}
+            </>
         );
     }
 
@@ -523,7 +627,7 @@ const Header = () => {
                             {isDeliverToOpen && (
                                 <div className="location-dropdown-menu">
                                     <div className="location-dropdown-content" style={{ position: 'relative' }}>
-                                        <button 
+                                        <button
                                             className="btn-reset location-close-btn"
                                             onClick={(e) => { e.stopPropagation(); setIsDeliverToOpen(false); }}
                                             style={{ position: 'absolute', top: '20px', right: '20px', padding: '5px', cursor: 'pointer', color: '#64748b', display: 'flex' }}

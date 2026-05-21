@@ -273,11 +273,15 @@
     }
 
     .app-promo-visual {
-        display: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: auto;
+        padding: 0 28px 40px;
     }
 
     .app-promo-content {
-        padding: 36px 28px;
+        padding: 36px 28px 20px;
     }
 }
 
@@ -291,7 +295,11 @@
     }
 
     .app-promo-content {
-        padding: 28px 20px;
+        padding: 28px 20px 16px;
+    }
+
+    .app-promo-visual {
+        padding: 0 20px 32px;
     }
 
     .app-store-btns {

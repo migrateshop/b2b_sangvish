@@ -3554,7 +3554,7 @@ body.mega-menu-open .header.is-fixed {
     }
 
     /* Language/currency — icon only on compact header tablet */
-    .top-nav.compact-layout .action-item.language > span:not(.icon) {
+    .top-nav.compact-layout .action-item.language>span:not(.icon) {
         display: none !important;
     }
 

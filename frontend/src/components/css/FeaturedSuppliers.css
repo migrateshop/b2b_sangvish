@@ -278,7 +278,9 @@
 }
 
 @media (max-width: 900px) {
-    .fs-grid, .fs-skeletons {
+
+    .fs-grid,
+    .fs-skeletons {
         grid-template-columns: repeat(2, 1fr);
     }
 }
@@ -289,7 +291,9 @@
         align-items: flex-start;
         gap: 8px;
     }
-    .fs-grid, .fs-skeletons {
+
+    .fs-grid,
+    .fs-skeletons {
         grid-template-columns: 1fr !important;
         gap: 16px;
     }

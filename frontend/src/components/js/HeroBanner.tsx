@@ -54,9 +54,9 @@ const HeroBanner = () => {
             title: t('hero_slide1_title') || 'Global B2B\nMarketplace',
             subtitle: t('hero_slide1_subtitle') || 'Connect with 40M+ products from verified suppliers worldwide and grow your business faster.',
             cta1: { label: t('get_quotes_now') || 'Get Quotes Now', link: '/rfq/post', needsAuth: true },
-            cta2: { 
-                label: isSupplier ? 'Seller Dashboard' : (t('start_selling') || 'Start Selling'), 
-                link: isSupplier ? '/dashboard' : '/become-supplier' 
+            cta2: {
+                label: isSupplier ? 'Seller Dashboard' : (t('start_selling') || 'Start Selling'),
+                link: isSupplier ? '/dashboard' : '/become-supplier'
             },
             accent: '#ff6600',
             gradFrom: '#0a1f4e',
@@ -101,9 +101,9 @@ const HeroBanner = () => {
     const DYNAMIC_SIDE_LINKS = [
         {
             icon: <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
-            title: isSupplier ? (t('seller_dashboard') || 'Seller Dashboard') : (t('start_selling') || 'Start Selling'), 
-            sub: isSupplier ? (t('manage_your_shop') || 'Manage your shop') : (t('reach_global_buyers') || 'Reach global buyers'), 
-            link: isSupplier ? '/dashboard' : '/become-supplier', 
+            title: isSupplier ? (t('seller_dashboard') || 'Seller Dashboard') : (t('start_selling') || 'Start Selling'),
+            sub: isSupplier ? (t('manage_your_shop') || 'Manage your shop') : (t('reach_global_buyers') || 'Reach global buyers'),
+            link: isSupplier ? '/dashboard' : '/become-supplier',
             cls: 'side-orange'
         },
         {
@@ -149,9 +149,9 @@ const HeroBanner = () => {
                     title: s.title,
                     subtitle: s.subtitle,
                     cta1: { label: s.cta1_label, link: s.cta1_link, needsAuth: s.cta1_needsAuth },
-                    cta2: { 
-                        label: (isSupplier && s.cta2_link === '/become-supplier') ? 'Seller Dashboard' : s.cta2_label, 
-                        link: (isSupplier && s.cta2_link === '/become-supplier') ? '/dashboard' : s.cta2_link 
+                    cta2: {
+                        label: (isSupplier && s.cta2_link === '/become-supplier') ? 'Seller Dashboard' : s.cta2_label,
+                        link: (isSupplier && s.cta2_link === '/become-supplier') ? '/dashboard' : s.cta2_link
                     },
                     accent: s.accent, gradFrom: s.gradFrom, gradMid: s.gradMid, gradTo: s.gradTo,
                     shape1: s.shape1, shape2: s.shape2, statLabel: s.statLabel,
@@ -317,20 +317,20 @@ const HeroBanner = () => {
                         {/* Decorative background layers */}
                         <div className="hb-bg-blob blob-tl" />
                         <div className="hb-bg-blob blob-br" />
-                        
+
                         {/* Dynamic Banner Image */}
                         {cur.image && (
-                            <div 
-                                className="hb-bg-image" 
-                                style={{ 
-                                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
-                                    zIndex: 1, overflow: 'hidden' 
+                            <div
+                                className="hb-bg-image"
+                                style={{
+                                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                    zIndex: 1, overflow: 'hidden'
                                 }}
                             >
-                                <img 
-                                    src={getImgUrl(cur.image)} 
-                                    alt="" 
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.35 }} 
+                                <img
+                                    src={getImgUrl(cur.image)}
+                                    alt=""
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.35 }}
                                 />
                                 <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, ${cur.gradFrom}cc, transparent)` }} />
                             </div>

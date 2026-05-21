@@ -49,7 +49,7 @@ const FALLBACK_SLIDES = [
 
 const MobileHomePage = () => {
     const navigate = useRouter();
-    const { t, convertPrice, user, openLogin, selectedCountry, setSelectedCountry, siteSettings, availableCountries } = useAuth();
+    const { t, convertPrice, user, openLogin, selectedCountry, setSelectedCountry, siteSettings, availableCountries, switchRole } = useAuth();
     const { unreadTotal } = useChat();
     const { unreadCount } = useNotifications();
 
@@ -275,6 +275,50 @@ const MobileHomePage = () => {
         }
     };
 
+    const isSupplier = user?.roles?.includes('supplier') || user?.role === 'supplier';
+
+    const DYNAMIC_SIDE_LINKS = [
+        {
+            icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+            title: isSupplier ? (t('seller_dashboard') || 'Seller Dashboard') : (t('start_selling') || 'Start Selling'),
+            sub: isSupplier ? (t('manage_your_shop') || 'Manage your shop') : (t('reach_global_buyers') || 'Reach global buyers'),
+            link: isSupplier ? '/dashboard' : '/become-supplier',
+            cls: 'side-orange'
+        },
+        {
+            icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+            title: t('post_rfq') || 'Post RFQ',
+            sub: t('get_multiple_quotes') || 'Get multiple quotes',
+            link: '/rfq/post',
+            cls: 'side-blue',
+            needsAuth: true
+        },
+        {
+            icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>,
+            title: t('top_ranking') || 'Top Ranking',
+            sub: t('best_sellers_today') || 'Best sellers today',
+            link: '/section/top-ranking',
+            cls: 'side-gold'
+        },
+        {
+            icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+            title: t('ai_sourcing') || 'AI Sourcing',
+            sub: t('smart_discovery') || 'Smart discovery',
+            link: '/ai-sourcing',
+            cls: 'side-purple'
+        },
+    ];
+
+    const handleSideLink = (item: any, e: React.MouseEvent) => {
+        if (item.needsAuth && !user) {
+            e.preventDefault();
+            openLogin();
+        }
+        if (isSupplier && item.link === '/dashboard' && switchRole) {
+            switchRole('supplier');
+        }
+    };
+
     const handleQuickAction = (item, e) => {
         if (item.needsAuth && !user) {
             e.preventDefault();
@@ -341,12 +385,15 @@ const MobileHomePage = () => {
 
     return (
         <div className="mobile-home-page">
+            {/* Spacer for fixed header height */}
+            <div style={{ height: '52px', flexShrink: 0 }} />
 
             {/* ═══════════════════════════
-                SEARCH BAR & TABS
+                SEARCH BAR & TABS — Premium Redesign
             ═══════════════════════════ */}
-            <div className="mph-search-bar-wrap" style={{ marginTop: '54px' }}>
-                {/* Location Selection Dropdown Banner */}
+            <div className="mph-search-bar-wrap mph-v2-search-zone">
+
+                {/* Location dropdown */}
                 {isDeliverToOpen && (
                     <div className="mph-location-dropdown">
                         <div className="mph-location-dropdown-header">
@@ -356,17 +403,9 @@ const MobileHomePage = () => {
                         <div className="mph-location-dropdown-body">
                             <Select
                                 value={(availableCountries || []).find((c: any) => c.code === tempCountry || c.name === tempCountry)}
-                                onChange={(opt: any) => {
-                                    setTempCountry(opt ? opt.name : '');
-                                }}
+                                onChange={(opt: any) => { setTempCountry(opt ? opt.name : ''); }}
                                 options={availableCountries || [
                                     { code: 'US', name: 'United States' },
-                                    { code: 'GB', name: 'United Kingdom' },
-                                    { code: 'CA', name: 'Canada' },
-                                    { code: 'AU', name: 'Australia' },
-                                    { code: 'DE', name: 'Germany' },
-                                    { code: 'FR', name: 'France' },
-                                    { code: 'CN', name: 'China' },
                                     { code: 'IN', name: 'India' },
                                 ]}
                                 getOptionLabel={(opt: any) => opt.name}
@@ -375,118 +414,85 @@ const MobileHomePage = () => {
                                 className="mph-country-select"
                                 classNamePrefix="react-select"
                             />
-                            <button
-                                className="mph-location-save-btn"
-                                onClick={() => {
-                                    if (setSelectedCountry) setSelectedCountry(tempCountry);
-                                    setIsDeliverToOpen(false);
-                                }}
-                            >
+                            <button className="mph-location-save-btn" onClick={() => { if (setSelectedCountry) setSelectedCountry(tempCountry); setIsDeliverToOpen(false); }}>
                                 Save Location
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* ─── Tabs ─── */}
-                <div className="mph-search-tabs">
+                {/* ── Pill Tab Switcher ── */}
+                <div className="mph-v2-tabs">
                     <Link
                         href="/ai-sourcing"
-                        className={`mph-search-tab mph-search-tab--ai ${activeSearchTab === 'ai' ? 'active' : ''}`}
+                        className={`mph-v2-tab mph-v2-tab--ai ${activeSearchTab === 'ai' ? 'mph-v2-tab--active' : ''}`}
                         style={{ textDecoration: 'none' }}
                     >
-                        AI Mode <span className="mph-sparkle">✦</span>
+                        ✦ AI Mode
                     </Link>
-                    <button
-                        className={`mph-search-tab ${activeSearchTab === 'products' ? 'active' : ''}`}
-                        onClick={() => navigate.replace(`/?tab=products`)}
-                    >
+                    <button className={`mph-v2-tab ${activeSearchTab === 'products' ? 'mph-v2-tab--active' : ''}`} onClick={() => navigate.replace(`/?tab=products`)}>
                         {t('products') || 'Products'}
                     </button>
-                    <button
-                        className={`mph-search-tab ${activeSearchTab === 'suppliers' ? 'active' : ''}`}
-                        onClick={() => navigate.replace(`/?tab=suppliers`)}
-                    >
+                    <button className={`mph-v2-tab ${activeSearchTab === 'suppliers' ? 'mph-v2-tab--active' : ''}`} onClick={() => navigate.replace(`/?tab=suppliers`)}>
                         {t('manufacturers') || 'Manufacturers'}
                     </button>
-                    <button
-                        className={`mph-search-tab ${activeSearchTab === 'worldwide' ? 'active' : ''}`}
-                        onClick={() => navigate.replace(`/?tab=worldwide`)}
-                    >
+                    <button className={`mph-v2-tab ${activeSearchTab === 'worldwide' ? 'mph-v2-tab--active' : ''}`} onClick={() => navigate.replace(`/?tab=worldwide`)}>
                         {t('worldwide') || 'Worldwide'}
                     </button>
                 </div>
 
-                <form className="mph-search-form" onSubmit={handleSearch}>
-                    <div className="mph-search-input-wrap">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="mph-search-icon-left">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                {/* ── Search bar ── */}
+                <form className="mph-v2-search-form" onSubmit={handleSearch}>
+                    <div className="mph-v2-input-wrap">
+                        <svg width="17" height="17" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         <input
                             type="text"
-                            className="mph-search-input"
-                            placeholder={activeSearchTab === 'products' ? (t('search') + ' ' + (t('products') || 'Products') + '...') : (t('search') + ' ' + (t('suppliers') || 'Suppliers') + '...')}
+                            className="mph-v2-input"
+                            placeholder={activeSearchTab === 'products' ? 'Search products...' : 'Search suppliers...'}
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                         />
-                        <input
-                            type="file"
-                            id="mph-mobile-image-search"
-                            style={{ display: 'none' }}
-                            accept="image/*"
-                            onChange={(e) => {
-                                const file = e.target.files ? e.target.files[0] : null;
-                                if (file) {
-                                    if (typeof window !== 'undefined') {
-                                        (window as any).imageSearchFile = file;
-                                    }
-                                    navigate.push('/search?is_image_search=true');
-                                }
-                            }}
-                        />
-                        <button
-                            type="button"
-                            className="mph-btn-image-search"
-                            onClick={() => document.getElementById('mph-mobile-image-search')?.click()}
-                        >
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <input type="file" id="mph-v2-img-search" style={{ display: 'none' }} accept="image/*" onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) { (window as any).imageSearchFile = file; navigate.push('/search?is_image_search=true'); }
+                        }}/>
+                        <button type="button" className="mph-v2-camera-btn" onClick={() => document.getElementById('mph-v2-img-search')?.click()}>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                         </button>
                     </div>
-                    <button type="submit" className="mph-search-submit">
-                        {t('search') || 'Search'}
+                    <button type="submit" className="mph-v2-search-btn" aria-label="Search">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
                     </button>
                 </form>
             </div>
 
             {/* ═══════════════════════════
-                SECONDARY NAV BAR (Scrolling)
+                SECONDARY NAV — Chip Style
             ═══════════════════════════ */}
-            <div className="mph-secondary-nav">
-                <button className="mph-sec-nav-item" onClick={() => setPopupMenu('categories')} style={{ background: 'none', border: 'none' }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+            <div className="mph-v2-secondary-nav">
+                <button className="mph-v2-chip mph-v2-chip--icon" onClick={() => setPopupMenu('categories')}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                     All categories
                 </button>
-                <button className="mph-sec-nav-item" onClick={() => setPopupMenu('featured')} style={{ background: 'none', border: 'none' }}>
+                <button className="mph-v2-chip" onClick={() => setPopupMenu('featured')}>
                     Featured selections
+                    <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ marginLeft: '4px' }}><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
-                <Link href="/become-supplier" className="mph-sec-nav-item">
-                    Start Selling
-                </Link>
-                <Link href="/rfq/post" className="mph-sec-nav-item">
-                    Request for Quotation
-                </Link>
-                <button className="mph-sec-nav-item" onClick={() => setPopupMenu('help')} style={{ background: 'none', border: 'none' }}>
+                <Link href="/become-supplier" className="mph-v2-chip" style={{ textDecoration: 'none' }}>Start Selling</Link>
+                <Link href="/rfq/post" className="mph-v2-chip" style={{ textDecoration: 'none' }}>Request for Quotation</Link>
+                <button className="mph-v2-chip" onClick={() => setPopupMenu('help')}>
                     Help Center
+                    <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ marginLeft: '4px' }}><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
             </div>
+
 
             {/* ═══════════════════════════
                 CONDITIONAL BODY FOR TABS
@@ -560,24 +566,50 @@ const MobileHomePage = () => {
                         )}
                     </div>
 
-                    {/* ═══════════════════════════
-                    QUICK ACTIONS GRID
-                ═══════════════════════════ */}
-                    <div className="mph-quick-actions-wrap">
-                        <div className="mph-quick-actions-grid" style={{ justifyContent: 'center' }}>
-                            {QUICK_ACTIONS.map((item, i) => (
-                                <Link
-                                    key={i}
-                                    href={item.link}
-                                    className="mph-quick-action-item"
-                                    onClick={e => handleQuickAction(item, e)}
-                                >
-                                    <div className="mph-quick-action-icon" style={{ background: item.bg }}>{item.icon}</div>
-                                    <span className="mph-quick-action-label" style={{ color: '#222' }}>{item.label}</span>
-                                </Link>
-                            ))}
+                    {/* Stats chips row */}
+                    <div className="mph-stats-chips-row">
+                        <div className="mph-stats-chip">
+                            <span className="mph-stats-chip-num">200K+</span>
+                            <span className="mph-stats-chip-label">{t('suppliers') || 'Suppliers'}</span>
+                        </div>
+                        <div className="mph-stats-chip">
+                            <span className="mph-stats-chip-num">40M+</span>
+                            <span className="mph-stats-chip-label">{t('products') || 'Products'}</span>
+                        </div>
+                        <div className="mph-stats-chip">
+                            <span className="mph-stats-chip-num">24hr</span>
+                            <span className="mph-stats-chip-label">{t('response') || 'Response'}</span>
+                        </div>
+                        <div className="mph-stats-chip">
+                            <span className="mph-stats-chip-num">190+</span>
+                            <span className="mph-stats-chip-label">{t('countries') || 'Countries'}</span>
                         </div>
                     </div>
+
+                    {/* Quick action 2x2 grid */}
+                    <div className="mph-hero-quicklinks">
+                        {DYNAMIC_SIDE_LINKS.map((item, i) => (
+                            <Link
+                                key={i}
+                                href={item.link}
+                                className={`mph-ql-card ${item.cls}`}
+                                onClick={e => handleSideLink(item, e)}
+                                style={{ textDecoration: 'none' }}
+                            >
+                                <span className="mph-ql-icon">{item.icon}</span>
+                                <div className="mph-ql-text">
+                                    <span className="mph-ql-title">{item.title}</span>
+                                    <span className="mph-ql-sub">{item.sub}</span>
+                                </div>
+                                <svg className="mph-ql-arrow" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 18l6-6-6-6" />
+                                </svg>
+                            </Link>
+                        ))}
+                    </div>
+
+
+
 
                     {/* ═══════════════════════════
                     CATEGORIES SCROLL ROW

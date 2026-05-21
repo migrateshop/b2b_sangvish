@@ -438,6 +438,7 @@
     .section-items-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+
     .grid-6-cols {
         grid-template-columns: repeat(4, 1fr);
     }
