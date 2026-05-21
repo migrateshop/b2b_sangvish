@@ -508,7 +508,7 @@ const MyMessages = () => {
                                                                     <p className={styles['msg-product-name']}>{p.name}</p>
                                                                     <p className={styles['msg-product-price']}>${p.price}</p>
                                                                     <button
-                                                                        onClick={() => window.open(`/product/${p.id}`, '_blank')}
+                                                                        onClick={() => window.open(`/product/${p.slug || p._id || p.id}`, '_blank')}
                                                                         className={styles['msg-product-btn']}
                                                                     >
                                                                         View Product

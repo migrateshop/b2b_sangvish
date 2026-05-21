@@ -25,6 +25,51 @@ const DATE_FORMATS = [
     { value: 'D MMM YYYY', label: 'D MMM YYYY (31 Dec 2024)' },
 ];
 
+const FieldRow = ({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', alignItems: 'flex-start', padding: '20px 0', borderBottom: '1px solid var(--admin-border)' }}>
+        <div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)' }}>{label}</div>
+            {hint && <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)', marginTop: '3px', lineHeight: '1.5' }}>{hint}</div>}
+        </div>
+        <div>{children}</div>
+    </div>
+);
+
+const Toggle = ({ on, onToggle, labelOn, labelOff, danger }: { on: boolean; onToggle: () => void; labelOn: string; labelOff: string; danger?: boolean }) => (
+    <div
+        onClick={onToggle}
+        style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '14px 16px', background: 'var(--admin-bg)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}
+    >
+        <div style={{ position: 'relative', width: '44px', height: '24px', borderRadius: '12px', background: on ? (danger ? '#dc2626' : 'var(--primary-color)') : 'var(--admin-border)', transition: 'background 0.2s', flexShrink: 0 }}>
+            <div style={{ position: 'absolute', top: '3px', left: on ? 'calc(100% - 21px)' : '3px', width: '18px', height: '18px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'left 0.2s' }} />
+        </div>
+        <div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)' }}>{on ? labelOn : labelOff}</div>
+        </div>
+    </div>
+);
+
+const LogoUpload = ({ label, dark, preview, onFile, onClear, t }: { label: string; dark?: boolean; preview: string | null; onFile: (e: React.ChangeEvent<HTMLInputElement>) => void; onClear: () => void; t: any }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {label && <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>}
+        <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px', border: '1px dashed var(--admin-border)', borderRadius: '10px', cursor: 'pointer', background: dark ? 'var(--admin-text-secondary)' : 'var(--admin-bg)', transition: 'border-color 0.15s' }}>
+            {!preview ? (
+                <>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--admin-text-muted)" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                    <span style={{ fontSize: '12px', color: 'var(--admin-text-muted)' }}>{t('click_to_upload') || 'Click to upload'}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary-color)' }}>{t('browse_files') || 'Browse files'}</span>
+                </>
+            ) : (
+                <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: dark ? 'transparent' : '#fff' }}>
+                    <img src={getImgUrl(preview)} alt={label} style={{ maxHeight: '36px', maxWidth: '140px', objectFit: 'contain' }} />
+                    <span onClick={e => { e.preventDefault(); onClear(); }} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '20px', height: '20px', borderRadius: '50%', background: '#ef4444', color: '#fff', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', cursor: 'pointer', lineHeight: 1 }}>&#x2715;</span>
+                </div>
+            )}
+            <input type="file" style={{ display: 'none' }} accept=".png,.svg,.jpg,.jpeg,.ico" onChange={onFile} />
+        </label>
+    </div>
+);
+
 const AdminSettings = () => {
     const router = useRouter();
     const { refreshSiteSettings, t } = useAuth();
@@ -169,51 +214,7 @@ const AdminSettings = () => {
         }
     };
 
-    /* ── Shared sub-components ── */
-    const FieldRow = ({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) => (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', alignItems: 'flex-start', padding: '20px 0', borderBottom: '1px solid var(--admin-border)' }}>
-            <div>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)' }}>{label}</div>
-                {hint && <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)', marginTop: '3px', lineHeight: '1.5' }}>{hint}</div>}
-            </div>
-            <div>{children}</div>
-        </div>
-    );
 
-    const Toggle = ({ on, onToggle, labelOn, labelOff, danger }: { on: boolean; onToggle: () => void; labelOn: string; labelOff: string; danger?: boolean }) => (
-        <div
-            onClick={onToggle}
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '14px 16px', background: 'var(--admin-bg)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}
-        >
-            <div style={{ position: 'relative', width: '44px', height: '24px', borderRadius: '12px', background: on ? (danger ? '#dc2626' : 'var(--primary-color)') : 'var(--admin-border)', transition: 'background 0.2s', flexShrink: 0 }}>
-                <div style={{ position: 'absolute', top: '3px', left: on ? 'calc(100% - 21px)' : '3px', width: '18px', height: '18px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'left 0.2s' }} />
-            </div>
-            <div>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)' }}>{on ? labelOn : labelOff}</div>
-            </div>
-        </div>
-    );
-
-    const LogoUpload = ({ label, dark, preview, onFile, onClear }: { label: string; dark?: boolean; preview: string | null; onFile: (e: React.ChangeEvent<HTMLInputElement>) => void; onClear: () => void }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {label && <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>}
-            <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px', border: '1px dashed var(--admin-border)', borderRadius: '10px', cursor: 'pointer', background: dark ? 'var(--admin-text-secondary)' : 'var(--admin-bg)', transition: 'border-color 0.15s' }}>
-                {!preview ? (
-                    <>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--admin-text-muted)" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                        <span style={{ fontSize: '12px', color: 'var(--admin-text-muted)' }}>{t('click_to_upload') || 'Click to upload'}</span>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary-color)' }}>{t('browse_files') || 'Browse files'}</span>
-                    </>
-                ) : (
-                    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--admin-border)', background: dark ? 'transparent' : '#fff' }}>
-                        <img src={getImgUrl(preview)} alt={label} style={{ maxHeight: '36px', maxWidth: '140px', objectFit: 'contain' }} />
-                        <span onClick={e => { e.preventDefault(); onClear(); }} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '20px', height: '20px', borderRadius: '50%', background: '#ef4444', color: '#fff', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', cursor: 'pointer', lineHeight: 1 }}>&#x2715;</span>
-                    </div>
-                )}
-                <input type="file" style={{ display: 'none' }} accept=".png,.svg,.jpg,.jpeg,.ico" onChange={onFile} />
-            </label>
-        </div>
-    );
 
     return (
         <div className={styles['admin-page']}>
@@ -282,14 +283,14 @@ const AdminSettings = () => {
 
                         <FieldRow label={t('logos') || "Logos"} hint={t('logos_hint') || "SVG or PNG recommended"}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
-                                <LogoUpload label={t('dark_logo_label') || "Dark Logo (on light bg)"} preview={darkLogoPreview} onFile={e => handleLogoChange(e, 'dark')} onClear={() => { setDarkLogoPreview(null); setSettings(p => ({ ...p, logo_dark: '' })); }} />
-                                <LogoUpload label={t('light_logo_label') || "Light Logo (on dark bg)"} dark preview={lightLogoPreview} onFile={e => handleLogoChange(e, 'light')} onClear={() => { setLightLogoPreview(null); setSettings(p => ({ ...p, logo_light: '' })); }} />
+                                <LogoUpload label={t('dark_logo_label') || "Dark Logo (on light bg)"} preview={darkLogoPreview} onFile={e => handleLogoChange(e, 'dark')} onClear={() => { setDarkLogoPreview(null); setSettings(p => ({ ...p, logo_dark: '' })); }} t={t} />
+                                <LogoUpload label={t('light_logo_label') || "Light Logo (on dark bg)"} dark preview={lightLogoPreview} onFile={e => handleLogoChange(e, 'light')} onClear={() => { setLightLogoPreview(null); setSettings(p => ({ ...p, logo_light: '' })); }} t={t} />
                             </div>
                         </FieldRow>
 
                         <FieldRow label={t('favicon') || "Favicon"} hint={t('favicon_hint') || "ICO, PNG or SVG, 32x32px"}>
                             <div style={{ maxWidth: '180px' }}>
-                                <LogoUpload label="" preview={faviconPreview} onFile={e => handleLogoChange(e, 'favicon')} onClear={() => { setFaviconPreview(null); setSettings(p => ({ ...p, favicon: '' })); }} />
+                                <LogoUpload label="" preview={faviconPreview} onFile={e => handleLogoChange(e, 'favicon')} onClear={() => { setFaviconPreview(null); setSettings(p => ({ ...p, favicon: '' })); }} t={t} />
                             </div>
                         </FieldRow>
                     </div>
@@ -434,29 +435,7 @@ const AdminSettings = () => {
                                         {t('restore_dummy_data_desc') || 'Instantly restore baseline dummy B2B categories, products, customer accounts, orders, reviews, and inquiries.'}
                                     </div>
                                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleDirectImport}
-                                            disabled={importing}
-                                            className={`${styles['admin-btn']} ${styles['admin-btn-primary']}`}
-                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                        >
-                                            {importing ? (
-                                                <>
-                                                    <span className="spinner" style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%' }} />
-                                                    Importing...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                                        <polyline points="7 10 12 15 17 10" />
-                                                        <line x1="12" y1="15" x2="12" y2="3" />
-                                                    </svg>
-                                                    {t('import_dummy_now') || 'Import Dummy Data'}
-                                                </>
-                                            )}
-                                        </button>
+
 
                                         <button type="button" onClick={() => router.push('/admin/dummy-data')}
                                             className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`}

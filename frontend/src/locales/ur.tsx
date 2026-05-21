@@ -348,5 +348,7 @@ export default {
     'users': 'صارفین',
     'verified_companies': 'تصدیق شدہ کمپنیاں',
     'pending_verifications': 'زیر التواء توثیق',
-    'admins': 'ایڈمنز'
+    'admins': 'ایڈمنز',
+    'bank_transfer': 'بینک ٹرانسفر',
+    'paypal': 'PayPal'
 };

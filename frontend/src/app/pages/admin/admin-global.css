@@ -124,9 +124,9 @@
 }
 
 .admin-nav-item.active {
-    background-color: #ff6a00 !important;
+    background-color: var(--primary-color, #0d2e67) !important;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(255, 106, 0, 0.25);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color, #0d2e67) 35%, transparent);
 }
 
 .admin-nav-item.active svg {
@@ -301,7 +301,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    margin-bottom: 0;
+    margin-bottom: 24px;
 }
 
 .admin-stat-premium {

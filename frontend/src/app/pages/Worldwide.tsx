@@ -23,12 +23,18 @@ const ALL_REGION = {
     )
 };
 
+interface CountryItem {
+    name: string;
+    icon?: React.ReactNode;
+    flag?: string;
+}
+
 const Worldwide = () => {
     const { user, convertPrice, t, selectedCountry } = useAuth();
-    const [products, setProducts] = useState([]);
-    const [dynamicHubs, setDynamicHubs] = useState([]);
+    const [products, setProducts] = useState<any[]>([]);
+    const [dynamicHubs, setDynamicHubs] = useState<any[]>([]);
     const [activeCountry, setActiveCountry] = useState('All');
-    const [countries, setCountries] = useState([ALL_REGION]);
+    const [countries, setCountries] = useState<CountryItem[]>([ALL_REGION]);
     const [loading, setLoading] = useState(true);
 
     // Fetch dynamic countries list on mount
@@ -164,7 +170,7 @@ const Worldwide = () => {
                                         <div className={styles['ww-hub-side-images']}>
                                             {[hub.sideProduct1, hub.sideProduct2].map((prod, pIdx) => (
                                                 prod ? (
-                                                    <Link key={pIdx} href={`/product/${prod._id}`} className={styles['ww-hub-side-box']} style={{ textDecoration: 'none' }}>
+                                                    <Link key={pIdx} href={`/product/${prod.slug || prod._id}`} className={styles['ww-hub-side-box']} style={{ textDecoration: 'none' }}>
                                                         <img src={getImgUrl(prod.main_image || prod.images?.[0])} alt="" />
                                                     </Link>
                                                 ) : hub.sideImages?.[pIdx] ? (
@@ -200,7 +206,7 @@ const Worldwide = () => {
                     <h2 className={styles['ww-section-title']}>{t('product_inspiration')}</h2>
                     <div className={styles['ww-inspiration-grid']}>
                         {products.map(product => (
-                            <Link key={product._id} href={`/product/${product._id}`} className={styles['ww-insp-card']}>
+                            <Link key={product._id} href={`/product/${product.slug || product._id}`} className={styles['ww-insp-card']}>
                                 <div className={styles['ww-insp-img-box']}>
                                     <img src={getImgUrl(product.main_image || product.images?.[0])} alt={product.name} />
                                 </div>
@@ -208,7 +214,7 @@ const Worldwide = () => {
                                     <h5 className={styles['ww-insp-name']}>{product.name}</h5>
                                     <p className={styles['ww-insp-price']}>
                                         {product.price_tiers && product.price_tiers.length > 1 ? (
-                                            `${convertPrice(Math.min(...product.price_tiers.map(t => t.price))).formatted} - ${convertPrice(Math.max(...product.price_tiers.map(t => t.price))).formatted}`
+                                            `${convertPrice(Math.min(...product.price_tiers.map((t: any) => t.price))).formatted} - ${convertPrice(Math.max(...product.price_tiers.map((t: any) => t.price))).formatted}`
                                         ) : (
                                             convertPrice(product.main_price).formatted
                                         )}

@@ -11,6 +11,7 @@ interface ProductEnquiry {
         _id: string;
         name: string;
         main_image: string;
+        slug?: string;
     };
     supplier: {
         _id: string;
@@ -82,8 +83,8 @@ const BuyerEnquiries = () => {
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>Product Enquiries</h2>
                     <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b', fontWeight: 500 }}>Manage your general questions regarding bulk prices, MOQs, shipping rates, and stock availability.</p>
                 </div>
-                <button 
-                    onClick={fetchEnquiries} 
+                <button
+                    onClick={fetchEnquiries}
                     style={{ background: '#f1f5f9', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, color: '#475569', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
                     onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}
@@ -119,15 +120,15 @@ const BuyerEnquiries = () => {
                                         <span style={{ color: '#cbd5e1' }}>•</span>
                                         <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Sent: {new Date(enq.createdAt).toLocaleDateString()}</span>
                                     </div>
-                                    <span style={{ 
-                                        padding: '4px 12px', 
-                                        borderRadius: '12px', 
-                                        fontSize: '0.75rem', 
-                                        fontWeight: 800, 
+                                    <span style={{
+                                        padding: '4px 12px',
+                                        borderRadius: '12px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 800,
                                         textTransform: 'uppercase',
-                                        background: statusColors.bg, 
-                                        color: statusColors.text, 
-                                        border: `1.5px solid ${statusColors.border}` 
+                                        background: statusColors.bg,
+                                        color: statusColors.text,
+                                        border: `1.5px solid ${statusColors.border}`
                                     }}>
                                         {enq.status}
                                     </span>
@@ -136,16 +137,16 @@ const BuyerEnquiries = () => {
                                 {/* Details Body */}
                                 <div style={{ padding: isMobile ? '16px' : '20px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '16px' : '20px' }}>
                                     {enq.product ? (
-                                        <img 
-                                            src={getImgUrl(enq.product?.main_image)} 
-                                            alt={enq.product?.name} 
-                                            style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #eee' }} 
+                                        <img
+                                            src={getImgUrl(enq.product?.main_image)}
+                                            alt={enq.product?.name}
+                                            style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #eee' }}
                                         />
                                     ) : (
                                         <div style={{ width: '80px', height: '80px', borderRadius: '10px', border: '1px solid #eee', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>🏢</div>
                                     )}
                                     <div>
-                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 700, color: '#0f172a', cursor: enq.product ? 'pointer' : 'default' }} onClick={() => enq.product && navigate.push(`/product/${enq.product?._id}`)}>
+                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 700, color: '#0f172a', cursor: enq.product ? 'pointer' : 'default' }} onClick={() => enq.product && navigate.push(`/product/${enq.product?.slug || enq.product?._id}`)}>
                                             {enq.product?.name || 'General Supplier Inquiry'}
                                         </h3>
                                         <p style={{ margin: '0 0 12px 0', fontSize: '0.825rem', color: '#64748b', fontWeight: 500 }}>To Supplier: <strong style={{ color: '#334155' }}>{supplierName}</strong></p>
@@ -163,14 +164,14 @@ const BuyerEnquiries = () => {
 
                                         {enq.attachment && (
                                             <div style={{ marginBottom: '16px' }}>
-                                                <a 
-                                                    href={formatFileUrl(enq.attachment)} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={formatFileUrl(enq.attachment)}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 700, textDecoration: 'none', background: 'rgba(13, 46, 103, 0.05)', padding: '6px 12px', borderRadius: '6px' }}
                                                 >
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '4px' }}>
-                                                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                                                     </svg>
                                                     View Attached File
                                                 </a>
@@ -189,7 +190,7 @@ const BuyerEnquiries = () => {
 
                                         {/* Continue Discussion button */}
                                         <div style={{ marginTop: '20px' }}>
-                                            <button 
+                                            <button
                                                 onClick={() => handleContinueDiscussion(enq.supplier._id)}
                                                 style={{ background: 'var(--primary-color)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                                             >

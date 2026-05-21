@@ -513,8 +513,8 @@ const AdminWorldwide = () => {
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                                    <button onClick={() => setModal({ type: 'hub', data: hub })} style={editBtnSt}>Edit</button>
-                                    <button onClick={() => setDeleteConfirm({ type: 'hub', id: hub._id, name: hub.title })} style={deleteBtnSt}>Delete</button>
+                                    <button onClick={() => setModal({ type: 'hub', data: hub })} className="admin-action-btn-edit">Edit</button>
+                                    <button onClick={() => setDeleteConfirm({ type: 'hub', id: hub._id, name: hub.title })} className="admin-action-btn-delete">Delete</button>
                                 </div>
                             </div>
                         </div>

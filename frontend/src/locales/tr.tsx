@@ -348,5 +348,7 @@ export default {
     'users': 'kullanıcılar',
     'verified_companies': 'Doğrulanmış Şirketler',
     'pending_verifications': 'Bekleyen Doğrulamalar',
-    'admins': 'Yöneticiler'
+    'admins': 'Yöneticiler',
+    'bank_transfer': 'Banka Havalesi',
+    'paypal': 'PayPal'
 };

@@ -336,5 +336,7 @@ export default {
     'users': '用户',
     'verified_companies': '已验证公司',
     'pending_verifications': '待验证',
-    'admins': '管理员'
+    'admins': '管理员',
+    'bank_transfer': '银行转账',
+    'paypal': 'PayPal'
 };

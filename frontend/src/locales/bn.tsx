@@ -350,5 +350,7 @@ export default {
     'users': 'ব্যবহারকারীদের',
     'verified_companies': 'যাচাইকৃত কোম্পানি',
     'pending_verifications': 'মুলতুবি যাচাইকরণ',
-    'admins': 'অ্যাডমিনস'
+    'admins': 'অ্যাডমিনস',
+    'bank_transfer': 'ব্যাংক ট্রান্সফার',
+    'paypal': 'PayPal'
 };

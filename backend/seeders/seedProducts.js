@@ -151,7 +151,8 @@ const seedData = async () => {
                 main_image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&auto=format&fit=crop',
                 images: [
                     'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&auto=format&fit=crop'
+                    'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800&auto=format&fit=crop'
                 ],
                 rating: 4.6,
                 numReviews: 860,
@@ -175,7 +176,8 @@ const seedData = async () => {
                 main_image: 'https://images.unsplash.com/photo-1544117518-30dd057209fc?w=800&auto=format&fit=crop',
                 images: [
                     'https://images.unsplash.com/photo-1544117518-30dd057209fc?w=800&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop'
+                    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop'
                 ],
                 rating: 4.7,
                 numReviews: 2100,
@@ -188,12 +190,54 @@ const seedData = async () => {
 
         // Add 18 varied products for "Just For You"
         const justForYouTemplates = [
-            { name: 'Wireless Bluetooth Headset', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop' },
-            { name: 'Mechanical Gaming Keyboard', img: 'https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=400&h=400&fit=crop' },
-            { name: 'Portable SSD 1TB USB-C', img: 'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=400&h=400&fit=crop' },
-            { name: '4K Action Camera Waterproof', img: 'https://images.unsplash.com/photo-1526170315870-ef6d82f58396?w=400&h=400&fit=crop' },
-            { name: 'Minimalist Wall Clock', img: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=400&h=400&fit=crop' },
-            { name: 'Leather Messenger Bag', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop' }
+            {
+                name: 'Wireless Bluetooth Headset',
+                images: [
+                    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&auto=format&fit=crop'
+                ]
+            },
+            {
+                name: 'Mechanical Gaming Keyboard',
+                images: [
+                    'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop'
+                ]
+            },
+            {
+                name: 'Portable SSD 1TB USB-C',
+                images: [
+                    'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1601524909162-be87252be298?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&auto=format&fit=crop'
+                ]
+            },
+            {
+                name: '4K Action Camera Waterproof',
+                images: [
+                    'https://images.unsplash.com/photo-1526170315870-ef6d82f58396?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=800&auto=format&fit=crop'
+                ]
+            },
+            {
+                name: 'Minimalist Wall Clock',
+                images: [
+                    'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1532635241-17e820acf59f?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&auto=format&fit=crop'
+                ]
+            },
+            {
+                name: 'Leather Messenger Bag',
+                images: [
+                    'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1590874103328-eacb5e699ce7?w=800&auto=format&fit=crop'
+                ]
+            }
         ];
 
         for (let i = 0; i < 18; i++) {
@@ -210,8 +254,8 @@ const seedData = async () => {
                     { min_quantity: 1, max_quantity: 10, price: Math.floor(Math.random() * 50) + 20 },
                     { min_quantity: 11, max_quantity: null, price: Math.floor(Math.random() * 40) + 15 }
                 ],
-                main_image: template.img,
-                images: [template.img],
+                main_image: template.images[0],
+                images: template.images,
                 rating: 4.0 + Math.random(),
                 numReviews: Math.floor(Math.random() * 500) + 50,
                 status: 'active',

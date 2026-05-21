@@ -348,5 +348,7 @@ export default {
     'users': 'pengguna',
     'verified_companies': 'Syarikat Disahkan',
     'pending_verifications': 'Pengesahan belum selesai',
-    'admins': 'Pentadbir'
+    'admins': 'Pentadbir',
+    'bank_transfer': 'Pemindahan Bank',
+    'paypal': 'PayPal'
 };

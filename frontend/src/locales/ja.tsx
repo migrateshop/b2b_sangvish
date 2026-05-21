@@ -348,5 +348,7 @@ export default {
     'users': 'ユーザー',
     'verified_companies': '検証された企業',
     'pending_verifications': '保留中の検証',
-    'admins': '管理者'
+    'admins': '管理者',
+    'bank_transfer': '銀行振込',
+    'paypal': 'PayPal'
 };

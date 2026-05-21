@@ -82,6 +82,8 @@ const AdminCompanies = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalConfig, setModalConfig] = useState<ModalConfig>({
@@ -258,6 +260,11 @@ const AdminCompanies = () => {
         return matchesSearch && matchesStatus;
     });
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentCompanies = filteredCompanies.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
+
     const stats = [
         { label: t('total_applications') || 'Total Applications', value: companies.length },
         { label: t('newly_submitted') || 'Newly Submitted', value: companies.filter(c => c.verification_status === 'pending' && c.user_id?.status === 'profile_submitted').length },
@@ -374,14 +381,14 @@ const AdminCompanies = () => {
                             className={styles['admin-search-input-premium']}
                             placeholder={t('find_company_placeholder') || "Find company by name, owner or email..."}
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                         />
                     </div>
                     <select
                         className={styles['admin-form-select']}
                         style={{ width: '180px' }}
                         value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
+                        onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
                     >
                         <option value="All">{t('all_statuses') || 'All Statuses'}</option>
                         <option value="Pending">{t('pending_review') || 'Pending Review'}</option>
@@ -402,7 +409,7 @@ const AdminCompanies = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredCompanies.map(company => (
+                            {currentCompanies.map(company => (
                                 <tr key={company._id}>
                                     <td>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -474,13 +481,13 @@ const AdminCompanies = () => {
                                         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                             {company.verification_status !== 'verified' ? (
                                                 <>
-                                                    <button onClick={() => handleVerifyClick(company._id, 'verified')} className={styles['admin-action-btn-edit']}>{t('approve') || 'Approve'}</button>
+                                                    <button onClick={() => handleVerifyClick(company._id, 'verified')} className="admin-action-btn-edit">{t('approve') || 'Approve'}</button>
                                                     {company.verification_status !== 'rejected' && (
-                                                        <button onClick={() => handleVerifyClick(company._id, 'rejected')} className={styles['admin-action-btn-delete']}>{t('reject') || 'Reject'}</button>
+                                                        <button onClick={() => handleVerifyClick(company._id, 'rejected')} className="admin-action-btn-delete">{t('reject') || 'Reject'}</button>
                                                     )}
                                                 </>
                                             ) : (
-                                                <button onClick={() => handleVerifyClick(company._id, 'rejected')} className={styles['admin-action-btn-delete']} style={{ fontSize: '11px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fee2e2' }}>{t('revoke_access') || 'Revoke Access'}</button>
+                                                <button onClick={() => handleVerifyClick(company._id, 'rejected')} className="admin-action-btn-delete">{t('revoke_access') || 'Revoke Access'}</button>
                                             )}
                                         </div>
                                     </td>
@@ -497,6 +504,22 @@ const AdminCompanies = () => {
                         </tbody>
                     </table>
                 </div>
+                {totalPages > 1 && (
+                    <div className={styles['admin-pagination-footer']}>
+                        <span className={styles['admin-pagination-info']}>
+                            {t('showing') || 'Showing'} {indexOfFirstItem + 1} {t('to') || 'to'} {Math.min(indexOfLastItem, filteredCompanies.length)} {t('of') || 'of'} {filteredCompanies.length}
+                        </span>
+                        <div className={styles['admin-pagination-controls']}>
+                            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className={styles['admin-pagination-btn-arrow']} title="Prev">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <span className="text-admin-main" style={{ fontSize: '12px', fontWeight: 800 }}>{t('page') || 'Page'} {currentPage} {t('of') || 'of'} {totalPages}</span>
+                            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className={styles['admin-pagination-btn-arrow']} title="Next">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

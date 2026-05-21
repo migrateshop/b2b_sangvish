@@ -101,7 +101,7 @@ const AdminPayoutSettings = () => {
                                     </div>
                                     <div>
                                         <h3 style={{ fontSize: '16px', fontWeight: 900, color: 'var(--admin-text-main)', margin: 0 }}>{method.name}</h3>
-                                        <p style={{ fontSize: '11px', color: 'var(--admin-text-muted)', margin: 0 }}>{method.id}</p>
+                                        <p style={{ fontSize: '11px', color: 'var(--admin-text-muted)', margin: 0 }}>{t(method.id)}</p>
                                     </div>
                                 </div>
                                 <div 

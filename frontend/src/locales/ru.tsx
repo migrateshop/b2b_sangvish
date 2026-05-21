@@ -348,5 +348,7 @@ export default {
     'users': 'пользователи',
     'verified_companies': 'Проверенные компании',
     'pending_verifications': 'Ожидающие проверки',
-    'admins': 'Админы'
+    'admins': 'Админы',
+    'bank_transfer': 'Банковский перевод',
+    'paypal': 'PayPal'
 };

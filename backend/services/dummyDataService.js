@@ -323,6 +323,31 @@ const performImport = async (logSession, session = null) => {
 
     // 4. Products Bulk Restorations (with Chunking)
     addLog(`Importing ${productsData.length} premium B2B products in chunks...`);
+    
+    // Ensure slugs are pre-populated on the imported products
+    const slugMap = new Map();
+    for (const product of productsData) {
+        if (!product.slug) {
+            const baseSlug = product.name
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            
+            let slug = baseSlug;
+            let counter = 1;
+            while (slugMap.has(slug)) {
+                slug = `${baseSlug}-${counter}`;
+                counter++;
+            }
+            product.slug = slug;
+            slugMap.set(slug, true);
+        } else {
+            slugMap.set(product.slug, true);
+        }
+    }
+
     const productChunks = chunkArray(productsData, CHUNK_SIZE);
     let importedProductsCount = 0;
     for (const chunk of productChunks) {

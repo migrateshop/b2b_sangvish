@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { verifySession, verifyPayPal } from '@/services/orderApi';
 import api from '@/services/axiosConfig';
 
-const DashboardContent = ({ overrideRole }) => {
+const DashboardContent = ({ overrideRole }: { overrideRole?: string }) => {
     const { user, currentRole } = useAuth();
     const params = useParams();
     // Routes use [...slug] so params is { slug: string[] }
@@ -27,12 +27,12 @@ const DashboardContent = ({ overrideRole }) => {
     }
 };
 
-const Dashboard = ({ overrideRole }) => {
+const Dashboard = ({ overrideRole }: { overrideRole?: string }) => {
     const { user, isInitialized } = useAuth();
     const navigate = useRouter();
 
     const searchParams = useSearchParams();
-    const setSearchParams = (params) => {
+    const setSearchParams = (params: any) => {
         navigate.push(`/dashboard?${params.toString()}`, { scroll: false });
     };
     const sessionId = searchParams.get('session_id');

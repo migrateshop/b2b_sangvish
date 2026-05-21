@@ -757,6 +757,34 @@ exports.confirmDelivery = async (req, res) => {
         order.status = 'delivered';
         await order.save();
         await createOrderStatusLog(order._id, 'Delivered', 'Order delivery confirmed by buyer');
+
+        // Escrow / Trade Assurance Logic: Release funds to supplier
+        if (order.payment_status === 'paid' && order.supplier_id) {
+            const User = require('../models/User');
+            const Transaction = require('../models/Transaction');
+            
+            // Calculate amount to credit (exclude service fee and tax, or simply subtract them from total)
+            const amountToCredit = order.total_amount - (order.service_fee || 0) - (order.tax_amount || 0);
+
+            if (amountToCredit > 0) {
+                const supplier = await User.findById(order.supplier_id);
+                if (supplier) {
+                    supplier.wallet_balance = (supplier.wallet_balance || 0) + amountToCredit;
+                    await supplier.save();
+
+                    await Transaction.create({
+                        user_id: supplier._id,
+                        order_id: order._id,
+                        type: 'credit',
+                        amount: amountToCredit,
+                        currency: 'USD',
+                        status: 'completed',
+                        description: `Payment released for delivered order #${order._id}`
+                    });
+                }
+            }
+        }
+
         res.json({ message: 'Delivery confirmed', order });
     } catch (err) {
         res.status(500).json({ message: err.message });

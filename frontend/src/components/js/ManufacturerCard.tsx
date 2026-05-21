@@ -236,7 +236,7 @@ const ManufacturerCard = ({ manufacturer }) => {
                             {products.map((product, idx) => (
                                 <SwiperSlide key={product._id || idx}>
                                     <Link
-                                        href={`/product/${product._id}`}
+                                        href={`/product/${product.slug || product._id}`}
                                         className="mc2-prod-slide"
                                         target="_blank"
                                         rel="noopener noreferrer"

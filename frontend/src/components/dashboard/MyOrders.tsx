@@ -10,12 +10,12 @@ import styles from './MyOrders.module.css';
 
 import { getImgUrl } from '@/utils/imageConfig';
 
-const PaymentBadge = ({ status }) => {
+const PaymentBadge = ({ status }: { status: string }) => {
     const cls =
-        status === 'paid' ? 'paid' :
-        status === 'disputed' ? 'disputed' :
-        status === 'refunded' ? 'refunded' : 'unpaid';
-    
+        (status === 'paid' ? 'paid' :
+            status === 'disputed' ? 'disputed' :
+                status === 'refunded' ? 'refunded' : 'unpaid') as 'paid' | 'disputed' | 'refunded' | 'unpaid';
+
     const icons = {
         paid: '',
         disputed: '',
@@ -31,25 +31,25 @@ const PaymentBadge = ({ status }) => {
     );
 };
 
-const OrderStatusPill = ({ status }) => {
-    const cls = ['pending','confirmed','shipped','delivered','cancelled'].includes(status) ? status : 'pending';
+const OrderStatusPill = ({ status }: { status: string }) => {
+    const cls = (['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'].includes(status) ? status : 'pending') as 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
     const labels = { pending: 'Confirming', confirmed: 'Preparing', shipped: 'In Transit', delivered: 'Delivered', cancelled: 'Cancelled' };
     return <div className={`${styles['order-status-pill']} ${styles[cls] || ''}`}>{labels[cls] || status}</div>;
 };
 
 const MyOrders = () => {
     const navigate = useRouter();
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { convertPrice } = useAuth();
     const [filterStatus, setFilterStatus] = useState('All');
     const [isReviewModalOpen, setReviewModalOpen] = useState(false);
-    const [reviewProductData, setReviewProductData] = useState(null);
-    const [reviewOrderId, setReviewOrderId] = useState(null);
+    const [reviewProductData, setReviewProductData] = useState<any>(null);
+    const [reviewOrderId, setReviewOrderId] = useState<any>(null);
 
     const [disputeModal, setDisputeModal] = useState(false);
-    const [disputeOrder, setDisputeOrder] = useState(null);
+    const [disputeOrder, setDisputeOrder] = useState<any>(null);
     const [disputeReason, setDisputeReason] = useState('Item not received');
     const [disputeDesc, setDisputeDesc] = useState('');
     const [disputeLoading, setDisputeLoading] = useState(false);
@@ -57,27 +57,28 @@ const MyOrders = () => {
     const [confirmModal, setConfirmModal] = useState({ isOpen: false, orderId: null });
     const [alertModal, setAlertModal] = useState({ isOpen: false, message: '', title: '' });
 
-    const openReviewModal = (product, orderId) => {
+    const openReviewModal = (product: any, orderId: any) => {
         setReviewProductData(product);
         setReviewOrderId(orderId);
         setReviewModalOpen(true);
     };
 
-    const handleConfirmDelivery = async (orderId) => {
+    const handleConfirmDelivery = async (orderId: any) => {
         setConfirmingDelivery(orderId);
         try {
             await api.put(`/orders/${orderId}/confirm-delivery`);
             setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: 'delivered' } : o));
             setAlertModal({ isOpen: true, message: 'Delivery confirmed successfully!', title: 'Success' });
         } catch (err) {
-            setAlertModal({ isOpen: true, message: err.response?.data?.message || 'Failed to confirm delivery', title: 'Error' });
+            setAlertModal({ isOpen: true, message: (err as any).response?.data?.message || 'Failed to confirm delivery', title: 'Error' });
         } finally {
             setConfirmingDelivery(null);
         }
     };
 
-    const handleOpenDisputeSubmit = async (e) => {
+    const handleOpenDisputeSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!disputeOrder) return;
         setDisputeLoading(true);
         try {
             await api.post('/disputes', { order_id: disputeOrder._id, reason: disputeReason, description: disputeDesc });
@@ -86,7 +87,7 @@ const MyOrders = () => {
             setDisputeDesc('');
             setAlertModal({ isOpen: true, message: 'Dispute opened. Our team will review it shortly.', title: 'Dispute Status' });
         } catch (err) {
-            setAlertModal({ isOpen: true, message: err.response?.data?.message || 'Failed to open dispute', title: 'Error' });
+            setAlertModal({ isOpen: true, message: (err as any).response?.data?.message || 'Failed to open dispute', title: 'Error' });
         } finally {
             setDisputeLoading(false);
         }
@@ -98,7 +99,7 @@ const MyOrders = () => {
                 const { data } = await getMyOrders();
                 setOrders(data);
             } catch (err) {
-                setError(err.response?.data?.message || 'Failed to fetch orders');
+                setError((err as any).response?.data?.message || 'Failed to fetch orders');
             } finally {
                 setLoading(false);
             }
@@ -136,9 +137,9 @@ const MyOrders = () => {
                             backdropFilter: 'blur(10px)'
                         }}>
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2">
-                                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                                <rect x="9" y="3" width="6" height="4" rx="2"/>
-                                <path d="M9 12h6M9 16h4"/>
+                                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                                <rect x="9" y="3" width="6" height="4" rx="2" />
+                                <path d="M9 12h6M9 16h4" />
                             </svg>
                         </div>
                         <h2 className={styles['orders-page-title']}>My Orders</h2>
@@ -240,7 +241,7 @@ const MyOrders = () => {
                                     {order.supplier_id && (
                                         <div className={styles['order-party-info']}>
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5">
-                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
                                             </svg>
                                             <span className={styles['order-party-label']}>Supplier:</span>
                                             <span className={styles['order-party-name']}>
@@ -251,7 +252,7 @@ const MyOrders = () => {
 
                                     {/* Items */}
                                     <div className={styles['order-items']}>
-                                        {order.order_items.map(item => (
+                                        {order.order_items.map((item: any) => (
                                             <div key={item._id} className={styles['order-item-row']}>
                                                 <div className={styles['order-item-img']}>
                                                     <img src={getImgUrl(item.image)} alt={item.name} />
@@ -275,7 +276,7 @@ const MyOrders = () => {
                                         {(order.tracking_number || order.shipping_company) && (
                                             <div className={styles['tracking-badge']}>
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1e40af" strokeWidth="2.5">
-                                                    <rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                                                    <rect x="1" y="3" width="15" height="13" /><path d="M16 8h4l3 3v5h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
                                                 </svg>
                                                 <span className={styles['tracking-carrier']}>{order.shipping_company}</span>
                                                 <span className={styles['tracking-number']}>{order.tracking_number}</span>
@@ -317,7 +318,7 @@ const MyOrders = () => {
                                             onClick={() => { setDisputeOrder(order); setDisputeModal(true); }}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
                                             Open Dispute
                                         </button>
@@ -356,9 +357,9 @@ const MyOrders = () => {
                                         }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px', verticalAlign: 'middle' }}>
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7 10 12 15 17 10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
                                         </svg>
                                         Download Invoice
                                     </button>
@@ -395,7 +396,7 @@ const MyOrders = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
                             <div style={{ width: 40, height: 40, background: '#fff1f2', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2.5">
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                                 </svg>
                             </div>
                             <div>

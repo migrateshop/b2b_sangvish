@@ -3,13 +3,13 @@ import { fetchProductById } from '@/services/productApi';
 import type { Metadata } from 'next';
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const { id } = await params;
-    const { data: product } = await fetchProductById(id);
+    const { slug } = await params;
+    const { data: product } = await fetchProductById(slug);
     if (!product) {
       return {
         title: 'Product - Alibaba Next B2B Marketplace',

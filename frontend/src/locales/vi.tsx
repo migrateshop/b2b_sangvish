@@ -348,5 +348,7 @@ export default {
     'users': 'người dùng',
     'verified_companies': 'Các công ty đã được xác minh',
     'pending_verifications': 'Đang chờ xác minh',
-    'admins': 'Quản trị viên'
+    'admins': 'Quản trị viên',
+    'bank_transfer': 'Chuyển khoản ngân hàng',
+    'paypal': 'PayPal'
 };

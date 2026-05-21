@@ -9,12 +9,12 @@ import styles from '../MyOrders.module.css';
 
 import { getImgUrl } from '@/utils/imageConfig';
 
-const PaymentBadge = ({ status, method }) => {
+const PaymentBadge = ({ status, method }: { status: string; method?: string }) => {
     const cls =
-        status === 'paid' ? 'paid' :
+        (status === 'paid' ? 'paid' :
             status === 'disputed' ? 'disputed' :
-                status === 'refunded' ? 'refunded' : 'unpaid';
-    
+                status === 'refunded' ? 'refunded' : 'unpaid') as 'paid' | 'disputed' | 'refunded' | 'unpaid';
+
     const icons = {
         paid: '✓',
         disputed: '!',
@@ -33,28 +33,29 @@ const PaymentBadge = ({ status, method }) => {
     );
 };
 
-const OrderStatusPill = ({ status }) => {
+const OrderStatusPill = ({ status }: { status: string }) => {
     const map = {
         pending: { cls: 'pending', label: 'New Request' },
         confirmed: { cls: 'confirmed', label: 'Confirmed' },
         shipped: { cls: 'shipped', label: 'In Transit' },
         delivered: { cls: 'delivered', label: 'Delivered' },
         cancelled: { cls: 'cancelled', label: 'Cancelled' },
-    };
-    const { cls, label } = map[status] || { cls: 'pending', label: status };
+    } as const;
+    const key = (['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'].includes(status) ? status : 'pending') as keyof typeof map;
+    const { cls, label } = map[key] || { cls: 'pending', label: status };
     return <div className={`${styles['order-status-pill']} ${styles[cls]}`}>{label}</div>;
 };
 
 const SupplierOrders = () => {
     const navigate = useRouter();
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { convertPrice } = useAuth();
     const [filterStatus, setFilterStatus] = useState('All');
-    const [updatingOrderId, setUpdatingOrderId] = useState(null);
+    const [updatingOrderId, setUpdatingOrderId] = useState<any>(null);
     const [alertModal, setAlertModal] = useState({ isOpen: false, message: '', title: '' });
-    const [editOrderData, setEditOrderData] = useState(null);
+    const [editOrderData, setEditOrderData] = useState<any>(null);
 
     useEffect(() => { fetchOrders(); }, []);
 
@@ -63,27 +64,28 @@ const SupplierOrders = () => {
             const { data } = await getSupplierOrders();
             setOrders(data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch orders');
+            setError((err as any).response?.data?.message || 'Failed to fetch orders');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleUpdateStatus = async (orderId, newStatus) => {
+    const handleUpdateStatus = async (orderId: any, newStatus: any) => {
         setUpdatingOrderId(orderId);
         try {
             await updateOrderStatus(orderId, { status: newStatus });
-            setOrders(orders.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
+            setOrders(orders.map((o: any) => o._id === orderId ? { ...o, status: newStatus } : o));
             setAlertModal({ isOpen: true, message: `Order status updated to ${newStatus}`, title: 'Update Successful' });
         } catch (err) {
-            setAlertModal({ isOpen: true, message: err.response?.data?.message || 'Failed to update order status', title: 'Update Error' });
+            setAlertModal({ isOpen: true, message: (err as any).response?.data?.message || 'Failed to update order status', title: 'Update Error' });
         } finally {
             setUpdatingOrderId(null);
         }
     };
 
-    const handleSaveTracking = async (e, orderId) => {
+    const handleSaveTracking = async (e: React.FormEvent, orderId: any) => {
         e.preventDefault();
+        if (!editOrderData) return;
         setUpdatingOrderId(orderId);
         try {
             await updateOrderStatus(orderId, {
@@ -91,7 +93,7 @@ const SupplierOrders = () => {
                 shipping_company: editOrderData.shipping_company,
                 status: 'shipped'
             });
-            setOrders(orders.map(o => o._id === orderId ? {
+            setOrders(orders.map((o: any) => o._id === orderId ? {
                 ...o,
                 tracking_number: editOrderData.tracking_number,
                 shipping_company: editOrderData.shipping_company,
@@ -100,7 +102,7 @@ const SupplierOrders = () => {
             setEditOrderData(null);
             setAlertModal({ isOpen: true, message: 'Tracking information saved successfully!', title: 'Shipping Updated' });
         } catch (err) {
-            setAlertModal({ isOpen: true, message: err.response?.data?.message || 'Failed to save tracking info', title: 'Update Error' });
+            setAlertModal({ isOpen: true, message: (err as any).response?.data?.message || 'Failed to save tracking info', title: 'Update Error' });
         } finally {
             setUpdatingOrderId(null);
         }
@@ -198,7 +200,7 @@ const SupplierOrders = () => {
 
                                     {/* Items */}
                                     <div className={styles['order-items']}>
-                                        {order.order_items.map(item => (
+                                        {order.order_items.map((item: any) => (
                                             <div key={item._id} className={styles['order-item-row']}>
                                                 <div className={styles['order-item-img']}>
                                                     <img src={getImgUrl(item.image)} alt={item.name} />
@@ -290,9 +292,9 @@ const SupplierOrders = () => {
                                         }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px', verticalAlign: 'middle' }}>
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7 10 12 15 17 10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
                                         </svg>
                                         Download Invoice
                                     </button>
@@ -335,8 +337,8 @@ const SupplierOrders = () => {
                                     value={editOrderData.shipping_company || ''}
                                     onChange={e => setEditOrderData({ ...editOrderData, shipping_company: e.target.value })}
                                     style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '14px', outline: 'none', transition: 'border-color 0.2s', background: '#f8fafc' }}
-                                    onFocus={e => e.target.style.borderColor = 'var(--primary-color)'}
-                                    onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                                    onFocus={e => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+                                    onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
                                 />
                             </div>
 
@@ -349,8 +351,8 @@ const SupplierOrders = () => {
                                     value={editOrderData.tracking_number || ''}
                                     onChange={e => setEditOrderData({ ...editOrderData, tracking_number: e.target.value })}
                                     style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '14px', outline: 'none', transition: 'border-color 0.2s', background: '#f8fafc', fontFamily: 'monospace', letterSpacing: '0.05em' }}
-                                    onFocus={e => e.target.style.borderColor = 'var(--primary-color)'}
-                                    onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                                    onFocus={e => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+                                    onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
                                 />
                             </div>
 

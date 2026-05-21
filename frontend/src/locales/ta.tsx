@@ -348,5 +348,7 @@ export default {
     'users': 'பயனர்கள்',
     'verified_companies': 'சரிபார்க்கப்பட்ட நிறுவனங்கள்',
     'pending_verifications': 'நிலுவையில் உள்ள சரிபார்ப்புகள்',
-    'admins': 'நிர்வாகிகள்'
+    'admins': 'நிர்வாகிகள்',
+    'bank_transfer': 'வங்கி பரிமாற்றம்',
+    'paypal': 'PayPal'
 };

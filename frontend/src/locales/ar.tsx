@@ -329,5 +329,7 @@ export default {
     'users': 'المستخدمين',
     'verified_companies': 'الشركات التي تم التحقق منها',
     'pending_verifications': 'عمليات التحقق المعلقة',
-    'admins': 'المشرفين'
+    'admins': 'المشرفين',
+    'bank_transfer': 'تحويل بنكي',
+    'paypal': 'PayPal'
 };

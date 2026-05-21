@@ -28,7 +28,7 @@ export default function ClientAppLayout({ children }: { children: React.ReactNod
     <>
       <SEO />
       {!isFullscreenRoute && <ScrollToTop />}
-      {!isFullscreenRoute && !(pathname === '/' && isHomeTabletOrMobile) && <Header />}
+      {!isFullscreenRoute && (!(pathname === '/' && isHomeTabletOrMobile) || isMobile) && <Header />}
       <main>
         {children}
       </main>

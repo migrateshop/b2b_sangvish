@@ -30,6 +30,7 @@ interface AiHistoryItem {
 
 interface AiProduct {
     _id: string;
+    slug?: string;
     name: string;
     images?: string[];
     main_image?: string;
@@ -502,7 +503,7 @@ const AiSourcing = () => {
                             <h2 className={styles['ais-section-title']}>Matching Products</h2>
                             <div className={styles['ais-products-grid']}>
                                 {results.products.map((prod) => (
-                                    <div key={prod._id} className={styles['ais-product-card']} onClick={() => prod._id && navigate.push(`/product/${prod._id}`)}>
+                                    <div key={prod._id} className={styles['ais-product-card']} onClick={() => prod._id && navigate.push(`/product/${prod.slug || prod._id}`)}>
                                         <div className={styles['ais-prod-img-wrap']}>
                                             <img
                                                 src={getImgUrl(prod.images?.[0] || prod.main_image)}

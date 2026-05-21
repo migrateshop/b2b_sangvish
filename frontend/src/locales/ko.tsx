@@ -348,5 +348,7 @@ export default {
     'users': '사용자',
     'verified_companies': '검증된 회사',
     'pending_verifications': '보류 중인 확인',
-    'admins': '관리자'
+    'admins': '관리자',
+    'bank_transfer': '은행 송금',
+    'paypal': 'PayPal'
 };

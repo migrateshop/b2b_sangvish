@@ -308,7 +308,7 @@ const AdminProducts = () => {
                                                 ) : (
                                                     <button onClick={() => handleReject(product._id)} className={`${styles['admin-btn']} ${styles['admin-btn-danger']}`} style={{ padding: '8px 12px' }}>✗</button>
                                                 )}
-                                                <button onClick={() => handleDelete(product._id)} className={styles['admin-action-btn-delete']} style={{ padding: '8px 12px' }}>🗑</button>
+                                                <button onClick={() => handleDelete(product._id)} className="admin-action-btn-delete" style={{ padding: '8px 12px' }}>🗑</button>
                                             </div>
                                         </div>
                                     </div>
@@ -374,20 +374,20 @@ const AdminProducts = () => {
                                             </td>
                                             <td>
                                                 {approvalSt === 'pending' ? (
-                                                    <button onClick={() => handleApprove(product._id)} className={styles['admin-action-btn-edit']}>{t('approve') || 'Approve'}</button>
+                                                    <button onClick={() => handleApprove(product._id)} className="admin-action-btn-edit">{t('approve') || 'Approve'}</button>
                                                 ) : approvalSt === 'rejected' ? (
-                                                    <button onClick={() => handleApprove(product._id)} className={styles['admin-action-btn-edit']}>{t('reapprove') || 'Re-approve'}</button>
+                                                    <button onClick={() => handleApprove(product._id)} className="admin-action-btn-edit">{t('reapprove') || 'Re-approve'}</button>
                                                 ) : (
                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                         <span className={`${styles['admin-badge']} ${styles['admin-badge-success']}`}>{t('approved') || 'Approved'}</span>
-                                                        <button onClick={() => handleReject(product._id)} className={"admin-action-btn-delete"} style={{ fontSize: '10px', padding: '3px 8px' }}>{t('reject') || 'Reject'}</button>
+                                                        <button onClick={() => handleReject(product._id)} className="admin-action-btn-delete" style={{ fontSize: '10px', padding: '3px 8px' }}>{t('reject') || 'Reject'}</button>
                                                     </div>
                                                 )}
                                             </td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                                    <button onClick={() => { setEditingProduct(product); setFormMode('edit'); }} className={styles['admin-action-btn-edit']}>{t('edit') || 'Edit'}</button>
-                                                    <button onClick={() => handleDelete(product._id)} className={styles['admin-action-btn-delete']}>{t('delete') || 'Delete'}</button>
+                                                    <button onClick={() => { setEditingProduct(product); setFormMode('edit'); }} className="admin-action-btn-edit">{t('edit') || 'Edit'}</button>
+                                                    <button onClick={() => handleDelete(product._id)} className="admin-action-btn-delete">{t('delete') || 'Delete'}</button>
                                                 </div>
                                             </td>
                                         </tr>

@@ -86,7 +86,7 @@ const RatingBar: React.FC<RatingBarProps> = ({ label, count, total }) => {
 // ─── Main Component ───────────────────────────────────────────────────────────
 const ProductDetail = () => {
     const params = useParams();
-    const id = params?.id as string;
+    const id = (params?.slug || params?.id) as string;
     const navigate = useRouter();
     const { user, openLogin, convertPrice, siteSettings, t } = useAuth();
     const { showToast } = useToast();
@@ -236,20 +236,8 @@ const ProductDetail = () => {
     const dynamicRating = validRatings.length > 0
         ? validRatings.reduce((a, r) => a + Number(r.rating), 0) / validRatings.length
         : (product.rating || 0);
-    const dynamicNumReviews = reviews.length || product.numReviews || 0;
 
-    // Rating breakdown
-    const ratingBreakdown = [5, 4, 3, 2, 1].map(star => {
-        const count = reviews.length > 0
-            ? reviews.filter(r => Math.round(Number(r.rating || 0)) === star).length
-            : (product.numReviews > 0
-                ? (star === 5 ? Math.round(product.numReviews * 0.7)
-                    : star === 4 ? Math.round(product.numReviews * 0.2)
-                        : Math.round(product.numReviews * 0.1 / 3))
-                : 0);
-        return { label: `${star}★`, count };
-    });
-
+    // displayReviews defined early so count/breakdown can reference it
     const displayReviews = reviews.length > 0 ? reviews : (product.numReviews > 0 ? [
         {
             buyer_id: { first_name: 'John', last_name: 'Doe', company_name: 'Global Trade Corp' },
@@ -275,55 +263,19 @@ const ProductDetail = () => {
             comment: 'Very satisfied with the product specifications. Shipping took slightly longer than expected due to customs, but the supplier was very helpful.',
             createdAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
         },
-        {
-            buyer_id: { first_name: 'David', last_name: 'Rodriguez', company_name: 'Latin America Logistics' },
-            rating: 5,
-            comment: 'Outstanding wholesale pricing and impeccable customer support. Praveena answered all our technical queries promptly.',
-            createdAt: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Jessica', last_name: 'Taylor', company_name: 'Nordic Retailers' },
-            rating: 5,
-            comment: 'The sample arrived within 4 days. After rigorous testing, we placed a bulk order. Flawless execution.',
-            createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Ahmed', last_name: 'Al-Mansoor', company_name: 'Gulf Trading LLC' },
-            rating: 5,
-            comment: 'High performance units exactly as described in the datasheet. Packaging was ruggedized for international transit.',
-            createdAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Robert', last_name: 'Johnson', company_name: 'Midwest Electronics' },
-            rating: 4,
-            comment: 'Good reliable supplier. MOQ is reasonable and the verified pro status gave us the confidence to wire the funds.',
-            createdAt: new Date(Date.now() - 32 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Maria', last_name: 'Garcia', company_name: 'Iberian Imports' },
-            rating: 5,
-            comment: 'Superb graphic customization on the retail boxes. Our clients love the premium unboxing experience.',
-            createdAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'William', last_name: 'Brown', company_name: 'ANZ Wholesale' },
-            rating: 5,
-            comment: 'Consistent quality across multiple batch orders. Defect rate is practically zero. A true tier-1 manufacturer.',
-            createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Linda', last_name: 'Davis', company_name: 'Maple Leaf Distribution' },
-            rating: 3,
-            comment: 'Product is great, but we wish there were more color variants available for the base model. Will order again regardless.',
-            createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'James', last_name: 'Wilson', company_name: 'UK Tech Hub' },
-            rating: 5,
-            comment: 'Smooth transaction from start to finish. The trade assurance and verified pro badge made the procurement process seamless.',
-            createdAt: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString()
-        }
     ] : []);
+
+    // Count is always the length of what we actually display
+    const dynamicNumReviews = displayReviews.length;
+
+    // Rating breakdown computed from displayReviews
+    const ratingBreakdown = [5, 4, 3, 2, 1].map(star => {
+        const count = displayReviews.filter(r => Math.round(Number(r.rating || 0)) === star).length;
+        return { label: `${star}★`, count };
+    });
+
+
+
 
     // Active price tier
     const sortedTiers = product.price_tiers ? [...product.price_tiers].sort((a, b) => a.min_quantity - b.min_quantity) : [];
@@ -801,7 +753,7 @@ const ProductDetail = () => {
                                     </div>
 
                                     <div className={styles['pd-review-list']}>
-                                        {displayReviews.map((r, i) => {
+                                        {displayReviews.slice(0, 4).map((r, i) => {
                                             const reviewerName = r.buyer_id
                                                 ? `${r.buyer_id.first_name || ''} ${r.buyer_id.last_name || ''}`.trim() || r.buyer_id.company_name || 'Buyer'
                                                 : 'Buyer';
@@ -826,6 +778,32 @@ const ProductDetail = () => {
                                             );
                                         })}
                                     </div>
+                                    {displayReviews.length > 4 && (
+                                        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                                            <button
+                                                onClick={() => setIsReviewsModalOpen(true)}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: '2px solid var(--primary-color)',
+                                                    color: 'var(--primary-color)',
+                                                    padding: '10px 32px',
+                                                    borderRadius: '30px',
+                                                    fontWeight: '700',
+                                                    fontSize: '14px',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px',
+                                                }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary-color)'; e.currentTarget.style.color = '#fff'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--primary-color)'; }}
+                                            >
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                View All {displayReviews.length} Reviews
+                                            </button>
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 <div className={styles['pd-empty-tab']}>
@@ -909,7 +887,7 @@ const ProductDetail = () => {
                     </div>
                     <div className={styles['pd-related-slider']} ref={relatedSliderRef}>
                         {relatedProducts.slice(0, 8).map((p: any) => (
-                            <Link key={p._id} href={`/product/${p._id}`} className={styles['pd-related-card']}>
+                            <Link key={p._id} href={`/product/${p.slug || p._id}`} className={styles['pd-related-card']}>
                                 <div className={styles['pd-rc-img']}>
                                     <img src={getImgUrl(p.main_image || p.images?.[0])} alt={p.name} loading="lazy" />
                                 </div>
@@ -942,7 +920,7 @@ const ProductDetail = () => {
                     </div>
                     <div className={styles['pd-trending-grid']}>
                         {sec.data.map((p: any) => (
-                            <Link key={p._id} href={`/product/${p._id}`} className={styles['pd-tc']}>
+                            <Link key={p._id} href={`/product/${p.slug || p._id}`} className={styles['pd-tc']}>
                                 <div className={styles['pd-tc-img']}><img src={getImgUrl(p.main_image || p.images?.[0])} alt={p.name} loading="lazy" /></div>
                                 <div className={styles['pd-tc-body']}>
                                     <h4 title={p.name}>{p.name}</h4>

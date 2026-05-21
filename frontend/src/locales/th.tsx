@@ -348,5 +348,7 @@ export default {
     'users': 'ผู้ใช้',
     'verified_companies': 'บริษัทที่ได้รับการรับรอง',
     'pending_verifications': 'รอการตรวจสอบ',
-    'admins': 'ผู้ดูแลระบบ'
+    'admins': 'ผู้ดูแลระบบ',
+    'bank_transfer': 'โอนเงินผ่านธนาคาร',
+    'paypal': 'PayPal'
 };

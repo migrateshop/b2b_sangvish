@@ -1089,14 +1089,40 @@
 .pd-tabs-section {
     margin-top: 48px;
     margin-bottom: 60px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .pd-tabs-nav {
     display: flex;
+    flex-wrap: nowrap;
     background: #fff;
     border-bottom: 2px solid var(--pd-gray-100);
     gap: 40px;
     padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pd-gray-300) transparent;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.pd-tabs-nav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.pd-tabs-nav::-webkit-scrollbar-thumb {
+    background: var(--pd-gray-200);
+    border-radius: 4px;
+}
+
+.pd-tabs-nav::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .pd-tab-nav-btn {
@@ -1111,6 +1137,8 @@
     transition: all .2s;
     position: relative;
     margin-bottom: -2px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .pd-tab-nav-btn:hover {
@@ -1319,64 +1347,80 @@
 .pd-review-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
 }
 
 .pd-review-item {
     display: flex;
     gap: 16px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--pd-gray-100);
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.pd-review-item:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .pd-review-avatar {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: var(--pd-blue);
+    background: linear-gradient(135deg, var(--primary-color, #0d2e67) 0%, #3a5bbf 100%);
     color: #fff;
     font-weight: 800;
-    font-size: 16px;
+    font-size: 17px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(13, 46, 103, 0.25);
 }
 
 .pd-review-body {
     flex: 1;
+    min-width: 0;
 }
 
 .pd-review-top {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 4px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .pd-reviewer-name {
     font-size: 14px;
-    font-weight: 700;
-    color: var(--pd-gray-900);
+    font-weight: 800;
+    color: #1a1a2e;
 }
 
 .pd-review-date {
-    font-size: 12px;
-    color: var(--pd-gray-400);
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .pd-review-comment {
-    font-size: 14px;
-    color: #374151;
-    line-height: 1.7;
-    margin-top: 6px;
-    margin-bottom: 8px;
+    font-size: 13.5px;
+    color: #4b5563;
+    line-height: 1.75;
+    margin-top: 8px;
+    margin-bottom: 0;
 }
 
 .pd-review-imgs {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 .pd-review-imgs img {
@@ -2221,21 +2265,12 @@
 
     .pd-tabs-nav {
         gap: 0;
-        overflow-x: auto;
-        padding-bottom: 0;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .pd-tabs-nav::-webkit-scrollbar {
-        display: none;
+        padding-bottom: 4px;
     }
 
     .pd-tab-nav-btn {
         padding: 14px 16px;
         font-size: 14px;
-        white-space: nowrap;
-        flex-shrink: 0;
     }
 
     .pd-tab-body {

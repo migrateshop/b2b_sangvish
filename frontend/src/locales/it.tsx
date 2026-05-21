@@ -348,5 +348,7 @@ export default {
     'users': 'utenti',
     'verified_companies': 'Aziende verificate',
     'pending_verifications': 'Verifiche in sospeso',
-    'admins': 'Amministratori'
+    'admins': 'Amministratori',
+    'bank_transfer': 'Bonifico bancario',
+    'paypal': 'PayPal'
 };

@@ -10,6 +10,7 @@ interface CustomizationRequest {
         _id: string;
         name: string;
         main_image: string;
+        slug?: string;
     };
     supplier: {
         _id: string;
@@ -94,7 +95,7 @@ const BuyerCustomizations = () => {
                 customizationId: req._id
             }
         };
-        
+
         if (typeof window !== 'undefined') {
             (window as any).checkoutState = checkoutState;
             navigate.push('/checkout');
@@ -114,8 +115,8 @@ const BuyerCustomizations = () => {
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>Customization Requests</h2>
                     <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b', fontWeight: 500 }}>Track your modified product requests, review supplier quotes, and finalize orders.</p>
                 </div>
-                <button 
-                    onClick={fetchRequests} 
+                <button
+                    onClick={fetchRequests}
                     style={{ background: '#f1f5f9', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, color: '#475569', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
                     onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}
@@ -134,7 +135,7 @@ const BuyerCustomizations = () => {
                 <div style={{ textAlign: 'center', padding: '80px 20px', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
                     <div style={{ width: '80px', height: '80px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                         </svg>
                     </div>
                     <h4 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 700, color: '#334155' }}>No Customization Requests</h4>
@@ -156,15 +157,15 @@ const BuyerCustomizations = () => {
                                         <span style={{ color: '#cbd5e1' }}>•</span>
                                         <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Submitted: {new Date(req.createdAt).toLocaleDateString()}</span>
                                     </div>
-                                    <span style={{ 
-                                        padding: '4px 12px', 
-                                        borderRadius: '12px', 
-                                        fontSize: '0.75rem', 
-                                        fontWeight: 800, 
+                                    <span style={{
+                                        padding: '4px 12px',
+                                        borderRadius: '12px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 800,
                                         textTransform: 'uppercase',
-                                        background: statusColors.bg, 
-                                        color: statusColors.text, 
-                                        border: `1.5px solid ${statusColors.border}` 
+                                        background: statusColors.bg,
+                                        color: statusColors.text,
+                                        border: `1.5px solid ${statusColors.border}`
                                     }}>
                                         {req.status}
                                     </span>
@@ -172,13 +173,13 @@ const BuyerCustomizations = () => {
 
                                 {/* Main Details Section */}
                                 <div style={{ padding: '20px', display: 'grid', gridTemplateColumns: '80px 1fr', gap: '20px' }}>
-                                    <img 
-                                        src={getImgUrl(req.product?.main_image)} 
-                                        alt={req.product?.name} 
-                                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #eee' }} 
+                                    <img
+                                        src={getImgUrl(req.product?.main_image)}
+                                        alt={req.product?.name}
+                                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #eee' }}
                                     />
                                     <div>
-                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 700, color: '#0f172a', cursor: 'pointer' }} onClick={() => navigate.push(`/product/${req.product?._id}`)}>
+                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 700, color: '#0f172a', cursor: 'pointer' }} onClick={() => navigate.push(`/product/${req.product?.slug || req.product?._id}`)}>
                                             {req.product?.name}
                                         </h3>
                                         <p style={{ margin: '0 0 12px 0', fontSize: '0.825rem', color: '#64748b', fontWeight: 500 }}>Supplier: <strong style={{ color: '#334155' }}>{supplierName}</strong></p>
@@ -210,16 +211,16 @@ const BuyerCustomizations = () => {
 
                                         {req.reference_file && (
                                             <div style={{ marginBottom: '16px' }}>
-                                                <a 
-                                                    href={formatFileUrl(req.reference_file)} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={formatFileUrl(req.reference_file)}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 700, textDecoration: 'none', background: 'rgba(13, 46, 103, 0.05)', padding: '6px 12px', borderRadius: '6px' }}
                                                 >
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px' }}>
-                                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                                                </svg>
-                                                View Attached Specifications File
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px' }}>
+                                                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                                                    </svg>
+                                                    View Attached Specifications File
                                                 </a>
                                             </div>
                                         )}
@@ -229,7 +230,7 @@ const BuyerCustomizations = () => {
                                             <div style={{ marginTop: '20px', padding: '16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px' }}>
                                                 <h4 style={{ margin: '0 0 8px 0', fontSize: '0.875rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                                     </svg>
                                                     <span>Supplier Quotation & Response</span>
                                                 </h4>
@@ -244,14 +245,14 @@ const BuyerCustomizations = () => {
                                                     </p>
                                                 )}
                                                 {req.quotation_file && (
-                                                    <a 
-                                                        href={formatFileUrl(req.quotation_file)} 
-                                                        target="_blank" 
+                                                    <a
+                                                        href={formatFileUrl(req.quotation_file)}
+                                                        target="_blank"
                                                         rel="noopener noreferrer"
                                                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#15803d', fontWeight: 700, textDecoration: 'none', background: '#dcfce7', padding: '6px 12px', borderRadius: '6px' }}
                                                     >
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px' }}>
-                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
                                                         </svg>
                                                         Download official quote PDF
                                                     </a>
@@ -261,7 +262,7 @@ const BuyerCustomizations = () => {
 
                                         {/* Continue Discussion button */}
                                         <div style={{ marginTop: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                            <button 
+                                            <button
                                                 onClick={() => handleContinueDiscussion(req.supplier._id)}
                                                 style={{ background: '#f1f5f9', color: '#475569', border: '1.5px solid #cbd5e1', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                                                 onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
@@ -272,13 +273,13 @@ const BuyerCustomizations = () => {
 
                                             {req.status === 'quoted' && (
                                                 <>
-                                                    <button 
+                                                    <button
                                                         onClick={() => handleUpdateStatus(req._id, 'approved')}
                                                         style={{ background: '#f0fdf4', color: '#166534', border: '1.5px solid #bbf7d0', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}
                                                     >
                                                         Approve Quotation
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         onClick={() => handleUpdateStatus(req._id, 'rejected')}
                                                         style={{ background: '#fef2f2', color: '#991b1b', border: '1.5px solid #fecaca', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}
                                                     >
@@ -288,7 +289,7 @@ const BuyerCustomizations = () => {
                                             )}
 
                                             {req.status === 'approved' && (
-                                                <button 
+                                                <button
                                                     onClick={() => handleStartOrder(req)}
                                                     style={{ background: 'var(--primary-color)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
                                                 >

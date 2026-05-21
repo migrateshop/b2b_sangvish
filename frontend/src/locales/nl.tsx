@@ -348,5 +348,7 @@ export default {
     'users': 'gebruikers',
     'verified_companies': 'Geverifieerde bedrijven',
     'pending_verifications': 'Verificaties in behandeling',
-    'admins': 'Beheerders'
+    'admins': 'Beheerders',
+    'bank_transfer': 'Bankoverschrijving',
+    'paypal': 'PayPal'
 };

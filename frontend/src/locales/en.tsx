@@ -774,5 +774,7 @@ export default {
     'configure_demo_reset': 'Configure Demo Reset',
     'import_dummy': 'Import Dummy Data',
     'cleanup_demo': 'Cleanup Demo Data',
-    'detailed_management': 'Detailed Management'
+    'detailed_management': 'Detailed Management',
+    'bank_transfer': 'Bank Transfer',
+    'paypal': 'PayPal'
 };

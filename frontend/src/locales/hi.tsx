@@ -336,5 +336,7 @@ export default {
     'users': 'उपयोगकर्ता',
     'verified_companies': 'सत्यापित कंपनियाँ',
     'pending_verifications': 'लंबित सत्यापन',
-    'admins': 'व्यवस्थापक'
+    'admins': 'व्यवस्थापक',
+    'bank_transfer': 'बैंक ट्रांसफर',
+    'paypal': 'PayPal'
 };

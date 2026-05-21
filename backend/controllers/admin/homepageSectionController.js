@@ -9,7 +9,7 @@ const DEFAULT_SECTIONS = [
     { id_name: 'industry_section', title: 'Shop by Industry', subtitle: 'Curated product collections across top industries', order: 5, is_active: true, data: {} },
     { id_name: 'rfq_section', title: 'Request for Quotation', subtitle: '', order: 6, is_active: true, data: {} },
     { id_name: 'why_choose_us', title: 'Why Choose Us', subtitle: 'The most trusted B2B marketplace built for global trade', order: 7, is_active: true, data: {} },
-    { id_name: 'app_promo', title: 'Mobile App', subtitle: 'Trade on the Go with Our Mobile App', order: 8, is_active: true, data: {} }
+    { id_name: 'app_promo', title: 'Mobile App', subtitle: 'Trade on the Go with Our Mobile App', order: 8, is_active: true, data: { image: '/uploads/homepage/mobile_app_promo_combined.png' } }
 ];
 
 const getSections = async (req, res) => {

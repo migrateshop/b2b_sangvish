@@ -96,18 +96,9 @@ const AdminEmailTemplates: React.FC = () => {
                                         </span>
                                     </td>
                                     <td>
-                                        <div className={styles['aet-actions']}>
-                                            <button className={styles['aet-btn-icon']} title="Edit" onClick={() => navigate.push(`/admin/email-templates/edit/${t._id}`)}>
-
-                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                                </svg>
-                                            </button>
-                                            <button className={`${styles['aet-btn-icon']} ${styles['delete']}`} title="Delete" onClick={() => handleDelete(t._id)}>
-                                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
-                                                </svg>
-                                            </button>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button onClick={() => navigate.push(`/admin/email-templates/edit/${t._id}`)} className="admin-action-btn-edit">Edit</button>
+                                            <button onClick={() => handleDelete(t._id)} className="admin-action-btn-delete">Delete</button>
                                         </div>
                                     </td>
                                 </tr>

@@ -222,17 +222,17 @@ const Header = () => {
                 <div className="mph-search-bar-wrap" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: '#fff', borderBottom: '1px solid #eee' }}>
                     <div className="mph-mobile-header-top">
                         <div className="mph-mobile-logo-container">
-                            {siteSettings?.logo_light ? (
+                            {siteSettings?.logo_dark || siteSettings?.logo_light ? (
                                 <img
-                                    src={getImgUrl(siteSettings.logo_light)}
-                                    alt={siteSettings?.siteName || 'Logo'}
+                                    src={getImgUrl(siteSettings.logo_dark || siteSettings.logo_light)}
+                                    alt={siteSettings?.site_name || 'Logo'}
                                     className="mph-mobile-logo"
                                     onClick={() => navigate.push('/')}
                                     style={{ height: '30px', cursor: 'pointer' }}
                                 />
                             ) : (
                                 <span className="mph-mobile-logo-text" onClick={() => navigate.push('/')}>
-                                    {siteSettings?.siteName || 'Alibaba Demo'}
+                                    {siteSettings?.site_name || 'Alibaba Demo'}
                                 </span>
                             )}
                         </div>
@@ -244,14 +244,6 @@ const Header = () => {
                             <button className="mph-hdr-btn" onClick={() => setIsSettingsOpen?.(true)} title="Language & Currency">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
                             </button>
-                            <Link href={user ? "/dashboard/messages" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn mph-hdr-badge-wrap" title="Messages">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                                {unreadTotal > 0 && <span className="mph-hdr-badge">{unreadTotal}</span>}
-                            </Link>
-                            <Link href="/cart" className="mph-hdr-btn mph-hdr-badge-wrap" title="Cart">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                {cartCount > 0 && <span className="mph-hdr-badge">{cartCount}</span>}
-                            </Link>
                             <Link href={user ? "/dashboard/notifications" : "#"} onClick={(e) => { if (!user) { e.preventDefault(); openLogin(); } }} className="mph-hdr-btn mph-hdr-badge-wrap" title="Notifications">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                                 {unreadCount > 0 && <span className="mph-hdr-badge">{unreadCount}</span>}

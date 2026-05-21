@@ -348,5 +348,7 @@ export default {
     'users': 'pengguna',
     'verified_companies': 'Perusahaan Terverifikasi',
     'pending_verifications': 'Verifikasi Tertunda',
-    'admins': 'Admin'
+    'admins': 'Admin',
+    'bank_transfer': 'Transfer Bank',
+    'paypal': 'PayPal'
 };

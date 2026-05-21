@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import ProductList from './ProductList';
 import ProductForm from './ProductForm';
 import SubscribePrompt from './SubscribePrompt';
@@ -9,6 +10,7 @@ import api from '@/services/axiosConfig';
 const TEMPLATE_HEADERS = ['name', 'description', 'category', 'sku', 'moq', 'price', 'currency', 'stock', 'sample_available', 'sample_price'];
 
 const ProductManagement = ({ isAdminView = false }) => {
+    const router = useRouter();
     const [view, setView] = useState('list');
     const [editProduct, setEditProduct] = useState(null);
     const [bulkModal, setBulkModal] = useState(false);
@@ -24,7 +26,7 @@ const ProductManagement = ({ isAdminView = false }) => {
     const handleAdd = () => {
         if (!isAdminView && (user?.roles?.includes('supplier') || user?.role === 'supplier')) {
             if (!user?.subscription_plan) {
-                setView('subscribe_prompt');
+                router.push('/supplier/dashboard/subscription');
                 return;
             }
 

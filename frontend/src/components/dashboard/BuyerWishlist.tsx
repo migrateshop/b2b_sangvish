@@ -6,9 +6,9 @@ import { getImgUrl } from '@/utils/imageConfig';
 import styles from './BuyerWishlist.module.css';
 
 const BuyerWishlist = () => {
-    const [wishlist, setWishlist] = useState([]);
+    const [wishlist, setWishlist] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [removing, setRemoving] = useState(null);
+    const [removing, setRemoving] = useState<any>(null);
     const { convertPrice } = useAuth();
 
     useEffect(() => {
@@ -18,7 +18,7 @@ const BuyerWishlist = () => {
     const fetchWishlist = async () => {
         try {
             const { data } = await getWishlist();
-            const formatted = data.map(item => ({
+            const formatted = data.map((item: any) => ({
                 wishlist_id: item._id,
                 ...(item.product_id || {})
             }));
@@ -30,7 +30,7 @@ const BuyerWishlist = () => {
         }
     };
 
-    const handleRemove = async (productId) => {
+    const handleRemove = async (productId: any) => {
         setRemoving(productId);
         try {
             await toggleWishlist(productId);
@@ -45,7 +45,7 @@ const BuyerWishlist = () => {
     if (loading) {
         return (
             <div className={styles['wl-skeleton-grid']}>
-                {[1,2,3,4,5,6].map(i => (
+                {[1, 2, 3, 4, 5, 6].map(i => (
                     <div key={i} className={styles['wl-skeleton-card']}>
                         <div className={styles['wl-skeleton-img']}></div>
                         <div className={styles['wl-skeleton-line'] + " " + styles['wl-skeleton-title']}></div>
@@ -79,14 +79,14 @@ const BuyerWishlist = () => {
                 </div>
             ) : (
                 <div className={styles['wl-grid']}>
-                    {wishlist.map((product) => {
+                    {wishlist.map((product: any) => {
                         const priceInfo = convertPrice(product.main_price);
                         const priceTiers = product.price_tiers;
                         const minPrice = priceTiers && priceTiers.length > 0
-                            ? convertPrice(Math.min(...priceTiers.map(t => t.price || product.main_price))).formatted
+                            ? convertPrice(Math.min(...priceTiers.map((t: any) => t.price || product.main_price))).formatted
                             : null;
                         const maxPrice = priceTiers && priceTiers.length > 0
-                            ? convertPrice(Math.max(...priceTiers.map(t => t.price || product.main_price))).formatted
+                            ? convertPrice(Math.max(...priceTiers.map((t: any) => t.price || product.main_price))).formatted
                             : null;
                         const displayPrice = minPrice && maxPrice && minPrice !== maxPrice
                             ? `${minPrice} - ${maxPrice}`
@@ -96,12 +96,12 @@ const BuyerWishlist = () => {
                             <div key={product._id} className={styles['wl-card']}>
                                 {/* Image area */}
                                 <div className={styles['wl-img-wrapper']}>
-                                    <Link href={`/product/${product._id}`}>
+                                    <Link href={`/product/${product.slug || product._id}`}>
                                         <img
                                             src={getImgUrl(product.images?.[0] || product.main_image)}
                                             alt={product.name}
                                             className={styles['wl-img']}
-                                            onError={(e) => e.target.src = 'https://placehold.co/400x400?text=No+Image'}
+                                            onError={(e) => e.currentTarget.src = 'https://placehold.co/400x400?text=No+Image'}
                                         />
                                     </Link>
 
@@ -118,7 +118,7 @@ const BuyerWishlist = () => {
                                     </button>
 
                                     {/* Quick view icon */}
-                                    <Link href={`/product/${product._id}`} className={styles['wl-quick-view-btn']} title="View product">
+                                    <Link href={`/product/${product.slug || product._id}`} className={styles['wl-quick-view-btn']} title="View product">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 15l5 5m-5-5a7 7 0 10-9.9-9.9 7 7 0 009.9 9.9z" />
                                         </svg>
@@ -127,7 +127,7 @@ const BuyerWishlist = () => {
 
                                 {/* Product Info */}
                                 <div className={styles['wl-info']}>
-                                    <Link href={`/product/${product._id}`} className={styles['wl-product-name']}>
+                                    <Link href={`/product/${product.slug || product._id}`} className={styles['wl-product-name']}>
                                         {product.name}
                                     </Link>
                                     <div className={styles['wl-price']}>{displayPrice}</div>

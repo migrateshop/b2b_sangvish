@@ -107,7 +107,7 @@ const SupplierProfile = () => {
             alert('Please login to chat with the supplier');
             return;
         }
-        
+
         const targetData = product?.supplier || product?.supplier_info || (supplierInfo as any)?.user;
         if (!targetData) return;
 
@@ -327,7 +327,7 @@ const SupplierProfile = () => {
                                 <div className={styles['sp-products-grid']} style={{ background: 'transparent', gap: '20px' }}>
                                     {products.slice(0, 12).map((p: any) => (
                                         <div key={p._id} className={styles['sp-product-card']} style={{ borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden', padding: '0', display: 'flex', flexDirection: 'column', transition: 'transform 0.2s, box-shadow 0.2s' }}>
-                                            <Link href={`/product/${p._id}`} className={styles['sp-product-card-link']} style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+                                            <Link href={`/product/${p.slug || p._id}`} className={styles['sp-product-card-link']} style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
                                                 <div className={styles['sp-product-image']} style={{ borderRadius: '0', marginBottom: '0', background: '#fcfcfc', width: '100%', aspectRatio: '1' }}>
                                                     <img src={getImgUrl(p.main_image)} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                     <button
@@ -429,7 +429,7 @@ const SupplierProfile = () => {
                                     <div className={styles['sp-products-grid-premium']}>
                                         {filteredProducts.map((p: any) => (
                                             <div key={p._id} className={styles['sp-product-card-premium']}>
-                                                <Link href={`/product/${p._id}`} className={styles['sp-product-card-link']}>
+                                                <Link href={`/product/${p.slug || p._id}`} className={styles['sp-product-card-link']}>
                                                     <div className={styles['sp-product-img-wrap']}>
                                                         <img
                                                             src={getImgUrl(p.main_image)}
@@ -458,7 +458,7 @@ const SupplierProfile = () => {
                                                         <h3 className={styles['sp-product-name']}>{p.name}</h3>
                                                         {p.rating && (
                                                             <div className={styles['sp-product-rating']}>
-                                                                {[1,2,3,4,5].map(s => (
+                                                                {[1, 2, 3, 4, 5].map(s => (
                                                                     <svg key={s} width="12" height="12" viewBox="0 0 24 24" fill={s <= Math.round(p.rating) ? '#f59e0b' : '#e2e8f0'}>
                                                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                                                     </svg>
@@ -548,7 +548,7 @@ const SupplierProfile = () => {
                                     </div>
                                 </div>
 
-                                </div>
+                            </div>
 
                             <div className={styles['sp-profile-card'] + " " + styles['mt-8']}>
                                 <div className={styles['grid'] + " " + styles['lg:grid-cols-2'] + " " + styles['gap-12'] + " " + styles['items-center']}>
@@ -701,9 +701,9 @@ const SupplierProfile = () => {
             )}
 
             {/* General Enquiry Modal */}
-            <GeneralEnquiryModal 
-                isOpen={isEnquiryModalOpen} 
-                onClose={() => setIsEnquiryModalOpen(false)} 
+            <GeneralEnquiryModal
+                isOpen={isEnquiryModalOpen}
+                onClose={() => setIsEnquiryModalOpen(false)}
                 product={products[0] || {
                     _id: 'mock_prod_id',
                     name: `General Supplier Inquiry: ${companyName}`,
@@ -715,7 +715,7 @@ const SupplierProfile = () => {
                         first_name: user.first_name,
                         last_name: user.last_name
                     }
-                }} 
+                }}
             />
 
         </div>

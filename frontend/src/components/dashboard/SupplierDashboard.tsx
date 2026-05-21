@@ -292,7 +292,13 @@ const SupplierDashboard = ({ tab, subtab }) => {
                         </div>
                     </div>
                     <div className={styles['supplier-welcome-banner-buttons']} style={{ display: 'flex', gap: '10px', flexShrink: 0, flexWrap: 'wrap' }}>
-                        <button onClick={() => navigate.push('/supplier/dashboard/products')} style={{ padding: '10px 18px', background: 'var(--clr-accent)', border: 'none', borderRadius: '10px', color: '#fff', fontWeight: '800', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(255,106,0,.3)' }}>
+                        <button onClick={() => {
+                            if (!user?.subscription_plan) {
+                                navigate.push('/supplier/dashboard/subscription');
+                            } else {
+                                navigate.push('/supplier/dashboard/products');
+                            }
+                        }} style={{ padding: '10px 18px', background: 'var(--clr-accent)', border: 'none', borderRadius: '10px', color: '#fff', fontWeight: '800', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(255,106,0,.3)' }}>
                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
                             {t('add_product') || 'Add Product'}
                         </button>
@@ -326,7 +332,13 @@ const SupplierDashboard = ({ tab, subtab }) => {
                         </div>
                         <div className={styles['supplier-quick-actions-grid']} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                             {[
-                                { label: t('post_new_product') || 'Post New Product', icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>, action: () => navigate.push('/supplier/dashboard/products'), primary: true },
+                                { label: t('post_new_product') || 'Post New Product', icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>, action: () => {
+                                    if (!user?.subscription_plan) {
+                                        navigate.push('/supplier/dashboard/subscription');
+                                    } else {
+                                        navigate.push('/supplier/dashboard/products');
+                                    }
+                                }, primary: true },
                                 { label: t('browse_rfq_market') || 'Browse RFQ Market', icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>, action: () => navigate.push('/supplier/dashboard/rfq'), primary: false },
                                 { label: t('view_orders') || 'View Orders', icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>, action: () => navigate.push('/supplier/dashboard/orders'), primary: false },
                                 { label: t('boost_visibility') || 'Boost Visibility', icon: <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, action: () => navigate.push('/supplier/dashboard/subscription'), primary: false },
