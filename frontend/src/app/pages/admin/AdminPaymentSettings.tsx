@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/axiosConfig';
+import { useToast } from '@/context/ToastContext';
 import styles from './AdminLayout.module.css';
 
 const PROVIDERS = [
@@ -11,6 +12,7 @@ const PROVIDERS = [
 
 const AdminPaymentSettings = () => {
     const { t } = useAuth();
+    const { showToast } = useToast();
     const [activeTab, setActiveTab] = useState('stripe');
     const [settings, setSettings] = useState({ enable: false, live_mode: false, public_key: '', secret_key: '', provider: 'stripe' });
     const [secretKeyMasked, setSecretKeyMasked] = useState('');
@@ -42,7 +44,11 @@ const AdminPaymentSettings = () => {
             if (editSecret && settings.secret_key) payload.secret_key = settings.secret_key;
             await api.put('/admin/payment-settings', payload);
             setSaved(true); setEditSecret(false); setTimeout(() => setSaved(false), 3000);
-        } catch (err) { setError('Failed to save settings. Please try again.'); }
+            showToast('Settings updated successfully!', 'success');
+        } catch (err) { 
+            setError('Failed to save settings. Please try again.'); 
+            showToast('Failed to save settings.', 'error');
+        }
         finally { setSaving(false); }
     };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/services/axiosConfig';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 
@@ -22,6 +23,7 @@ const AdminLogin = () => {
     const navigate = useRouter();
 
     const {  user, siteSettings, isInitialized , t } = useAuth();
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -71,10 +73,13 @@ const AdminLogin = () => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data));
             
+            showToast('Login successful', 'success');
             // Redirect to admin dashboard
             window.location.href = '/admin/dashboard';
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+            const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }
@@ -90,8 +95,11 @@ const AdminLogin = () => {
             setResendTimer(30);
             setForgotMode(false);
             setResetMode(true);
+            showToast('Reset code sent to your email.', 'success');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to send reset code');
+            const msg = err.response?.data?.message || 'Failed to send reset code';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }
@@ -108,9 +116,11 @@ const AdminLogin = () => {
             await api.post('/auth/reset-password', { email, otp: code, newPassword: password });
             setResetMode(false);
             setError('');
-            alert('Password reset successful. Please login with your new password.');
+            showToast('Password reset successful. Please login with your new password.', 'success');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Reset failed');
+            const msg = err.response?.data?.message || 'Reset failed';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }

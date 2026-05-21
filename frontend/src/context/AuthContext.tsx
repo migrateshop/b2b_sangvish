@@ -266,7 +266,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const curr = availableCurrencies.find(c => c.code === currency);
         const rate = curr ? curr.exchange_rate : 1;
         const symbol = curr ? curr.symbol : '$';
-        const amount = (priceInUSD * rate).toLocaleString(undefined, { minimumFractionDigits: 2 });
+        const convertedAmount = priceInUSD * rate;
+        const hasFraction = convertedAmount % 1 !== 0;
+        const amount = convertedAmount.toLocaleString(undefined, { minimumFractionDigits: hasFraction ? 2 : 0, maximumFractionDigits: 2 });
         const isSuffix = siteSettings?.price_format === 'suffix';
         const formatted = isSuffix ? `${amount}${symbol}` : `${symbol}${amount}`;
 

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/js/Header';
 import Footer from '@/components/js/Footer';
 import MobileBottomNav from '@/components/js/MobileBottomNav';
+import useIsMobile from '@/hooks/useIsMobile';
 import ScrollToTop from '@/components/js/ScrollToTop';
 import BackToTop from '@/components/js/BackToTop';
 import AuthModal from '@/components/js/AuthModal';
@@ -13,6 +14,8 @@ import SEO from '@/components/js/SEO';
 
 export default function ClientAppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isMobile = useIsMobile(450);
+  const isHomeTabletOrMobile = useIsMobile(767);
 
   // Routes that use their own full-screen layouts (no global header/footer)
   const isFullscreenRoute =
@@ -25,12 +28,12 @@ export default function ClientAppLayout({ children }: { children: React.ReactNod
     <>
       <SEO />
       {!isFullscreenRoute && <ScrollToTop />}
-      {!isFullscreenRoute && <Header />}
+      {!isFullscreenRoute && !(pathname === '/' && isHomeTabletOrMobile) && <Header />}
       <main>
         {children}
       </main>
       {!isFullscreenRoute && pathname !== '/ai-sourcing' && <Footer />}
-      {(!isFullscreenRoute || pathname?.startsWith('/buyer/dashboard') || pathname?.startsWith('/dashboard')) && <MobileBottomNav />}
+      {isMobile && (!isFullscreenRoute || pathname?.startsWith('/buyer/dashboard') || pathname?.startsWith('/dashboard')) && <MobileBottomNav />}
       {!isFullscreenRoute && <BackToTop />}
       {/* Global Modals/Popups */}
       <AuthModal />

@@ -129,22 +129,6 @@ const PostRFQ = () => {
         setShowSuggestions(false);
     };
 
-    const handleAiRefine = async () => {
-        if (!description.trim()) return;
-        setLoading(true);
-        try {
-            const { data } = await api.post('/ai/refine', { text: description, type: 'rfq' });
-            if (data.refinedText) {
-                setDescription(data.refinedText);
-            }
-        } catch (err) {
-            console.error('AI Refine error:', err);
-            alert(err.response?.data?.message || 'Failed to refine text');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length + attachments.length > 5) {
@@ -358,15 +342,6 @@ const PostRFQ = () => {
                                     <div className={styles['rfq-field-group']}>
                                         <div className={styles['rfq-label-row']}>
                                             <label>Detailed Specifications *</label>
-                                            <button 
-                                                type="button" 
-                                                className={styles['rfq-ai-btn']} 
-                                                onClick={handleAiRefine}
-                                                disabled={loading || !description.trim()}
-                                            >
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
-                                                {loading ? 'Refining...' : 'Refine with AI'}
-                                            </button>
                                         </div>
                                         <textarea
                                             rows="5"

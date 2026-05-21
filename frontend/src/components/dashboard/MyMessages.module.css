@@ -822,7 +822,7 @@
 }
 
 /* ── MOBILE RESPONSIVE ──────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 1280px) {
     .msg-desktop-layout {
         display: none;
     }

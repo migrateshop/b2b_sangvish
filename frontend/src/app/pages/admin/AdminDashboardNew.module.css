@@ -554,6 +554,17 @@
     }
 }
 
+/* Tablet landscape (iPad, etc.) — 2 columns for better card width */
+@media (max-width: 1024px) {
+    .adm-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .adm-stat-value {
+        font-size: 1.6rem;
+    }
+}
+
 @media (max-width: 900px) {
     .adm-dashboard {
         padding: 16px 12px;

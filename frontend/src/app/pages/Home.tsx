@@ -7,7 +7,7 @@ import SupplierHomeLayout from '@/components/js/SupplierHomeLayout';
 import Partners from '@/components/js/Partners';
 import AllProducts from '@/components/js/AllProducts';
 import MobileHomePage from '@/components/js/MobileHomePage';
-
+import useIsMobile from '@/hooks/useIsMobile';
 // Lazy-loaded homepage sections for performance
 const HeroBanner = lazy(() => import('@/components/js/HeroBanner'));
 const HomeCategories = lazy(() => import('@/components/js/HomeCategories'));
@@ -18,19 +18,6 @@ const FeaturedSelections = lazy(() => import('@/components/js/FeaturedSelections
 const WhyChooseUs = lazy(() => import('@/components/js/WhyChooseUs'));
 const AppPromoSection = lazy(() => import('@/components/js/AppPromoSection'));
 
-/* ─── Custom hook: detect mobile viewport ─── */
-const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const checkMobile = () => window.innerWidth <= 991;
-        setIsMobile(checkMobile());
-        const mq = window.matchMedia('(max-width: 991px)');
-        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-        mq.addEventListener('change', handler);
-        return () => mq.removeEventListener('change', handler);
-    }, []);
-    return isMobile;
-};
 
 const SectionLoader = () => (
     <div style={{
@@ -49,7 +36,7 @@ const Home = () => {
     const location = usePathname();
     const searchParams = useSearchParams();
     const tab = searchParams.get('tab') || 'products';
-    const isMobile = useIsMobile();
+    const isMobile = useIsMobile(450);
 
     const [sections, setSections] = useState<any[]>([]);
     const [loadingSections, setLoadingSections] = useState(true);
@@ -72,7 +59,7 @@ const Home = () => {
         // Removed trending_products to prevent duplicate "Top Deals" section
     };
 
-    /* ── MOBILE layout (≤ 767 px) ── */
+    /* ── MOBILE layout (≤ 450 px) ── */
     if (isMobile) {
         return <MobileHomePage />;
     }

@@ -155,7 +155,7 @@ const MyMessages = () => {
                 
                 // Mark as read if it's an incoming message
                 if (String(msg.senderId) === String(activeChatUser._id)) {
-                    const conv = conversations.find(c => c.participants?.some(p => p._id === activeChatUser._id));
+                    const conv = conversations.find(c => c.participants?.some(p => String(p._id) === String(activeChatUser?._id)));
                     if (conv) markChatAsRead(conv._id, activeChatUser._id);
                 }
             } else {
@@ -273,10 +273,22 @@ const MyMessages = () => {
         }
     };
 
-    /* Open chat: also switch to chat panel on mobile */
-    const openChat = (participant: Participant) => {
-        setActiveChatUser(participant);
-        setMobileView('chat');
+    /* Open chat: also switch to chat panel on mobile. Accepts either a participant object or an id. */
+    const openChat = async (participant: Participant | string) => {
+        if (!participant) return;
+        try {
+            let userObj: any = participant;
+            // If caller passed an id or a minimal object, fetch full user info
+            if (typeof participant === 'string' || (participant as any)._id === undefined) {
+                const id = typeof participant === 'string' ? participant : (participant as any);
+                const { data } = await api.get(`/auth/user-info/${id}`);
+                userObj = data || { _id: id };
+            }
+            setActiveChatUser(userObj);
+            setMobileView('chat');
+        } catch (err) {
+            console.error('Failed to open chat for participant:', err);
+        }
     };
 
     const goBackToList = () => setMobileView('list');
@@ -351,7 +363,7 @@ const MyMessages = () => {
                 ) : filteredConversations.map(conv => {
                     const other = conv.participants?.find(p => String(p._id) !== String(user._id));
                     if (!other) return null;
-                    const isActive = activeChatUser?._id === other._id;
+                    const isActive = activeChatUser && String(activeChatUser._id) === String(other._id);
                     const hasUnread = conv.unreadCount > 0 && !isActive;
                     const fullName = `${other.first_name || ''} ${other.last_name || ''}`.trim();
                     const lastContent = conv.lastMessage?.content || 'New conversation';

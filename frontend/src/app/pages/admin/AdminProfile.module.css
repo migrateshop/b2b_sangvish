@@ -313,7 +313,7 @@
     border: 1px solid #dcfce7;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
     .profile-content-grid {
         grid-template-columns: 1fr;
     }

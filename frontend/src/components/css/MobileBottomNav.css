@@ -74,14 +74,14 @@
 }
 
 /* Hide on desktop */
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
     .mobile-bottom-nav {
         display: none;
     }
 }
 
 /* Add padding to body to prevent content being covered by nav */
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
     body {
         padding-bottom: 60px;
     }
@@ -146,7 +146,7 @@
 }
 
 /* Only show on mobile */
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
 
     .myalibaba-sheet,
     .myalibaba-overlay {

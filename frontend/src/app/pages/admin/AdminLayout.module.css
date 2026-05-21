@@ -791,16 +791,7 @@
         display: block;
     }
 
-    .admin-lang-dropdown-container {
-        position: fixed !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        width: 90% !important;
-        max-width: 320px;
-        z-index: 4000 !important;
-        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 20px 60px rgba(0, 0, 0, 0.2) !important;
-    }
+
 
     /* Show X close button inside sidebar on mobile */
     .mobile-close-btn {
@@ -2428,7 +2419,7 @@
     overflow: hidden;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 640px) {
 
     .admin-notification-dropdown,
     .admin-profile-dropdown,
@@ -2442,7 +2433,9 @@
         max-height: 80vh;
         overflow-y: auto;
     }
+}
 
+@media (max-width: 1024px) {
     .mobile-only-dropdown-items {
         display: block !important;
     }

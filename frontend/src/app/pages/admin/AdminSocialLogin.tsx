@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/axiosConfig';
+import { useToast } from '@/context/ToastContext';
 import styles from './AdminLayout.module.css';
 
 const PROVIDERS = [
@@ -50,6 +51,7 @@ const PROVIDERS = [
 
 const AdminSocialLogin = () => {
     const { t } = useAuth();
+    const { showToast } = useToast();
     const [activeTab, setActiveTab] = useState('google');
     const [config, setConfig] = useState<any>({
         google: { enabled: false, client_id: '', client_secret: '' },
@@ -86,7 +88,12 @@ const AdminSocialLogin = () => {
         try {
             await api.put('/admin/social-login', config);
             setSaved(true); setTimeout(() => setSaved(false), 3000);
-        } catch (err: any) { setError(err.response?.data?.message || 'Failed to save settings.'); }
+            showToast('Social login settings updated successfully!', 'success');
+        } catch (err: any) { 
+            const msg = err.response?.data?.message || 'Failed to save settings.';
+            setError(msg);
+            showToast(msg, 'error');
+        }
         finally { setSaving(false); }
     };
 

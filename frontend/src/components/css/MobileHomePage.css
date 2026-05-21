@@ -1,6 +1,6 @@
 /* ============================================================
    MOBILE HOME PAGE — Alibaba-style
-   Only shown on screens ≤ 767px via Home.js conditional render
+   Shown on screens ≤ 991px via Home.js useIsMobile() hook
    ============================================================ */
 
 /* ─── Root ─── */
@@ -1268,8 +1268,9 @@
 /* ═══════════════════════════════
    HIDE on desktop — mobile-only
    (also controlled via Home.js JS)
+   Shows for screens ≤ 991px (matches useIsMobile threshold)
 ═══════════════════════════════ */
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .mobile-home-page {
         display: none !important;
     }

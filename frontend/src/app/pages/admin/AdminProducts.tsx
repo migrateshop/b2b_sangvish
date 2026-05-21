@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '@/services/axiosConfig';
 import ProductForm from '@/components/dashboard/products/ProductForm';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import styles from './AdminLayout.module.css';
 
 const IMAGE_URL = process.env.NEXT_PUBLIC_IMAGE_URL || '';
@@ -46,6 +47,7 @@ const AdminProducts = () => {
     const [formMode, setFormMode] = useState<'add' | 'edit' | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const { siteSettings, t } = useAuth();
+    const { showToast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [categoryFilter, setCategoryFilter] = useState('All');
@@ -59,7 +61,7 @@ const AdminProducts = () => {
 
     useEffect(() => {
         if (siteSettings?.pagination_limit) {
-            setItemsPerPage(siteSettings.pagination_limit);
+            setItemsPerPage(Number(siteSettings.pagination_limit) || 10);
         }
     }, [siteSettings?.pagination_limit]);
 
@@ -83,19 +85,37 @@ const AdminProducts = () => {
     };
 
     const handleApprove = async (id: string) => {
-        try { await api.put(`/admin/products/${id}/approve`); fetchProducts(); }
-        catch (err) { console.error(err); }
+        try { 
+            await api.put(`/admin/products/${id}/approve`); 
+            fetchProducts(); 
+            showToast('Product approved successfully!', 'success');
+        } catch (err: any) { 
+            console.error(err); 
+            showToast(err.response?.data?.message || 'Failed to approve product.', 'error');
+        }
     };
 
     const handleReject = async (id: string) => {
-        try { await api.put(`/admin/products/${id}/reject`, { note: 'Disapproved by admin' }); fetchProducts(); }
-        catch (err) { console.error(err); }
+        try { 
+            await api.put(`/admin/products/${id}/reject`, { note: 'Disapproved by admin' }); 
+            fetchProducts(); 
+            showToast('Product rejected successfully.', 'success');
+        } catch (err: any) { 
+            console.error(err); 
+            showToast(err.response?.data?.message || 'Failed to reject product.', 'error');
+        }
     };
 
     const handleDelete = async (id: string) => {
         if (!window.confirm('Delete this product?')) return;
-        try { await api.delete(`/admin/products/${id}`); fetchProducts(); }
-        catch (err) { console.error(err); }
+        try { 
+            await api.delete(`/admin/products/${id}`); 
+            fetchProducts(); 
+            showToast('Product deleted successfully.', 'success');
+        } catch (err: any) { 
+            console.error(err); 
+            showToast(err.response?.data?.message || 'Failed to delete product.', 'error');
+        }
     };
 
     const filteredProducts = products.filter((p: Product) => {
@@ -377,7 +397,7 @@ const AdminProducts = () => {
                         </table>
                     </div>
                 )}
-                {totalPages > 1 && (
+                {totalPages > 0 && (
                     <div className={styles['admin-pagination-footer']}>
                         <span className={styles['admin-pagination-info']}>
                             {t('showing') || 'Showing'} {indexOfFirstItem + 1} {t('to') || 'to'} {Math.min(indexOfLastItem, filteredProducts.length)} {t('of') || 'of'} {filteredProducts.length} {t('products') || 'products'}

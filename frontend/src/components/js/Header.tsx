@@ -137,7 +137,7 @@ const Header = () => {
     const isHome = pathname === '/';
     const isCompactHeader = (!isHome || (isHome && isScrolled)) && pathname && !pathname.startsWith('/admin') && !pathname.startsWith('/dashboard') && !pathname.startsWith('/buyer/dashboard');
 
-    const isMobile = useIsMobile(991);
+    const isMobile = useIsMobile(450);
 
     useEffect(() => {
         const fetchCategories = async () => {

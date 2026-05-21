@@ -370,6 +370,7 @@
 /* Scrollable nav area */
 .supplier-sidebar-content {
   flex: 1;
+  min-height: 0; /* CRITICAL: allows flex child to shrink so overflow-y: auto activates */
   overflow-y: auto !important;
   overflow-x: hidden;
   padding: 6px 10px 24px;

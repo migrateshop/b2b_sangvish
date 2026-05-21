@@ -95,7 +95,7 @@ body.mega-menu-open .header.is-fixed {
     padding-top: 125px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .d-none-mobile {
         display: none !important;
     }
@@ -2629,19 +2629,6 @@ body.mega-menu-open .header.is-fixed {
     }
 }
 
-@media (max-width: 1024px) {
-
-    /* .nav-actions .action-item.location, */
-    .nav-actions .action-item.language,
-    .nav-actions .action-item.notifications-dropdown-wrapper,
-    .nav-actions .action-item.messages,
-    .nav-actions .action-item.favorites,
-    .nav-actions .action-item.cart,
-    .nav-actions .action-item.sign-in,
-    .nav-actions .btn-create-account {
-        display: none !important;
-    }
-}
 
 @media (max-width: 1024px) {
     .search-tabs {
@@ -3397,9 +3384,190 @@ body.mega-menu-open .header.is-fixed {
 }
 
 /* ══════════════════════════════════════════
-   ALIBABA-STYLE MOBILE HEADER  (≤768px)
+   TABLET HEADER  (768px – 1024px)
+   Full desktop header, compacted for tablet
    ══════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    /* Top nav — tighter padding */
+    .top-nav {
+        padding: 0.5rem 20px !important;
+        min-height: 60px;
+    }
+
+    /* Keep nav-actions fully visible */
+    .nav-actions {
+        display: flex !important;
+        gap: 10px !important;
+    }
+
+    /* Smaller gaps between action items */
+    .user-utility-actions {
+        gap: 12px !important;
+    }
+
+    /* Deliver-to: show icon + country code, hide long text */
+    .location-trigger span:not(.icon) {
+        font-size: 12px;
+        max-width: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Language button — just icon */
+    .action-item.language span:last-of-type {
+        font-size: 12px;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* User label (role + name): hide on tablet to save space */
+    .user-label-content {
+        display: none !important;
+    }
+
+    /* Sign-in / create account buttons */
+    .sign-in,
+    .btn-create-account {
+        font-size: 12px !important;
+        padding: 6px 10px !important;
+    }
+
+    /* Search section — keep it centered */
+    .search-section.container {
+        padding: 8px 20px !important;
+    }
+
+    .search-tabs {
+        gap: 12px !important;
+    }
+
+    .search-tab {
+        font-size: 14px !important;
+        padding: 6px 8px !important;
+    }
+
+    .search-bar {
+        height: 44px !important;
+    }
+
+    .search-input {
+        font-size: 14px !important;
+    }
+
+    .btn-search {
+        padding: 0.6rem 1.4rem !important;
+        font-size: 14px !important;
+    }
+
+    /* Bottom nav — keep visible, override d-none-mobile */
+    .bottom-nav,
+    .bottom-nav.d-none-mobile {
+        display: block !important;
+    }
+
+    .bottom-nav .container {
+        padding: 0 20px !important;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    /* Logo — slightly smaller */
+    .logo-section img,
+    .alibaba-logo-svg svg {
+        height: 32px !important;
+        width: auto !important;
+    }
+
+    .alibaba-logo-svg text {
+        font-size: 24px !important;
+    }
+
+    /* Compact top-nav all-categories btn */
+    .top-nav-categories .header-cat-btn {
+        padding: 7px 12px !important;
+        font-size: 13px !important;
+    }
+
+    /* Keep messages & favorites visible */
+    .d-none-mobile {
+        display: flex !important;
+    }
+
+    /* ── Compact header (New Arrivals / Search / Product pages) ── */
+    /* When compact search bar is in the top-nav row, give it proper space */
+    .top-nav.compact-layout {
+        gap: 1rem !important;
+        padding: 0.5rem 16px !important;
+    }
+
+    /* Hide the top-nav "All Categories" button on compact header pages
+       to free up space for the search bar on tablet */
+    .top-nav.compact-layout .top-nav-categories {
+        display: none !important;
+    }
+
+    /* Compact search container — expand to fill available space */
+    .compact-search-container {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin-left: 0.5rem !important;
+        margin-right: 0.5rem !important;
+    }
+
+    /* Ensure search bar fills the container */
+    .compact-search-container .search-bar.unified {
+        width: 100% !important;
+        height: 44px !important;
+    }
+
+    /* Compact search input */
+    .compact-search-container .search-input {
+        font-size: 14px !important;
+        padding: 0 1rem !important;
+    }
+
+    /* Compact search button */
+    .compact-search-container .btn-search {
+        height: 36px !important;
+        padding: 0 1rem !important;
+        font-size: 14px !important;
+    }
+
+    /* Reduce nav-actions gap on compact header */
+    .top-nav.compact-layout .nav-actions {
+        gap: 8px !important;
+        flex-shrink: 0;
+    }
+
+    /* Shrink location-trigger text on compact header — icon only */
+    .top-nav.compact-layout .location-trigger span:not(.icon) {
+        display: none !important;
+    }
+
+    .top-nav.compact-layout .location-trigger .chevron-icon {
+        display: none !important;
+    }
+
+    /* Language/currency — icon only on compact header tablet */
+    .top-nav.compact-layout .action-item.language > span:not(.icon) {
+        display: none !important;
+    }
+
+    .top-nav.compact-layout .action-item.language .chevron-icon {
+        display: none !important;
+    }
+}
+
+/* ══════════════════════════════════════════
+   ALIBABA-STYLE MOBILE HEADER  (≤767px)
+   ══════════════════════════════════════════ */
+@media (max-width: 767px) {
+
 
     /* ── 1. Top nav: logo + search on ONE compact row ── */
     .top-nav {

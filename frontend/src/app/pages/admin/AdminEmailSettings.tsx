@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/axiosConfig';
+import { useToast } from '@/context/ToastContext';
 import styles from './AdminEmailSettings.module.css';
 import alStyles from './AdminLayout.module.css';
 const AdminEmailSettings = () => {
     const { t } = useAuth();
+    const { showToast } = useToast();
     const [settings, setSettings] = useState({
         MAIL_MAILER: '',
         MAIL_HOST: '',
@@ -48,8 +50,11 @@ const AdminEmailSettings = () => {
             await api.put('/admin/email-settings', settings);
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
+            showToast('Email settings updated successfully!', 'success');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update email settings');
+            const msg = err.response?.data?.message || 'Failed to update email settings';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setSaving(false);
         }

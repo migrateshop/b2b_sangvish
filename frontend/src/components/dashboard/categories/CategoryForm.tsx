@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createCategory, updateCategory, fetchCategories } from '@/services/categoryApi';
 import { getImgUrl } from '@/utils/imageConfig';
+import { useToast } from '@/context/ToastContext';
 import styles from '@/app/pages/admin/AdminLayout.module.css';
 
 interface Category {
@@ -22,6 +23,7 @@ interface CategoryFormProps {
 
 const CategoryForm: React.FC<CategoryFormProps> = ({ category, presetParentId, onSave, onCancel }) => {
     const isEdit = !!category;
+    const { showToast } = useToast();
     const [title, setTitle] = useState(category?.title || '');
     const [description, setDescription] = useState(category?.description || '');
     const [parent, setParent] = useState(category?.parent || presetParentId || '');
@@ -65,12 +67,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, presetParentId, o
 
             if (isEdit) {
                 await updateCategory(category._id, formData);
+                showToast('Category updated successfully!', 'success');
             } else {
                 await createCategory(formData);
+                showToast('Category created successfully!', 'success');
             }
             onSave();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Save failed');
+            const msg = err.response?.data?.message || 'Save failed';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }

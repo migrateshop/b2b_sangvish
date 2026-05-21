@@ -98,9 +98,10 @@
 }
 
 .ais-new-chat-btn:hover {
-    background: #1e40af;
+    background: var(--primary-color, #0d2e67);
+    filter: brightness(1.15);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(13, 46, 103, 0.25);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .ais-recent-section {
@@ -124,44 +125,53 @@
 }
 
 .ais-chat-item {
-    padding: 12px;
-    border-radius: 10px;
+    padding: 14px 16px;
+    border-radius: 12px;
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 14px;
     cursor: pointer;
     transition: all 0.2s;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .ais-chat-item:hover {
     background: #f1f5f9;
 }
 
+.ais-chat-item.active,
+.ais-chat-item:active {
+    background: rgba(13, 46, 103, 0.06);
+    border-left: 3px solid var(--primary-color, #0d2e67);
+    padding-left: 13px; /* Adjust padding to keep alignment consistent with border */
+}
+
 .ais-chat-icon {
     color: #94a3b8;
     margin-top: 2px;
+    flex-shrink: 0;
 }
 
 .ais-chat-meta {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    gap: 3px;
 }
 
 .ais-chat-query {
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 600;
     color: #334155;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.3;
 }
 
 .ais-chat-time {
-    font-size: 11px;
+    font-size: 11.5px;
     color: #94a3b8;
-    margin-top: 2px;
 }
 
 .ais-sidebar-footer {
@@ -940,6 +950,8 @@
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .ais-contact-btn:hover {
@@ -1030,16 +1042,24 @@
     .ais-stats-row {
         grid-template-columns: repeat(2, 1fr);
     }
-}
 
-@media (max-width: 768px) {
+    .ais-security-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .ais-security-badges {
+        justify-content: center;
+    }
+
     .ais-sidebar-container {
         position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
         width: 280px;
-        z-index: 1000;
+        z-index: 2000;
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background: #fff;
@@ -1067,9 +1087,32 @@
         bottom: 0;
         background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
-        z-index: 999;
+        z-index: 1999;
     }
 
+    .ais-sidebar-footer {
+        padding: 16px;
+        margin-top: auto;
+        border-top: 1px solid #f1f5f9;
+        background: #fff;
+    }
+
+    .ais-user-pill {
+        padding: 10px;
+        gap: 10px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .ais-user-name {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 768px) {
     .ais-hero-title {
         font-size: 2rem;
         text-align: center;
@@ -1084,15 +1127,6 @@
 
     .ais-features-grid {
         grid-template-columns: 1fr;
-    }
-
-    .ais-security-banner {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .ais-security-badges {
-        justify-content: center;
     }
 
     .ais-stats-row {
@@ -1123,30 +1157,32 @@
         justify-content: center;
     }
 
+    .ais-supplier-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .ais-sup-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ais-sup-stats {
+        justify-content: center;
+    }
+
+    .ais-contact-btn {
+        width: 100%;
+        text-align: center;
+    }
+
     .ais-section-title {
         justify-content: center;
         width: 100%;
-    }
-
-    .ais-sidebar-footer {
-        padding: 16px;
-        margin-top: auto;
-        border-top: 1px solid #f1f5f9;
-        background: #fff;
-    }
-
-    .ais-user-pill {
-        padding: 10px;
-        gap: 10px;
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .ais-user-name {
-        font-size: 13px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .ais-main {

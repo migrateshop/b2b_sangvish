@@ -26,6 +26,8 @@
     margin: 0 auto;
     padding: 0 24px 80px;
     color: var(--pd-gray-900);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ── Breadcrumb ─────────────────────────────────────────────── */
@@ -198,11 +200,14 @@
 
 @media (max-width: 1200px) {
     .pd-main-section {
-        grid-template-columns: 420px 1fr;
+        grid-template-columns: 350px 1fr;
+        gap: 24px;
     }
 
     .pd-supplier-card {
         grid-column: 1 / -1;
+        position: relative !important;
+        top: auto !important;
     }
 }
 
@@ -2097,7 +2102,7 @@
     font-size: 16px;
 }
 
-@media (max-width: 780px) {
+@media (max-width: 992px) {
     .pd-page {
         padding: 0 16px 60px;
         width: 100%;
@@ -2162,18 +2167,48 @@
     }
 
     .pd-action-btns {
-        flex-direction: column;
-        gap: 12px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        max-width: 500px;
+        margin: 0 auto 12px;
+        width: 100%;
     }
 
     .pd-btn-primary,
     .pd-btn-cart,
     .pd-btn-chat,
     .pd-btn-enquiry {
-        flex: none;
+        flex: 1 1 120px;
+        width: auto;
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 20px;
+        box-sizing: border-box;
+    }
+
+    .pd-sc-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        max-width: 500px;
+        margin: 16px auto 14px;
         width: 100%;
-        padding: 14px;
-        font-size: 15px;
+    }
+
+    .pd-sc-btn-primary,
+    .pd-sc-btn-enquiry,
+    .pd-sc-btn-sec {
+        flex: 1 1 120px;
+        width: auto;
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 20px;
+        box-sizing: border-box;
     }
 
     .pd-supplier-card {

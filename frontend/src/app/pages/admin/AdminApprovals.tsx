@@ -76,7 +76,7 @@ const AdminApprovals = () => {
         const fetchSettings = async () => {
             try {
                 const { data } = await api.get('/admin/site-settings');
-                if (data?.pagination_limit) setItemsPerPage(data.pagination_limit);
+                if (data?.pagination_limit) setItemsPerPage(Number(data.pagination_limit) || 10);
             } catch (err) { }
         };
         fetchSettings();
@@ -210,12 +210,12 @@ const AdminApprovals = () => {
                                 </tr>
                             ))}
                             {pendingProducts.length === 0 && (
-                                <tr className={""}><td colSpan={5}>{t('no_pending_products') || 'No pending products to review.'}</td></tr>
+                                <tr className={""}><td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: 'var(--admin-text-muted)' }}>{t('no_pending_products') || 'No pending products to review.'}</td></tr>
                             )}
                         </tbody>
                     </table>
                 </div>
-                {totalPages > 1 && (
+                {totalPages > 0 && (
                     <div className={styles['admin-pagination-footer']}>
                         <span className={styles['admin-pagination-info']}>
                             {t('showing') || 'Showing'} {indexOfFirstItem + 1} {t('to') || 'to'} {Math.min(indexOfLastItem, pendingProducts.length)} {t('of') || 'of'} {pendingProducts.length} {t('approvals') || 'approvals'}

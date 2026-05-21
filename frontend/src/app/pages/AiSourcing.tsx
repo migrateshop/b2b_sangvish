@@ -294,7 +294,7 @@ const AiSourcing = () => {
                         {history.slice(0, 10).map((item) => (
                             <li
                                 key={item._id}
-                                className={styles['ais-chat-item']}
+                                className={`${styles['ais-chat-item']} ${input === item.query_text ? styles['active'] : ''}`}
                                 onClick={() => { setInput(item.query_text); handleSearch(null, item.query_text); setDrawerOpen(false); }}
                             >
                                 <div className={styles['ais-chat-icon']}>
