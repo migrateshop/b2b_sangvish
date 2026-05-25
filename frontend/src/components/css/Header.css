@@ -4094,3 +4094,20 @@ body.mega-menu-open .header.is-fixed {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+@media (max-width: 768px) {
+    .location-dropdown-menu.mobile-location-modal {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 360px !important;
+        margin: 0 auto !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        border-radius: 16px !important;
+        background-color: #ffffff !important;
+        display: block !important;
+        animation: fadeInScale 0.2s ease-out !important;
+    }
+}

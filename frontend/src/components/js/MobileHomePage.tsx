@@ -76,6 +76,7 @@ const MobileHomePage = () => {
     const [tempCountry, setTempCountry] = useState(selectedCountry || '');
     const [cartCount, setCartCount] = useState(0);
     const [expandedCatId, setExpandedCatId] = useState<string | null>(null);
+    const [appPromoConfig, setAppPromoConfig] = useState<any>(null);
 
     useEffect(() => {
         setTempCountry(selectedCountry || '');
@@ -179,6 +180,12 @@ const MobileHomePage = () => {
 
         api.get('/cms').then(res => {
             setStaticPages(res.data || []);
+        }).catch(() => { });
+
+        api.get('/homepage-sections').then(res => {
+            const sections = res.data || [];
+            const promo = sections.find((s: any) => s.id_name === 'app_promo');
+            if (promo) setAppPromoConfig(promo);
         }).catch(() => { });
     }, []);
 
@@ -814,7 +821,7 @@ const MobileHomePage = () => {
             {activeSearchTab !== 'ai' && (
                 <div className="mph-desktop-section-wrapper">
                     <RFQSection />
-                    <AppPromoSection />
+                    <AppPromoSection config={appPromoConfig} />
                 </div>
             )}
 

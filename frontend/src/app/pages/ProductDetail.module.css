@@ -2349,3 +2349,9 @@
         font-size: 18px;
     }
 }
+
+@media (max-width: 450px) {
+    .pd-page {
+        padding-top: 52px !important;
+    }
+}

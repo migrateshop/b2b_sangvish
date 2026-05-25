@@ -441,3 +441,9 @@
         font-size: 0.82rem;
     }
 }
+
+@media (max-width: 450px) {
+    .cat-page-wrapper {
+        padding-top: 72px !important;
+    }
+}

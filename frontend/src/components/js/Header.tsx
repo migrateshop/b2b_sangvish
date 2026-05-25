@@ -358,6 +358,116 @@ const Header = () => {
                 <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
                 <LogoutModal isOpen={showLogoutModal} onClose={() => setShowLogoutModal(false)} onConfirm={() => { logout(); setShowLogoutModal(false); }} />
                 {authModal && <AuthModal />}
+                {isDeliverToOpen && (
+                    <div className="settings-modal-overlay" onClick={() => setIsDeliverToOpen(false)}>
+                        <div className="location-dropdown-menu mobile-location-modal" onClick={e => e.stopPropagation()}>
+                            <div className="location-dropdown-content">
+                                <button
+                                    className="btn-reset location-close-btn"
+                                    onClick={(e) => { e.stopPropagation(); setIsDeliverToOpen(false); }}
+                                    style={{ position: 'absolute', top: '16px', right: '16px', padding: '5px', cursor: 'pointer', color: '#64748b', display: 'flex' }}
+                                    title="Close"
+                                >
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                                <h4 className="location-title">Specify your location</h4>
+                                <p className="location-subtitle">Shipping options and fees vary based on your location</p>
+
+                                {user ? (
+                                    <div className="user-location-info">
+                                        {userAddress && (
+                                            <div className="current-address-card">
+                                                <div className="address-info">
+                                                    <strong>{user.first_name} {user.last_name}</strong>
+                                                    <p>{userAddress.address}, {userAddress.city}, {userAddress.state}, {userAddress.zip_code}, {userAddress.country}</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="location-links">
+                                            <Link href="/dashboard/shipping" className="location-link" onClick={() => setIsDeliverToOpen(false)}>View more</Link>
+                                            <span className="divider">|</span>
+                                            <Link href="/dashboard/shipping" className="location-link" onClick={() => setIsDeliverToOpen(false)}>Add address</Link>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className="login-prompt-location"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => {
+                                            openLogin();
+                                            setIsDeliverToOpen(false);
+                                        }}
+                                    >
+                                        <p>Sign in to see your addresses</p>
+                                    </div>
+                                )}
+
+                                <div className="location-separator">
+                                    <span>Or</span>
+                                </div>
+
+                                <div className="location-form">
+                                    <div className="form-group custom-select-wrapper-react">
+                                        <div className="select-container-react">
+                                            <Select
+                                                className="country-select-enhanced"
+                                                classNamePrefix="rs-select"
+                                                options={(availableCountries || []).map(c => ({ value: c.code, label: c.name }))}
+                                                value={{
+                                                    value: tempCountry,
+                                                    label: availableCountries.find(c => c.code === tempCountry)?.name || tempCountry
+                                                }}
+                                                onChange={(option: any) => option && setTempCountry(option.value)}
+                                                placeholder="Select country..."
+                                                isSearchable={true}
+                                                styles={{
+                                                    control: (base) => ({
+                                                        ...base,
+                                                        border: 'none',
+                                                        boxShadow: 'none',
+                                                        background: 'transparent',
+                                                        padding: '0 10px',
+                                                        minHeight: '60px',
+                                                        fontWeight: '700',
+                                                        fontSize: '18px',
+                                                        cursor: 'pointer'
+                                                    }),
+                                                    valueContainer: (base) => ({
+                                                        ...base,
+                                                        paddingLeft: '50px'
+                                                    }),
+                                                    option: (base, state) => ({
+                                                        ...base,
+                                                        fontSize: '14px',
+                                                        fontWeight: state.isSelected ? '700' : '500',
+                                                        padding: '12px 20px',
+                                                        background: state.isFocused ? '#f1f5f9' : (state.isSelected ? 'var(--primary-color)' : 'transparent'),
+                                                        color: state.isSelected ? '#fff' : '#1a1a2e',
+                                                        cursor: 'pointer'
+                                                    })
+                                                }}
+                                            />
+                                            <span className="flag-icon-overlay">
+                                                {tempCountry || 'IN'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        className="btn-location-save"
+                                        onClick={() => {
+                                            setSelectedCountry(tempCountry);
+                                            setIsDeliverToOpen(false);
+                                            window.location.reload();
+                                        }}
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </>
         );
     }
@@ -626,11 +736,11 @@ const Header = () => {
 
                             {isDeliverToOpen && (
                                 <div className="location-dropdown-menu">
-                                    <div className="location-dropdown-content" style={{ position: 'relative' }}>
+                                    <div className="location-dropdown-content">
                                         <button
                                             className="btn-reset location-close-btn"
                                             onClick={(e) => { e.stopPropagation(); setIsDeliverToOpen(false); }}
-                                            style={{ position: 'absolute', top: '20px', right: '20px', padding: '5px', cursor: 'pointer', color: '#64748b', display: 'flex' }}
+                                            style={{ position: 'absolute', top: '16px', right: '16px', padding: '5px', cursor: 'pointer', color: '#64748b', display: 'flex' }}
                                             title="Close"
                                         >
                                             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>

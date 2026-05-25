@@ -567,3 +567,15 @@
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+@media (max-width: 450px) {
+  .tr-page {
+    padding-top: 52px !important;
+  }
+  .tr-cat-nav {
+    top: 52px !important;
+  }
+  .tr-toolbar {
+    top: 104px !important;
+  }
+}

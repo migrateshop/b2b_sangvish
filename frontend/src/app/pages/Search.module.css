@@ -448,6 +448,14 @@
   align-items: center;
   justify-content: flex-start;
   height: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  -webkit-overflow-scrolling: touch;
+}
+
+.sr-tab-inner::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .sr-tab-links {
@@ -455,6 +463,7 @@
   align-items: center;
   gap: 24px;
   height: 100%;
+  flex-wrap: nowrap;
 }
 
 .sr-tab-btn {
@@ -470,6 +479,8 @@
   display: flex;
   align-items: center;
   position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .sr-tab-btn:hover {
@@ -3695,4 +3706,10 @@
   backdrop-filter: blur(4px);
   box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
   z-index: 2;
+}
+
+@media (max-width: 450px) {
+  .sr-page {
+    padding-top: 52px !important;
+  }
 }

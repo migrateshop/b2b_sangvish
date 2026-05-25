@@ -503,3 +503,9 @@
         text-align: center;
     }
 }
+
+@media (max-width: 450px) {
+    .worldwide-container {
+        padding-top: 52px !important;
+    }
+}

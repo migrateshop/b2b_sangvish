@@ -313,3 +313,10 @@
 .submitBtn:hover {
     background: #0a2452;
 }
+
+@media (max-width: 450px) {
+    .marketplaceBg {
+        padding-top: 52px !important;
+    }
+}
+

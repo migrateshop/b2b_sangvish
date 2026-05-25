@@ -1436,3 +1436,9 @@
         width: 100% !important;
     }
 }
+
+@media (max-width: 450px) {
+    .supplier-profile-page {
+        padding-top: 52px !important;
+    }
+}

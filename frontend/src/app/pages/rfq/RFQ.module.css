@@ -644,3 +644,9 @@
 .rfq-preview-item button:hover {
     background: rgba(255, 0, 0, 0.7);
 }
+
+@media (max-width: 450px) {
+    .rfq-page-bg {
+        padding-top: 52px !important;
+    }
+}

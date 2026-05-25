@@ -470,3 +470,9 @@
         padding: 20px;
     }
 }
+
+@media (max-width: 450px) {
+    .cart-page-premium {
+        padding-top: 72px !important;
+    }
+}

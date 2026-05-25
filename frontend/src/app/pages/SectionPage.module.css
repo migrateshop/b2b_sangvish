@@ -1143,3 +1143,12 @@
         padding: 8px;
     }
 }
+
+@media (max-width: 450px) {
+    .sp-wrapper {
+        padding-top: 52px !important;
+    }
+    .sp-cat-nav {
+        top: 52px !important;
+    }
+}
