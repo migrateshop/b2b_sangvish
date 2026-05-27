@@ -350,5 +350,8 @@ export default {
     'pending_verifications': '보류 중인 확인',
     'admins': '관리자',
     'bank_transfer': '은행 송금',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': '고객 리뷰',
+    'review_management': '리뷰 관리',
+    'customer_reviews_desc': '바이어의 피드백을 탐색하고 공식 공급업체 답변을 제출합니다.'
 };

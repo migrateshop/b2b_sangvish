@@ -352,5 +352,8 @@ export default {
     'pending_verifications': 'Ausstehende Überprüfungen',
     'admins': 'Administratoren',
     'bank_transfer': 'Banküberweisung',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Kundenbewertungen',
+    'review_management': 'Bewertungsmanagement',
+    'customer_reviews_desc': 'Durchsuchen Sie Feedback von Käufern und übermitteln Sie offizielle Lieferantenantworten.'
 };

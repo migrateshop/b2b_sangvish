@@ -31,7 +31,29 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
-    }
+    },
+    reply_comment: {
+        type: String,
+        trim: true
+    },
+    reply_date: {
+        type: Date
+    },
+    is_hidden: {
+        type: Boolean,
+        default: false
+    },
+    report_count: {
+        type: Number,
+        default: 0
+    },
+    report_reasons: [{
+        type: String
+    }],
+    reported_by: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 }, { timestamps: true });
 
 // Ensure a buyer can only review a product for a specific order once

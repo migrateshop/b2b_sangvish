@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Verificações pendentes',
     'admins': 'Administradores',
     'bank_transfer': 'Transferência bancária',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Avaliações de clientes',
+    'review_management': 'Gestão de avaliações',
+    'customer_reviews_desc': 'Navegue pelos comentários dos compradores e envie respostas oficiais de fornecedores.'
 };

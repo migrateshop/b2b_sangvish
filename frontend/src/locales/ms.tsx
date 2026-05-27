@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Pengesahan belum selesai',
     'admins': 'Pentadbir',
     'bank_transfer': 'Pemindahan Bank',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Ulasan Pelanggan',
+    'review_management': 'Pengurusan Ulasan',
+    'customer_reviews_desc': 'Semak maklum balas daripada pembeli dan serahkan respons rasmi pembekal.'
 };

@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Verifiche in sospeso',
     'admins': 'Amministratori',
     'bank_transfer': 'Bonifico bancario',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Recensioni dei clienti',
+    'review_management': 'Gestione recensioni',
+    'customer_reviews_desc': 'Sfoglia i feedback degli acquirenti e invia risposte ufficiali del fornitore.'
 };

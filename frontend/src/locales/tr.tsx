@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Bekleyen Doğrulamalar',
     'admins': 'Yöneticiler',
     'bank_transfer': 'Banka Havalesi',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Müşteri Değerlendirmeleri',
+    'review_management': 'Değerlendirme Yönetimi',
+    'customer_reviews_desc': 'Alıcıların geri bildirimlerine göz atın ve resmi tedarikçi yanıtlarını gönderin.'
 };

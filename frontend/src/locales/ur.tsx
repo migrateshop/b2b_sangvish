@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'زیر التواء توثیق',
     'admins': 'ایڈمنز',
     'bank_transfer': 'بینک ٹرانسفر',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'صارفین کے جائزے',
+    'review_management': 'جائزہ کا انتظام',
+    'customer_reviews_desc': 'خریداروں کے تاثرات دیکھیں اور فراہم کنندہ کے سرکاری جوابات جمع کروائیں۔'
 };

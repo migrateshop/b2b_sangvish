@@ -776,5 +776,8 @@ export default {
     'cleanup_demo': 'Cleanup Demo Data',
     'detailed_management': 'Detailed Management',
     'bank_transfer': 'Bank Transfer',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Customer Reviews',
+    'review_management': 'Review Management',
+    'customer_reviews_desc': 'Browse feedback from buyers and submit official supplier responses.'
 };

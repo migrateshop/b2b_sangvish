@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Verifikasi Tertunda',
     'admins': 'Admin',
     'bank_transfer': 'Transfer Bank',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Ulasan Pelanggan',
+    'review_management': 'Manajemen Ulasan',
+    'customer_reviews_desc': 'Jelajahi masukan dari pembeli dan kirimkan tanggapan resmi pemasok.'
 };

@@ -331,5 +331,8 @@ export default {
     'pending_verifications': 'عمليات التحقق المعلقة',
     'admins': 'المشرفين',
     'bank_transfer': 'تحويل بنكي',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'آراء العملاء',
+    'review_management': 'إدارة المراجعات',
+    'customer_reviews_desc': 'تصفح تعليقات المشترين وتقديم ردود المورد الرسمية.'
 };

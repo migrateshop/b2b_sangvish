@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import api from '@/services/axiosConfig';
+import { translations } from '@/utils/translations';
 import styles from './AdminLayout.module.css';
 
 const emptyForm = { name: '', code: '', native_name: '', is_active: true, direction: 'ltr' };
@@ -13,10 +14,10 @@ interface Language {
     native_name: string;
     is_active: boolean;
     direction: string;
+    translations?: Record<string, string>;
 }
 
 const AdminModal = ({ isOpen, title, children, onConfirm, onCancel, confirmText = 'Confirm', type = 'info' }: any) => {
-    const { t } = useAuth();
     if (!isOpen) return null;
     return (
         <div className={styles['admin-modal-overlay']}>
@@ -43,6 +44,7 @@ const AdminModal = ({ isOpen, title, children, onConfirm, onCancel, confirmText 
 
 const AdminLanguages = () => {
     const { showToast } = useToast();
+    const { refreshSiteSettings } = useAuth();
     const [data, setData] = useState<Language[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -52,10 +54,17 @@ const AdminLanguages = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
-    // Pagination states
+    // Pagination states for languages list
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Translation editor states
+    const [selectedLangForTranslation, setSelectedLangForTranslation] = useState<Language | null>(null);
+    const [translationEditMap, setTranslationEditMap] = useState<Record<string, string>>({});
+    const [transSearch, setTransSearch] = useState('');
+    const [transPage, setTransPage] = useState(1);
+    const transPerPage = 20;
 
     const fetchLanguages = async () => {
         try {
@@ -71,7 +80,7 @@ const AdminLanguages = () => {
         fetchLanguages(); 
     }, []);
 
-    // Search and Pagination Logic
+    // Search and Pagination Logic for languages list
     const filteredData = data.filter(item => {
         return item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -98,6 +107,7 @@ const AdminLanguages = () => {
             await api.delete(`/admin/languages/${pendingDeleteId}`);
             showToast('Language removed', 'success');
             fetchLanguages();
+            refreshSiteSettings();
         } catch (err) { showToast('Delete failed', 'error'); }
         finally { setModalOpen(false); setPendingDeleteId(null); }
     };
@@ -114,8 +124,229 @@ const AdminLanguages = () => {
             }
             setShowForm(false);
             fetchLanguages();
+            refreshSiteSettings();
         } catch (err) { showToast('Save failed', 'error'); }
     };
+
+    // Translation Editor Functions
+    const handleStartTranslate = (lang: Language) => {
+        setSelectedLangForTranslation(lang);
+        const initialMap: Record<string, string> = {};
+        const dbTranslations = lang.translations || {};
+        const englishKeys = translations['English'] ? Object.keys(translations['English']) : [];
+        
+        englishKeys.forEach(key => {
+            initialMap[key] = dbTranslations[key] || '';
+        });
+        
+        setTranslationEditMap(initialMap);
+        setTransSearch('');
+        setTransPage(1);
+    };
+
+    const handleTranslationChange = (key: string, value: string) => {
+        setTranslationEditMap(prev => ({
+            ...prev,
+            [key]: value
+        }));
+    };
+
+    const handleResetKey = (key: string) => {
+        setTranslationEditMap(prev => ({
+            ...prev,
+            [key]: ''
+        }));
+    };
+
+    const handleSaveTranslations = async () => {
+        if (!selectedLangForTranslation) return;
+        try {
+            const cleanedTranslations: Record<string, string> = {};
+            Object.keys(translationEditMap).forEach(key => {
+                const val = translationEditMap[key];
+                if (val && val.trim() !== '') {
+                    cleanedTranslations[key] = val.trim();
+                }
+            });
+
+            const updatedLang = {
+                ...selectedLangForTranslation,
+                translations: cleanedTranslations
+            };
+
+            await api.put(`/admin/languages/${selectedLangForTranslation._id}`, updatedLang);
+            showToast('Translations saved successfully', 'success');
+            refreshSiteSettings();
+            setSelectedLangForTranslation(null);
+            fetchLanguages();
+        } catch (err) {
+            console.error('Save translations error', err);
+            showToast('Failed to save translations', 'error');
+        }
+    };
+
+    // Render Translation Editor View
+    if (selectedLangForTranslation) {
+        const langName = selectedLangForTranslation.name;
+        const englishKeys = translations['English'] ? Object.keys(translations['English']) : [];
+        
+        // Filter keys based on search
+        const filteredKeys = englishKeys.filter(key => {
+            const keyLower = key.toLowerCase();
+            const englishVal = (((translations['English'] as any)[key]) || '').toLowerCase();
+            const defaultVal = (((translations as any)[langName]?.[key]) || '').toLowerCase();
+            const currentOverride = (translationEditMap[key] || '').toLowerCase();
+            const query = transSearch.toLowerCase();
+            return (
+                keyLower.includes(query) ||
+                englishVal.includes(query) ||
+                defaultVal.includes(query) ||
+                currentOverride.includes(query)
+            );
+        });
+
+        // Paginate keys
+        const indexOfLastKey = transPage * transPerPage;
+        const indexOfFirstKey = indexOfLastKey - transPerPage;
+        const currentKeys = filteredKeys.slice(indexOfFirstKey, indexOfLastKey);
+        const totalTransPages = Math.ceil(filteredKeys.length / transPerPage);
+
+        // Count overrides
+        const overrideCount = Object.keys(translationEditMap).filter((key: string) => {
+            const val = translationEditMap[key];
+            return val && val.trim() !== '';
+        }).length;
+
+        return (
+            <div className={"admin-page"}>
+                <div className={"admin-page-header"} style={{ marginBottom: '32px' }}>
+                    <div>
+                        <h1 className={"admin-page-title"} style={{ fontSize: '28px', fontWeight: 900 }}>
+                            Translate: {selectedLangForTranslation.name} ({selectedLangForTranslation.code.toUpperCase()})
+                        </h1>
+                        <p className={"admin-page-subtitle"} style={{ fontSize: '14px', color: 'var(--admin-text-muted)', fontWeight: 600 }}>
+                            Override local translations dynamically. Unchanged inputs fall back to default locales.
+                        </p>
+                    </div>
+                    <button onClick={() => setSelectedLangForTranslation(null)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`}>
+                        &larr; Back to Languages
+                    </button>
+                </div>
+
+                {/* Stats Banner */}
+                <div className={"admin-card"} style={{ marginBottom: '24px', borderRadius: '16px', border: '1px solid var(--admin-border)' }}>
+                    <div style={{ padding: '16px 24px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Total Master Keys</span>
+                            <span style={{ fontSize: '20px', fontWeight: 900, color: 'var(--admin-text-main)' }}>{englishKeys.length}</span>
+                        </div>
+                        <div style={{ width: '1px', height: '32px', background: 'var(--admin-border)' }}></div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Custom Overrides</span>
+                            <span style={{ fontSize: '20px', fontWeight: 900, color: 'var(--primary-color)' }}>{overrideCount}</span>
+                        </div>
+                        <div style={{ width: '1px', height: '32px', background: 'var(--admin-border)' }}></div>
+                        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                            <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Status</span>
+                            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--admin-text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: selectedLangForTranslation.is_active ? '#10b981' : '#ef4444', display: 'inline-block' }}></span>
+                                {selectedLangForTranslation.is_active ? 'Active on Storefront' : 'Inactive'}
+                            </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button onClick={() => setSelectedLangForTranslation(null)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`}>Cancel</button>
+                            <button onClick={handleSaveTranslations} className={`${styles['admin-btn']} ${styles['admin-btn-primary']}`}>Save Translations</button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Translation List */}
+                <div className={"admin-card"}>
+                    <div style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        <div className={styles['admin-search-wrap']} style={{ flex: '1', minWidth: '220px' }}>
+                            <svg className={styles['admin-search-icon']} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input
+                                type="text"
+                                className={styles['admin-search-input-premium']}
+                                placeholder="Search translation keys or text..."
+                                value={transSearch}
+                                onChange={e => { setTransSearch(e.target.value); setTransPage(1); }}
+                            />
+                        </div>
+                    </div>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table className={"admin-table"}>
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '25%' }}>Translation Key</th>
+                                    <th style={{ width: '30%' }}>English Reference</th>
+                                    <th style={{ width: '35%' }}>Translation Override ({selectedLangForTranslation.name})</th>
+                                    <th style={{ width: '10%', textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentKeys.length === 0 ? (
+                                    <tr><td colSpan={4} style={{ textAlign: 'center', padding: '40px', color: 'var(--admin-text-muted)' }}>No translation keys found.</td></tr>
+                                ) : currentKeys.map(key => {
+                                    const englishVal = (translations['English'] as any)[key] || '';
+                                    const defaultVal = ((translations as any)[langName]?.[key]) || '';
+                                    const isOverridden = !!translationEditMap[key];
+
+                                    return (
+                                        <tr key={key}>
+                                            <td>
+                                                <div style={{ fontWeight: 700, color: 'var(--admin-text-main)', fontSize: '13px' }}>{key}</div>
+                                                {defaultVal && defaultVal !== englishVal && (
+                                                    <div style={{ fontSize: '11px', color: 'var(--admin-text-muted)', marginTop: '2px' }}>
+                                                        Default File: <span style={{ fontStyle: 'italic', fontWeight: 600 }}>{defaultVal}</span>
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td style={{ fontSize: '13px', color: 'var(--admin-text-secondary)', whiteSpace: 'normal', wordBreak: 'break-word' }}>{englishVal}</td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    className={styles['admin-form-input']}
+                                                    style={{ margin: 0, padding: '8px 12px', fontSize: '13px', width: '100%', borderRadius: '8px' }}
+                                                    value={translationEditMap[key] || ''}
+                                                    placeholder={defaultVal || englishVal}
+                                                    onChange={e => handleTranslationChange(key, e.target.value)}
+                                                />
+                                            </td>
+                                            <td style={{ textAlign: 'right' }}>
+                                                {isOverridden && (
+                                                    <button
+                                                        type="button"
+                                                        className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`}
+                                                        style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '6px' }}
+                                                        onClick={() => handleResetKey(key)}
+                                                    >
+                                                        Reset
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                    {totalTransPages > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--admin-border)' }}>
+                            <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-muted)' }}>
+                                Showing {indexOfFirstKey + 1} to {Math.min(indexOfLastKey, filteredKeys.length)} of {filteredKeys.length} keys
+                            </span>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <button disabled={transPage === 1} onClick={() => setTransPage(p => p - 1)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ padding: '6px 12px' }}>Prev</button>
+                                <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--admin-text-main)' }}>Page {transPage} of {totalTransPages}</span>
+                                <button disabled={transPage === totalTransPages} onClick={() => setTransPage(p => p + 1)} className={`${styles['admin-btn']} ${styles['admin-btn-secondary']}`} style={{ padding: '6px 12px' }}>Next</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={"admin-page"}>
@@ -218,6 +449,7 @@ const AdminLanguages = () => {
                                         <td>
                                             <div style={{ display: 'flex', gap: '8px' }}>
                                                 <button onClick={() => handleEdit(item)} className={"admin-action-btn-edit"}>Edit</button>
+                                                <button onClick={() => handleStartTranslate(item)} className={"admin-action-btn-edit"} style={{ background: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}>Translate</button>
                                                 <button onClick={() => confirmDelete(item._id)} className={"admin-action-btn-delete"}>Delete</button>
                                             </div>
                                         </td>

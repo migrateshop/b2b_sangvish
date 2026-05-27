@@ -329,5 +329,8 @@ export default {
     'pending_verifications': 'Vérifications en attente',
     'admins': 'Administrateurs',
     'bank_transfer': 'Virement bancaire',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Avis clients',
+    'review_management': 'Gestion des avis',
+    'customer_reviews_desc': 'Parcourez les commentaires des acheteurs et soumettez des réponses officielles de fournisseurs.'
 };

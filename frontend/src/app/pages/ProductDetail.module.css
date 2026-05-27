@@ -2355,3 +2355,64 @@
         padding-top: 52px !important;
     }
 }
+
+/* Supplier Review Reply Styling */
+.pd-review-reply {
+    margin-top: 14px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border-left: 3px solid var(--primary-color, #0d2e67);
+    border-radius: 0 10px 10px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.pd-review-reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.pd-review-reply-author {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary-color, #0d2e67);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pd-review-reply-date {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.pd-review-reply-comment {
+    font-size: 13.5px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Report Review Button */
+.pd-review-report-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.pd-review-report-btn:hover {
+    color: #ef4444;
+    background: #fef2f2;
+}

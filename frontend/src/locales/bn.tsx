@@ -352,5 +352,8 @@ export default {
     'pending_verifications': 'মুলতুবি যাচাইকরণ',
     'admins': 'অ্যাডমিনস',
     'bank_transfer': 'ব্যাংক ট্রান্সফার',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'গ্রাহক পর্যালোচনা',
+    'review_management': 'পর্যালোচনা ব্যবস্থাপনা',
+    'customer_reviews_desc': 'ক্রেতাদের মতামত ব্রাউজ করুন এবং অফিসিয়াল সরবরাহকারী প্রতিক্রিয়া জমা দিন।'
 };

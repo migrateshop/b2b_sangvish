@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Väntande verifieringar',
     'admins': 'Administratörer',
     'bank_transfer': 'Banköverföring',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Kundrecensioner',
+    'review_management': 'Recensionshantering',
+    'customer_reviews_desc': 'Bläddra bland feedback från köpare och skicka officiella leverantörssvar.'
 };

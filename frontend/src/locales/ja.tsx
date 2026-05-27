@@ -350,5 +350,8 @@ export default {
     'pending_verifications': '保留中の検証',
     'admins': '管理者',
     'bank_transfer': '銀行振込',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'カスタマーレビュー',
+    'review_management': 'レビュー管理',
+    'customer_reviews_desc': 'バイヤーからのフィードバックを閲覧し、サプライヤーの公式回答を送信します。'
 };

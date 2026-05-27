@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'நிலுவையில் உள்ள சரிபார்ப்புகள்',
     'admins': 'நிர்வாகிகள்',
     'bank_transfer': 'வங்கி பரிமாற்றம்',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'வாடிக்கையாளர் மதிப்புரைகள்',
+    'review_management': 'மதிப்புரை மேலாண்மை',
+    'customer_reviews_desc': 'வாங்குபவர்களின் கருத்துக்களை உலாவவும் மற்றும் அதிகாரப்பூர்வ சப்ளையர் பதில்களை சமர்ப்பிக்கவும்.'
 };

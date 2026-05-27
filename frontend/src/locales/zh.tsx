@@ -338,5 +338,8 @@ export default {
     'pending_verifications': '待验证',
     'admins': '管理员',
     'bank_transfer': '银行转账',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': '客户评价',
+    'review_management': '评价管理',
+    'customer_reviews_desc': '浏览买家反馈并提交官方供应商回复。'
 };

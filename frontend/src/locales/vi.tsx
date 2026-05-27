@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Đang chờ xác minh',
     'admins': 'Quản trị viên',
     'bank_transfer': 'Chuyển khoản ngân hàng',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Đánh giá của khách hàng',
+    'review_management': 'Quản lý đánh giá',
+    'customer_reviews_desc': 'Duyệt phản hồi từ người mua và gửi phản hồi chính thức của nhà cung cấp.'
 };

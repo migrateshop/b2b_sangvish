@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Ожидающие проверки',
     'admins': 'Админы',
     'bank_transfer': 'Банковский перевод',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Отзывы клиентов',
+    'review_management': 'Управление отзывами',
+    'customer_reviews_desc': 'Просматривайте отзывы покупателей и отправляйте официальные ответы поставщиков.'
 };

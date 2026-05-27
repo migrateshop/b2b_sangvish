@@ -8,6 +8,10 @@ import styles from './BookingDrawer.module.css';
 const ShippingModal = ({ isOpen, onClose, services, currentId, onSelect, totalQuantity, convertPrice, countryName }) => {
     const [selectedId, setSelectedId] = useState(currentId);
 
+    useEffect(() => {
+        setSelectedId(currentId);
+    }, [currentId, isOpen]);
+
     if (!isOpen) return null;
 
     const handleApply = () => {
@@ -413,7 +417,7 @@ const BookingDrawer = ({ isOpen, onClose, product, initialQuantity, initialVaria
                             width: '100%', 
                             padding: '14px', 
                             background: totalQuantity > 0 ? 'var(--primary-color)' : '#f5f5f5', 
-                            color: totalQuantity > 0 ? '#000' : '#aaa', 
+                            color: totalQuantity > 0 ? '#fff' : '#aaa', 
                             border: 'none', 
                             borderRadius: '30px', 
                             fontWeight: '800', 

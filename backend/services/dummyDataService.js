@@ -386,6 +386,21 @@ const performImport = async (logSession, session = null) => {
     }
     addLog(`Reviews populated: ${importedReviewsCount} records.`);
 
+    // Recalculate rating and numReviews for all products to keep them in sync with seeded reviews
+    addLog('Recalculating rating and numReviews for all products...');
+    const allProductsList = await Product.find({}, null, { session });
+    for (const prod of allProductsList) {
+        const productReviews = await Review.find({ product_id: prod._id }, null, { session });
+        const numReviews = productReviews.length;
+        const avgRating = numReviews > 0 ? (productReviews.reduce((acc, item) => item.rating + acc, 0) / numReviews) : 0;
+        
+        await Product.findByIdAndUpdate(prod._id, {
+            rating: avgRating,
+            numReviews
+        }, { session });
+    }
+    addLog('Product ratings and review counts successfully synchronized with database reviews.');
+
     // 8. Disputes Restoration
     addLog('Seeding active mediation disputes...');
     const disputeChunks = chunkArray(disputesData, CHUNK_SIZE);

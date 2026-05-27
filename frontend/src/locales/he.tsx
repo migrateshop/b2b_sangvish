@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'ממתינים לאימות',
     'admins': 'מנהלי מערכת',
     'bank_transfer': 'העברה בנקאית',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'חוות דעת לקוחות',
+    'review_management': 'ניהול חוות דעת',
+    'customer_reviews_desc': 'עיין במשอบ מהקונים ושלח תגובות רשמיות של ספקים.'
 };

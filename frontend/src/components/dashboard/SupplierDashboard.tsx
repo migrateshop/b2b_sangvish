@@ -26,6 +26,7 @@ import { getImgUrl } from '@/utils/imageConfig';
 import OrderDetail from './OrderDetail';
 import Invoice from './Invoice';
 import BuyerDisputes from './BuyerDisputes';
+import SupplierReviews from './SupplierReviews';
 
 const SupplierDashboard = ({ tab, subtab }) => {
     const { unreadTotal } = useChat();
@@ -58,7 +59,8 @@ const SupplierDashboard = ({ tab, subtab }) => {
             'payout': t('payout_method') || 'Payout Method',
             'profile': t('company_profile') || 'Company Profile',
             'subscription': t('subscription_plan') || 'Subscription Plan',
-            'settings': t('settings') || 'Settings'
+            'settings': t('settings') || 'Settings',
+            'reviews': t('reviews') || 'Reviews'
         };
         return map[id] || labelName;
     };
@@ -154,7 +156,8 @@ const SupplierDashboard = ({ tab, subtab }) => {
                 { id: 'product-enquiries', label: 'Product Enquiries', icon: 'I' },
                 { id: 'notifications', label: 'Notifications', icon: 'N' },
                 { id: 'messages', label: 'Messages', icon: 'M' },
-                { id: 'disputes', label: 'Disputes', icon: 'D' }
+                { id: 'disputes', label: 'Disputes', icon: 'D' },
+                { id: 'reviews', label: 'Reviews', icon: 'Rev' }
             ]
         },
         {
@@ -194,6 +197,7 @@ const SupplierDashboard = ({ tab, subtab }) => {
             'S': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" strokeWidth="1" /></svg>,
             'Sec': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>,
             'Set': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
+            'Rev': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>,
         };
         return <span className={styles['supplier-sb-icon']}>{icons[type] || icons['dashboard']}</span>;
     };
@@ -201,7 +205,7 @@ const SupplierDashboard = ({ tab, subtab }) => {
     const renderContent = () => {
         const isVerified = stats.company_status === 'verified' || stats.company_status === 'pending' || stats.has_company;
         const isPlanActive = stats.plan_active || stats.has_company;
-        const restrictedSections = ['products', 'rfq', 'my-quotes', 'orders', 'inquiries', 'wallet', 'payout', 'analytics', 'marketing'];
+        const restrictedSections = ['products', 'rfq', 'my-quotes', 'orders', 'inquiries', 'wallet', 'payout', 'analytics', 'marketing', 'reviews'];
         const isRestricted = restrictedSections.includes(activeSection) && (!isVerified || !isPlanActive);
 
         if (loadingStats) {
@@ -241,6 +245,7 @@ const SupplierDashboard = ({ tab, subtab }) => {
         if (activeSection === 'products') return <ProductManagement isAdminView={false} />;
         if (activeSection === 'rfq') return <RFQMarket />;
         if (activeSection === 'my-quotes') return <SupplierQuotes />;
+        if (activeSection === 'reviews') return <SupplierReviews />;
         const emptyCardStyle = { backgroundColor: '#ffffff', borderRadius: '8px', padding: '32px', minHeight: '800px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' };
 
         if (activeSection === 'orders') return subtab ? <OrderDetail role="supplier" orderId={subtab} /> : <SupplierOrders />;

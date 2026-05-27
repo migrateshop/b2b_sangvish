@@ -350,5 +350,8 @@ export default {
     'pending_verifications': 'Verificaties in behandeling',
     'admins': 'Beheerders',
     'bank_transfer': 'Bankoverschrijving',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'Klantbeoordelingen',
+    'review_management': 'Beoordelingsbeheer',
+    'customer_reviews_desc': 'Blader door feedback van kopers and dien officiële reacties van leveranciers in.'
 };

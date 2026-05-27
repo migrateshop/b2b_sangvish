@@ -338,5 +338,8 @@ export default {
     'pending_verifications': 'लंबित सत्यापन',
     'admins': 'व्यवस्थापक',
     'bank_transfer': 'बैंक ट्रांसफर',
-    'paypal': 'PayPal'
+    'paypal': 'PayPal',
+    'customer_reviews': 'ग्राहक समीक्षाएं',
+    'review_management': 'समीक्षा प्रबंधन',
+    'customer_reviews_desc': 'खरीददारों की प्रतिक्रिया ब्राउज़ करें और आधिकारिक आपूर्तिकर्ता प्रतिक्रियाएं सबमिट करें।'
 };

@@ -116,7 +116,32 @@ const ProductDetail = () => {
     const [isCustomizationModalOpen, setIsCustomizationModalOpen] = useState(false);
     const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
     const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportingReviewId, setReportingReviewId] = useState<string | null>(null);
+    const [reportReason, setReportReason] = useState('Spam');
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     const relatedSliderRef = useRef<HTMLDivElement>(null);
+
+    const handleReportSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) {
+            openLogin();
+            return;
+        }
+        if (!reportingReviewId) return;
+        setIsSubmittingReport(true);
+        try {
+            await api.post(`/reviews/${reportingReviewId}/report`, { reason: reportReason });
+            showToast('Review reported successfully for moderation', 'success');
+            setIsReportModalOpen(false);
+            setReportingReviewId(null);
+            setReportReason('Spam');
+        } catch (err: any) {
+            showToast(err.response?.data?.message || 'Failed to report review', 'error');
+        } finally {
+            setIsSubmittingReport(false);
+        }
+    };
 
     // Zoom
     const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
@@ -235,35 +260,10 @@ const ProductDetail = () => {
     const validRatings = reviews.filter(r => r && (typeof r.rating === 'number' || (typeof r.rating === 'string' && !isNaN(Number(r.rating)))));
     const dynamicRating = validRatings.length > 0
         ? validRatings.reduce((a, r) => a + Number(r.rating), 0) / validRatings.length
-        : (product.rating || 0);
+        : 0;
 
     // displayReviews defined early so count/breakdown can reference it
-    const displayReviews = reviews.length > 0 ? reviews : (product.numReviews > 0 ? [
-        {
-            buyer_id: { first_name: 'John', last_name: 'Doe', company_name: 'Global Trade Corp' },
-            rating: Math.min(5, Math.max(3, Math.round(product.rating || 5))),
-            comment: 'Excellent quality! The packaging was very secure, and delivery was on time. Highly recommended supplier.',
-            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Sarah', last_name: 'Smith', company_name: 'Apex Imports' },
-            rating: Math.min(5, Math.max(3, Math.round(product.rating || 4))),
-            comment: 'Great communication and customization service. The custom logo looks perfectly done. Will buy again!',
-            createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Michael', last_name: 'Chen', company_name: 'Pacific Distribution' },
-            rating: 5,
-            comment: 'Ordered 50 units for our retail chain. The build quality exceeded our expectations. Solid profit margins.',
-            createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            buyer_id: { first_name: 'Emma', last_name: 'Watson', company_name: 'EuroTech Solutions' },
-            rating: 4,
-            comment: 'Very satisfied with the product specifications. Shipping took slightly longer than expected due to customs, but the supplier was very helpful.',
-            createdAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
-        },
-    ] : []);
+    const displayReviews = reviews || [];
 
     // Count is always the length of what we actually display
     const dynamicNumReviews = displayReviews.length;
@@ -764,13 +764,39 @@ const ProductDetail = () => {
                                                     <div className={styles['pd-review-body']}>
                                                         <div className={styles['pd-review-top']}>
                                                             <span className={styles['pd-reviewer-name']}>{reviewerName}</span>
-                                                            <span className={styles['pd-review-date']}>{new Date(r.createdAt || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                                <span className={styles['pd-review-date']}>{new Date(r.createdAt || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                                {r.buyer_id?._id !== user?._id && (
+                                                                    <button 
+                                                                        className={styles['pd-review-report-btn']}
+                                                                        onClick={() => {
+                                                                            if (!user) { openLogin(); return; }
+                                                                            setReportingReviewId(r._id);
+                                                                            setIsReportModalOpen(true);
+                                                                        }}
+                                                                        title="Report Review"
+                                                                    >
+                                                                        🚩 Report
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                         <StarRating rating={r.rating} size={13} />
                                                         <p className={styles['pd-review-comment']}>{r.comment}</p>
                                                         {r.images?.length > 0 && (
                                                             <div className={styles['pd-review-imgs']}>
                                                                 {r.images.map((img: string, j: number) => <img key={j} src={getImgUrl(img)} alt="review" />)}
+                                                            </div>
+                                                        )}
+                                                        {r.reply_comment && (
+                                                            <div className={styles['pd-review-reply']}>
+                                                                <div className={styles['pd-review-reply-header']}>
+                                                                    <span className={styles['pd-review-reply-author']}>Supplier Response</span>
+                                                                    <span className={styles['pd-review-reply-date']}>
+                                                                        {new Date(r.reply_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                                    </span>
+                                                                </div>
+                                                                <p className={styles['pd-review-reply-comment']}>{r.reply_comment}</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -1056,13 +1082,39 @@ const ProductDetail = () => {
                                                     <div className={styles['pd-review-body']}>
                                                         <div className={styles['pd-review-top']}>
                                                             <span className={styles['pd-reviewer-name']}>{reviewerName}</span>
-                                                            <span className={styles['pd-review-date']}>{new Date(r.createdAt || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                                <span className={styles['pd-review-date']}>{new Date(r.createdAt || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                                {r.buyer_id?._id !== user?._id && (
+                                                                    <button 
+                                                                        className={styles['pd-review-report-btn']}
+                                                                        onClick={() => {
+                                                                            if (!user) { openLogin(); return; }
+                                                                            setReportingReviewId(r._id);
+                                                                            setIsReportModalOpen(true);
+                                                                        }}
+                                                                        title="Report Review"
+                                                                    >
+                                                                        🚩 Report
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                         <StarRating rating={r.rating} size={13} />
                                                         <p className={styles['pd-review-comment']}>{r.comment}</p>
                                                         {r.images?.length > 0 && (
                                                             <div className={styles['pd-review-imgs']}>
                                                                 {r.images.map((img: string, j: number) => <img key={j} src={getImgUrl(img)} alt="review" />)}
+                                                            </div>
+                                                        )}
+                                                        {r.reply_comment && (
+                                                            <div className={styles['pd-review-reply']}>
+                                                                <div className={styles['pd-review-reply-header']}>
+                                                                    <span className={styles['pd-review-reply-author']}>Supplier Response</span>
+                                                                    <span className={styles['pd-review-reply-date']}>
+                                                                        {new Date(r.reply_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                                    </span>
+                                                                </div>
+                                                                <p className={styles['pd-review-reply-comment']}>{r.reply_comment}</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -1081,8 +1133,102 @@ const ProductDetail = () => {
                     </div>
                 </div>
             )}
+
+            {/* ── Report Review Modal Popup ── */}
+            {isReportModalOpen && (
+                <div className={styles['pd-modal-overlay']} onClick={() => { setIsReportModalOpen(false); setReportingReviewId(null); }}>
+                    <div className={styles['pd-modal-box']} style={{ maxWidth: '450px', padding: '24px 32px' }} onClick={e => e.stopPropagation()}>
+                        <div className={styles['pd-modal-header']} style={{ marginBottom: '16px' }}>
+                            <h3>Report Review</h3>
+                            <button onClick={() => { setIsReportModalOpen(false); setReportingReviewId(null); }}>✕</button>
+                        </div>
+                        <form onSubmit={handleReportSubmit}>
+                            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px', lineHeight: '1.5' }}>
+                                Please select the reason why you are reporting this review. The platform administrators will moderate the flagged content.
+                              </p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                                {['Spam', 'Harassment', 'Inaccurate', 'Inappropriate Content', 'Other'].map((reason) => (
+                                    <label 
+                                        key={reason} 
+                                        style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: '10px', 
+                                            fontSize: '13.5px', 
+                                            fontWeight: '600', 
+                                            cursor: 'pointer',
+                                            padding: '8px 12px',
+                                            borderRadius: '8px',
+                                            border: '1.5px solid',
+                                            borderColor: reportReason === reason ? 'var(--primary-color)' : '#e2e8f0',
+                                            background: reportReason === reason ? 'rgba(13, 46, 103, 0.02)' : 'transparent',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="reportReason"
+                                            value={reason}
+                                            checked={reportReason === reason}
+                                            onChange={() => setReportReason(reason)}
+                                            style={{ cursor: 'pointer' }}
+                                        />
+                                        {reason}
+                                    </label>
+                                ))}
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsReportModalOpen(false); setReportingReviewId(null); }}
+                                    style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '20px',
+                                        border: '1.5px solid #e2e8f0',
+                                        background: '#fff',
+                                        color: '#475569',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmittingReport}
+                                    style={{
+                                        padding: '10px 24px',
+                                        borderRadius: '20px',
+                                        border: 'none',
+                                        background: '#ef4444',
+                                        color: '#fff',
+                                        fontSize: '13px',
+                                        fontWeight: '800',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)'
+                                    }}
+                                >
+                                    {isSubmittingReport ? (
+                                        <>
+                                            <div style={{ width: '12px', height: '12px', border: '2px solid #fff', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                                            Submitting...
+                                        </>
+                                    ) : (
+                                        'Submit Report'
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
+
 
 export default ProductDetail;
